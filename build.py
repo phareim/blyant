@@ -7,6 +7,7 @@ dist/tokens.css   – fargene (Papir/Kull), avstander, strek og skrift som CSS-v
 dist/blyant.css   – fonter + tokens + komponenter (én fil å lenke til)
 dist/blyant.js    – Blyant (streker, komponenter, Sketch3D, HexBoard) + Blyant.chart
 examples/hex-skisse/index.html – testflaten, ferdig bygget
+index.html        – samme testflate, som forside på https://phareim.github.io/blyant/
 """
 import json, os, re
 
@@ -83,3 +84,4 @@ if __name__ == '__main__':
             '<style>body { margin: 0; } [hidden] { display: none !important; }</style>\n'
             '</head>\n<body>\n' + page + '\n</body>\n</html>\n')
     write(os.path.join(ex, 'index.html'), page)
+    write('index.html', page)   # forsiden på GitHub Pages (deploy fra main, rotmappen)
