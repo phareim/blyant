@@ -36,7 +36,7 @@ Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Filene ligger i `di
 | --- | --- |
 | `dist/blyant.css` | Fonter, tokens og alle komponenter i én fil |
 | `dist/tokens.css` | Bare tokens som CSS-variabler (Papir og Kull) |
-| `dist/blyant.js` | `Blyant`: streker, `ink`, `figure`, `Sketch3D`, `HexBoard`, `hexgrid` og `chart` |
+| `dist/blyant.js` | `Blyant`: streker, `ink`, `figure`, `Sketch3D`, `HexBoard`, `hexgrid`, `chart` og `frames` |
 | `tokens.json` | Kilden til alle tokens |
 | `src/` | Kildekoden; `src/blyant.d.ts` beskriver API-et |
 | `docs/komponenter/` | Retningslinjer per komponent |
@@ -166,12 +166,34 @@ Blyant.chart.line(el, {
 - Hver graf har verktøytips på hover og tastatur (piltaster når grafen har fokus) og en tabell: `chart.table(true)`. Verktøytipset er aldri eneste vei til et tall.
 - Eksempeldata merkes som eksempeldata i undertittel eller etikett.
 
+## Tegneserieruter
+
+`Blyant.frames` fyller en vilkårlig flate med et vilkårlig antall tegneserieruter. `geometry` går fra 0 (rolig rutenett) til 1 (skjeve kutt, diagonaler og en rute lagt oppå de andre).
+
+![Sju ruter med geometri 0,8](docs/ruter.png)
+
+```js
+var side = Blyant.frames(el, {
+  count: 7, geometry: 0.8, seed: 4,
+  render: function (rute, i) { rute.body.textContent = "Rute " + (i + 1); }
+});
+side.update({ count: 9 });
+```
+
+- Gi flaten en høyde (`height` eller `aspect-ratio`). Siden legges ut på nytt når størrelsen endrer seg, og samme `seed` gir samme side.
+- Legg innhold i `rute.body`, det største rette rektangelet i ruta. Bakgrunn og skravur går i `rute.el`, som er klippet til hele polygonet.
+- Rutene ligger i leserekkefølge i DOM-en.
+- `Blyant.frames.layout(w, h, opts)` gir bare polygonene, til canvas eller three.js.
+
+Se `docs/komponenter/Frames.md`.
+
 ## Flater
 
 - **Nettside:** `.b-page` på `body` gir papir, korn og prosa-stiler for vanlige HTML-elementer. Bruk `.b-nav`, `.b-btn`, `.b-field`, `.b-box`, `.b-table`, `.b-ph` for bilder som ikke finnes ennå.
 - **Dokument:** vanlig HTML inne i `.b-prose`. `<mark>` er tusj, `.b-scribble` er margnotat, `.b-callout` er en tegnet ramme rundt et poeng.
 - **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`.
 - **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå.
+- **Tegneserie og storyboard:** `Blyant.frames` på en flate med fast sideforhold, innhold i `rute.body`.
 - **Dashbord og rapport:** en rad `Blyant.chart.stat` øverst, ett filter-rad over grafene, og grafer i `.b-box`-kort med en «Vis tabell»-knapp.
 
 ## Ikoner

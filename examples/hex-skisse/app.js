@@ -34,13 +34,14 @@
       host.appendChild(game.el);
       var th = document.createElement("section");
       th.className = "stack-lg";
-      th.innerHTML = '<div class="sec-head"><h2>Muligheter i systemet</h2><p>Samme blyant, samme tokens, seks andre flater. Klikk på en skisse for å hoppe dit.</p></div><div class="thumbs" id="thumbs"></div>';
+      th.innerHTML = '<div class="sec-head"><h2>Muligheter i systemet</h2><p>Samme blyant, samme tokens, sju andre flater. Klikk på en skisse for å hoppe dit.</p></div><div class="thumbs" id="thumbs"></div>';
       host.appendChild(th);
       var grid = th.querySelector("#thumbs");
       [["nettside", "Nettside", "Navigasjon, hero, kort, skjema, tabell og bunntekst."],
         ["dokument", "Dokument", "Artikkel med ingress, overstrykning, margnotater og figur."],
         ["presentasjon", "Presentasjon", "16:9-slides med håndtegnede diagrammer."],
         ["grafer", "Grafer", "Linjer, stolper, punkter og nøkkeltall i blyant."],
+        ["ruter", "Tegneserieruter", "Fyll en flate med ruter, fra rolig rutenett til skjeve kutt."],
         ["former", "Former i 2D og 3D", "Rå streker, skravur, fargeblyanter og three.js-laben."],
         ["system", "System", "Farger, skrift, avstander og alle komponentene."]].forEach(function (t) {
           var a = document.createElement("a");
@@ -459,6 +460,95 @@
       d.querySelector('[data-range="' + grafRange + '"]').classList.add("b-btn--marker");
       d.querySelector('[data-range="' + grafRange + '"]').setAttribute("aria-pressed", "true");
       d.querySelector('[data-range="' + (grafRange === 7 ? 30 : 7) + '"]').setAttribute("aria-pressed", "false");
+    }
+  };
+
+  /* ---------- Ruter (comic frames) ---------- */
+  var ruter = { count: 6, geometry: 0.6, seed: 4, shape: "bred" };
+  var RUTE_TEKST = ["Hoppet", "Dit bort?", "HOPP!", "Senere, på myra …", "Tre hex igjen.", "Nesten!", "Og så ble det stille."];
+  function fillFrame(pn, i) {
+    var body = pn.body, node = pn.el, w = pn.safe.w, h = pn.safe.h, bb = pn.bbox, kind = i % 6;
+    var old = node.querySelector(".rute-bg");
+    if (old) node.removeChild(old);
+    body.innerHTML = "";
+    body.className = "b-frame__body rute rute--" + kind;
+    var rel = pn.points.map(function (v) { return [v[0] - bb.x, v[1] - bb.y]; });
+    function bg(draw) {
+      var s = B.svg(bb.w, bb.h, null, { "class": "rute-bg", "aria-hidden": "true" });
+      node.insertBefore(s, body);
+      draw(s);
+    }
+    if (kind === 0) {
+      body.innerHTML = '<span class="b-label">Kapittel ' + (1 + Math.floor(i / 6)) + '</span><span class="rute__title">' + esc(RUTE_TEKST[i % 7]) + "</span>";
+    } else if (kind === 1 || kind === 4) {
+      var s1 = B.svg(200, 140, body, { "class": "rute__art", role: "img", "aria-label": kind === 1 ? "Figuren står på en hex" : "Figuren i luften mellom to hex", preserveAspectRatio: "xMidYMid meet" });
+      s1.removeAttribute("width"); s1.removeAttribute("height");
+      var hexA = [[56, 104], [82, 92], [118, 92], [144, 104], [118, 118], [82, 118]];
+      var shapes = kind === 1
+        ? [{ type: "hatch", points: hexA, gap: 5, opacity: 0.5 }, { type: "poly", points: hexA },
+           { type: "ellipse", cx: 100, cy: 74, rx: 15, ry: 20, fill: "var(--dust-blue)" }, { type: "circle", cx: 100, cy: 42, r: 11, fill: "var(--paper)", fillOpacity: 1 }]
+        : [{ type: "poly", points: hexA.map(function (v) { return [v[0] - 52, v[1] + 8]; }) }, { type: "poly", points: hexA.map(function (v) { return [v[0] + 52, v[1] + 8]; }) },
+           { type: "curve", points: [[52, 96], [76, 44], [112, 36], [146, 92]], opacity: 0.55, width: 1.1 },
+           { type: "ellipse", cx: 104, cy: 46, rx: 14, ry: 18, fill: "var(--dust-orange)" }, { type: "circle", cx: 110, cy: 18, r: 10, fill: "var(--paper)", fillOpacity: 1 }];
+      B.figure(s1, shapes.map(function (sh, k) { sh.seed = i * 13 + k + 3; return sh; }));
+    } else if (kind === 2) {
+      var s2 = B.svg(w, h, body, { "class": "rute__bubble", "aria-hidden": "true" });
+      var ry = Math.min(h * 0.34, w * 0.3), rx = Math.min(w * 0.46, ry * 1.9), cx = w / 2, cy = h * 0.46;
+      B.draw(s2, B.rough.ellipse(cx, cy, rx, ry, { seed: i + 9 }), { width: 1.7 });
+      B.draw(s2, B.rough.poly([[cx - rx * 0.3, cy + ry * 0.9], [cx - rx * 0.5, Math.min(h * 0.98, cy + ry * 1.5)], [cx - rx * 0.02, cy + ry * 0.98]], false, { seed: i + 4 }), { width: 1.7 });
+      var p = document.createElement("p");
+      p.className = "rute__say";
+      p.style.cssText = "left:" + (cx - rx * 0.72) + "px;top:" + (cy - ry * 0.62) + "px;width:" + rx * 1.44 + "px;height:" + ry * 1.24 + "px";
+      p.textContent = RUTE_TEKST[(i + 6) % 7 || 1];
+      body.appendChild(p);
+    } else if (kind === 3) {
+      bg(function (s) { B.draw(s, B.rough.hatch(rel, { seed: i + 2, gap: 9, angle: -38 }), { width: 1, opacity: 0.32 }); });
+      body.innerHTML = '<span class="rute__lyd"><mark>HOPP!</mark></span>';
+    } else {
+      bg(function (s) { B.draw(s, B.rough.hatch(rel, { seed: i + 7, gap: 6, angle: 52 }), { width: 1, opacity: 0.5 }); });
+      body.innerHTML = '<span class="rute__cap">' + esc(RUTE_TEKST[(i + 3) % 7]) + "</span>";
+    }
+  }
+  VIEWS.ruter = {
+    title: "Ruter",
+    render: function (host, o) {
+      o = o || {};
+      var d = document.createElement("div");
+      d.className = "stack-lg";
+      d.style.gap = "var(--space-12)";
+      d.innerHTML =
+        (o.thumb ? "" : '<a class="back" href="#spill">← Til hex-flaten</a>') +
+        '<section class="stack-lg"><div class="sec-head"><span class="b-label">Blyant.frames</span><h1>Tegneserieruter</h1><p>Gi verktøyet en flate og et antall. Det kutter flaten i ruter som alltid fyller plassen, og tegner rammene med blyant. Dra i geometrien for å gå fra rolig rutenett til skjeve kutt.</p></div>' +
+        (o.thumb ? "" :
+        '<div class="rute-tools b-box">' +
+        '<label class="b-field"><span class="b-field__label">Antall ruter <output id="rt-n-out"></output></span><input class="b-range" id="rt-n" type="range" min="1" max="14" step="1"></label>' +
+        '<label class="b-field"><span class="b-field__label">Geometri <output id="rt-g-out"></output></span><input class="b-range" id="rt-g" type="range" min="0" max="1" step="0.05"></label>' +
+        '<div class="rute-tools__row"><div class="rute-tools__fmt" role="group" aria-label="Format"><button class="b-btn b-btn--sm" type="button" data-shape="bred">Bred</button><button class="b-btn b-btn--sm" type="button" data-shape="kvadrat">Kvadrat</button><button class="b-btn b-btn--sm" type="button" data-shape="hoy">Høy</button></div>' +
+        '<button class="b-btn b-btn--sm b-btn--primary" type="button" id="rt-seed">Ny side</button></div></div>') +
+        '<div class="rute-stage" data-shape="' + ruter.shape + '"><div id="rt-frames" class="rute-frames"></div></div></section>' +
+        (o.thumb ? "" : '<section class="two"><div class="stack"><span class="b-label">Bruk</span><h2>Én linje per side</h2><p>Samme <code>seed</code> gir samme side hver gang, også når plassen endrer størrelse. Hver rute har et trygt rektangel til innholdet, så tekst aldri klippes av en skrå kant. Rutene ligger i leserekkefølge.</p></div>' +
+        '<pre><code>var side = Blyant.frames(el, {\n  count: 6,       // antall ruter\n  geometry: 0.6,  // 0 = rutenett, 1 = skjevt og vilt\n  seed: 4,\n  render: function (rute, i) {\n    rute.body.textContent = "Rute " + (i + 1);\n  }\n});\n\nside.update({ geometry: 1 });\n\n// eller rett i HTML: ett barn per rute\n// &lt;div data-count="3" data-geometry="0.4"&gt;…&lt;/div&gt;</code></pre></section>');
+      host.appendChild(d);
+      var fr = B.frames(d.querySelector("#rt-frames"), { count: ruter.count, geometry: ruter.geometry, seed: ruter.seed, render: fillFrame });
+      if (o.thumb) return;
+      var nIn = d.querySelector("#rt-n"), gIn = d.querySelector("#rt-g"), stage = d.querySelector(".rute-stage");
+      function sync() {
+        nIn.value = ruter.count; gIn.value = ruter.geometry;
+        d.querySelector("#rt-n-out").textContent = ruter.count;
+        d.querySelector("#rt-g-out").textContent = String(ruter.geometry.toFixed(2)).replace(".", ",");
+        stage.setAttribute("data-shape", ruter.shape);
+        Array.prototype.forEach.call(d.querySelectorAll("[data-shape].b-btn"), function (b) {
+          var on = b.getAttribute("data-shape") === ruter.shape;
+          b.classList.toggle("b-btn--marker", on); b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      }
+      nIn.addEventListener("input", function () { ruter.count = +nIn.value; sync(); fr.update({ count: ruter.count }); });
+      gIn.addEventListener("input", function () { ruter.geometry = +gIn.value; sync(); fr.update({ geometry: ruter.geometry }); });
+      d.querySelector("#rt-seed").addEventListener("click", function () { ruter.seed++; fr.update({ seed: ruter.seed }); });
+      Array.prototype.forEach.call(d.querySelectorAll("[data-shape].b-btn"), function (b) {
+        b.addEventListener("click", function () { ruter.shape = b.getAttribute("data-shape"); sync(); B.reink(d); });
+      });
+      sync();
     }
   };
 

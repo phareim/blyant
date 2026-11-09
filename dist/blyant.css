@@ -748,6 +748,18 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-stat__delta span { color: var(--ink-soft); }
 .b-spark { display: block; overflow: visible; }
 
+/* Comic frames (Blyant.frames): panels are clipped boxes, the pencil frame lies on top */
+.b-frames { position: relative; min-height: 200px; isolation: isolate; }
+.b-frame { position: absolute; overflow: hidden; background: var(--b-frame-fill, transparent); }
+.b-frame--pop { z-index: 2; background: var(--b-frame-pop, var(--paper)); }
+.b-frame__body { position: absolute; overflow: hidden; container-type: size; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.b-frames__ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 1; color: var(--line); }
+.b-frames__ink--top { z-index: 3; }
+.b-frames__num { font-family: var(--b-note); font-size: 13px; fill: var(--ink-soft); }
+
+/* Range slider */
+.b-range { width: 100%; accent-color: var(--ink); height: 28px; margin: 0; }
+
 @media (prefers-reduced-motion: reduce) {
   .b-btn, .b-check__box::after, .b-switch__track::after { transition: none; }
 }

@@ -93,8 +93,15 @@ export interface StatProps { label: string; value: number | string; unit?: strin
 /** What every chart returns. */
 export interface ChartHandle { update(patch: object): void; table(show?: boolean): boolean; destroy(): void; }
 
+/** Blyant.frames(el, props) — comic-book panels that fill any box. */
+export interface FramesProps { count?: number; geometry?: number; seed?: number; gutter?: number; minSize?: number; numbers?: boolean; render?: (panel: FramePanel, index: number, fresh: boolean) => void; }
+export interface FramePanel { index: number; points: [number, number][]; bbox: { x: number; y: number; w: number; h: number }; safe: { x: number; y: number; w: number; h: number }; area: number; pop: boolean; el?: HTMLElement; body?: HTMLElement; }
+export interface FramesHandle { el: HTMLElement; panels: FramePanel[]; layout(): FramesHandle; update(patch: Partial<FramesProps>): FramesHandle; destroy(): void; }
+
 declare global { interface Window { Blyant: BlyantGlobal & { chart: {
   line(el: HTMLElement, p: LineChartProps): ChartHandle; bar(el: HTMLElement, p: BarChartProps): ChartHandle;
   scatter(el: HTMLElement, p: ScatterChartProps): ChartHandle; segments(el: HTMLElement, p: SegmentsProps): ChartHandle;
   stat(el: HTMLElement, p: StatProps): HTMLElement; spark(el: HTMLElement, values: number[], o?: { color?: string; width?: number; height?: number }): SVGSVGElement;
-} } } }
+};
+  frames: { (el: HTMLElement, p?: FramesProps): FramesHandle; layout(w: number, h: number, p?: FramesProps): FramePanel[] };
+} } }

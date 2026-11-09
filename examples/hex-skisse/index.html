@@ -761,6 +761,18 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-stat__delta span { color: var(--ink-soft); }
 .b-spark { display: block; overflow: visible; }
 
+/* Comic frames (Blyant.frames): panels are clipped boxes, the pencil frame lies on top */
+.b-frames { position: relative; min-height: 200px; isolation: isolate; }
+.b-frame { position: absolute; overflow: hidden; background: var(--b-frame-fill, transparent); }
+.b-frame--pop { z-index: 2; background: var(--b-frame-pop, var(--paper)); }
+.b-frame__body { position: absolute; overflow: hidden; container-type: size; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.b-frames__ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 1; color: var(--line); }
+.b-frames__ink--top { z-index: 3; }
+.b-frames__num { font-family: var(--b-note); font-size: 13px; fill: var(--ink-soft); }
+
+/* Range slider */
+.b-range { width: 100%; accent-color: var(--ink); height: 28px; margin: 0; }
+
 @media (prefers-reduced-motion: reduce) {
   .b-btn, .b-check__box::after, .b-switch__track::after { transition: none; }
 }
@@ -939,6 +951,31 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   .thumb__ink, .thumb__title::after { transition: none; }
 }
 
+/* Ruter */
+.rute-tools { display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--space-4) var(--space-8); align-items: end; padding: var(--space-4) var(--space-6); }
+.rute-tools output { font-family: var(--b-mono, monospace); color: var(--ink-soft); margin-left: 6px; }
+.rute-tools__row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.rute-tools__fmt { display: flex; gap: var(--space-2); }
+.rute-stage { margin-inline: auto; width: 100%; }
+.rute-stage[data-shape="kvadrat"] { max-width: 640px; }
+.rute-stage[data-shape="hoy"] { max-width: 440px; }
+.rute-frames { aspect-ratio: 16 / 9; min-height: 420px; }
+.rute-stage[data-shape="kvadrat"] .rute-frames { aspect-ratio: 1; }
+.rute-stage[data-shape="hoy"] .rute-frames { aspect-ratio: 9 / 16; }
+.rute { text-align: center; align-items: center; gap: 2cqmin; }
+.rute-bg { position: absolute; left: 0; top: 0; pointer-events: none; }
+.rute__title { font-family: var(--b-display); font-weight: 700; line-height: .95; font-size: clamp(18px, 26cqmin, 64px); }
+.rute__art { width: 100%; height: 100%; overflow: visible; }
+.rute__bubble { position: absolute; left: 0; top: 0; overflow: visible; }
+.rute__say { position: absolute; margin: 0; display: grid; place-items: center; line-height: 1; font-size: clamp(13px, 15cqmin, 34px); }
+.rute__lyd { font-family: var(--b-display); font-weight: 700; font-size: clamp(20px, 34cqmin, 84px); line-height: 1; transform: rotate(-6deg); }
+.rute__cap { align-self: flex-start; margin-bottom: auto; padding: 2px 10px; background: var(--paper); border: 1.5px solid var(--line); font-size: clamp(13px, 12cqmin, 22px); line-height: 1.15; text-align: left; }
+@media (max-width: 720px) {
+  .rute-tools { grid-template-columns: 1fr; }
+  .rute-frames { min-height: 0; }
+  .rute-stage[data-shape="bred"] .rute-frames { aspect-ratio: 4 / 5; }
+}
+
 </style>
 
 <div class="app b-page" id="app">
@@ -951,6 +988,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         <li><a class="b-nav__link" href="#dokument" data-view="dokument">Dokument</a></li>
         <li><a class="b-nav__link" href="#presentasjon" data-view="presentasjon">Presentasjon</a></li>
         <li><a class="b-nav__link" href="#grafer" data-view="grafer">Grafer</a></li>
+        <li><a class="b-nav__link" href="#ruter" data-view="ruter">Ruter</a></li>
         <li><a class="b-nav__link" href="#former" data-view="former">Former</a></li>
         <li><a class="b-nav__link" href="#system" data-view="system">System</a></li>
       </ul>
@@ -2412,6 +2450,282 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   B.chart = C;
 })();
 
+/* Blyant.frames — fills any box with any number of comic-book panels.
+   A seeded recursive cut: every cut halves a convex panel by area, so the layout
+   holds at any size. `geometry` (0–1) goes from a calm grid to slanted, uneven,
+   overlapping panels. DOM order is reading order. */
+(function () {
+  "use strict";
+  var B = window.Blyant, R = B.rough;
+
+  /* ---------- convex polygon helpers ---------- */
+  function area(p) {
+    var a = 0;
+    for (var i = 0; i < p.length; i++) { var q = p[(i + 1) % p.length]; a += p[i][0] * q[1] - q[0] * p[i][1]; }
+    return Math.abs(a) / 2;
+  }
+  function centroid(p) {
+    var x = 0, y = 0, a = 0;
+    for (var i = 0; i < p.length; i++) {
+      var q = p[(i + 1) % p.length], c = p[i][0] * q[1] - q[0] * p[i][1];
+      x += (p[i][0] + q[0]) * c; y += (p[i][1] + q[1]) * c; a += c;
+    }
+    return a ? [x / (3 * a), y / (3 * a)] : p[0].slice();
+  }
+  function bbox(p) {
+    var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    p.forEach(function (v) { x0 = Math.min(x0, v[0]); y0 = Math.min(y0, v[1]); x1 = Math.max(x1, v[0]); y1 = Math.max(y1, v[1]); });
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  // keep the part of p where n·v <= s
+  function clip(p, nx, ny, s) {
+    var out = [];
+    for (var i = 0; i < p.length; i++) {
+      var a = p[i], b = p[(i + 1) % p.length];
+      var da = a[0] * nx + a[1] * ny - s, db = b[0] * nx + b[1] * ny - s;
+      if (da <= 0) out.push(a);
+      if ((da < 0 && db > 0) || (da > 0 && db < 0)) { var t = da / (da - db); out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]); }
+    }
+    return out;
+  }
+  // narrowest width of a convex polygon
+  function thickness(p) {
+    var best = Infinity;
+    for (var i = 0; i < p.length; i++) {
+      var a = p[i], b = p[(i + 1) % p.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 0.01) continue;
+      var far = 0;
+      for (var k = 0; k < p.length; k++) far = Math.max(far, Math.abs((p[k][0] - a[0]) * dy - (p[k][1] - a[1]) * dx) / len);
+      best = Math.min(best, far);
+    }
+    return best;
+  }
+  function inset(p, d) {
+    var c = centroid(p), out = p;
+    for (var i = 0; i < p.length && out.length > 2; i++) {
+      var a = p[i], b = p[(i + 1) % p.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 0.01) continue;
+      var nx = dy / len, ny = -dx / len;
+      if ((c[0] - a[0]) * nx + (c[1] - a[1]) * ny > 0) { nx = -nx; ny = -ny; }   // n points outward
+      out = clip(out, nx, ny, a[0] * nx + a[1] * ny - d);
+    }
+    return out;
+  }
+  function inside(p, x, y) {
+    var sign = 0;
+    for (var i = 0; i < p.length; i++) {
+      var a = p[i], b = p[(i + 1) % p.length], c = (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]);
+      if (Math.abs(c) < 1e-6) continue;
+      if (!sign) sign = c > 0 ? 1 : -1; else if ((c > 0 ? 1 : -1) !== sign) return false;
+    }
+    return true;
+  }
+  // largest upright rectangle we can find inside p: where content is safe from the slanted edges
+  function safeRect(p) {
+    var bb = bbox(p), c = centroid(p), best = null;
+    var centres = [c, [bb.x + bb.w / 2, bb.y + bb.h / 2], [(c[0] + bb.x + bb.w / 2) / 2, (c[1] + bb.y + bb.h / 2) / 2]];
+    var base = bb.w / Math.max(bb.h, 1);
+    centres.forEach(function (m) {
+      if (!inside(p, m[0], m[1])) return;
+      [0.45, 0.6, 0.8, 1, 1.25, 1.6, 2.2].forEach(function (k) {
+        var ar = base * k, lo = 0, hi = Math.max(bb.w, bb.h);
+        for (var i = 0; i < 18; i++) {
+          var h = (lo + hi) / 2, w = h * ar;
+          var ok = inside(p, m[0] - w / 2, m[1] - h / 2) && inside(p, m[0] + w / 2, m[1] - h / 2) &&
+                   inside(p, m[0] + w / 2, m[1] + h / 2) && inside(p, m[0] - w / 2, m[1] + h / 2);
+          if (ok) lo = h; else hi = h;
+        }
+        var W = lo * ar, H = lo;
+        if (!best || W * H > best.w * best.h) best = { x: m[0] - W / 2, y: m[1] - H / 2, w: W, h: H };
+      });
+    });
+    return best || { x: c[0], y: c[1], w: 0, h: 0 };
+  }
+
+  /* ---------- the cut ---------- */
+  // Cut p in two so the first part holds `ratio` of the area. Normal (nx, ny) points at the second part.
+  function cutAt(p, nx, ny, ratio) {
+    var lo = Infinity, hi = -Infinity, total = area(p);
+    p.forEach(function (v) { var s = v[0] * nx + v[1] * ny; lo = Math.min(lo, s); hi = Math.max(hi, s); });
+    for (var i = 0; i < 30; i++) {
+      var mid = (lo + hi) / 2;
+      if (area(clip(p, nx, ny, mid)) < total * ratio) lo = mid; else hi = mid;
+    }
+    var s = (lo + hi) / 2;
+    return [clip(p, nx, ny, s), clip(p, -nx, -ny, -s)];
+  }
+
+  // How roomy a part is for the k panels it must hold: 1 is a square's worth, lower is a sliver.
+  // A single panel is also judged by the upright box its content gets, which is what punishes long spikes.
+  function room(p, k) {
+    var a = area(p), q = thickness(p) / Math.sqrt(a / k);
+    if (k === 1) { var s = safeRect(p); q = Math.min(q, Math.min(s.w, s.h) / Math.sqrt(a) * 1.6); }
+    return q;
+  }
+
+  /** Pure layout: returns the panel polygons (in reading order) for a w × h box. */
+  function layout(w, h, o) {
+    o = o || {};
+    var n = Math.max(1, Math.round(o.count || 1));
+    var g = Math.max(0, Math.min(1, o.geometry != null ? +o.geometry : 0.5));
+    var gutter = o.gutter != null ? +o.gutter : Math.max(8, Math.min(18, Math.sqrt(w * h / n) * 0.07));
+    var r = R.rng((o.seed != null ? o.seed : 1) * 2654435761 + n * 97);
+    var minT = o.minSize != null ? +o.minSize : Math.max(gutter * 3, Math.sqrt(w * h / n) * 0.3);
+    var leaves = [];
+
+    function split(p, k) {
+      if (k <= 1) { leaves.push(p); return; }
+      var bb = bbox(p);
+      var k1 = k >> 1;
+      if (k % 2 && r() < 0.5) k1 = k - k1;
+      if (k > 3 && r() < g * 0.6) k1 = Math.max(1, Math.min(k - 1, k1 + (r() < 0.5 ? -1 : 1)));
+      var ratio = Math.max(0.16, Math.min(0.84, k1 / k * (1 + (r() * 2 - 1) * g * 0.28)));
+      // rows first, like a comics page; then columns inside the rows
+      var vertical = bb.w > bb.h * 1.2;
+      if (r() < g * 0.14 && Math.min(bb.w, bb.h) > minT * 2.4) vertical = !vertical;
+      var tilt = (r() * 2 - 1) * g * 0.36;                        // up to about 20°
+      if (k === 2 && g > 0.55 && r() < (g - 0.55) * 1.3) tilt = (r() < 0.5 ? -1 : 1) * (0.55 + r() * 0.4);   // a real diagonal
+      // Try the lively cut first, then calmer ones. A cut is good when neither part is
+      // narrower than a fair panel would be; if none is, take the roomiest we saw.
+      var fair = k1 / k, parts = null, best = -1;
+      for (var tries = 0; tries < 8; tries++) {
+        var t = tries < 5 ? tilt * (1 - tries / 4) : 0;
+        var v = tries >= 6 ? !vertical : vertical;
+        var ra = tries < 5 ? ratio + (fair - ratio) * (tries / 4) : (tries % 2 ? fair : 0.5);
+        var ang = (v ? 0 : Math.PI / 2) + t;
+        var c = cutAt(p, Math.cos(ang), Math.sin(ang), ra);
+        if (c[0].length < 3 || c[1].length < 3) continue;
+        var q = Math.min(room(c[0], k1), room(c[1], k - k1));
+        if (q > best) { best = q; parts = c; }
+        if (q >= 0.74 - g * 0.12 && Math.min(thickness(c[0]), thickness(c[1])) >= minT) break;
+      }
+      split(parts[0], k1);
+      split(parts[1], k - k1);
+    }
+    split([[0, 0], [w, 0], [w, h], [0, h]], n);
+
+    var panels = leaves.map(function (p, i) {
+      var pts = inset(p, gutter / 2);
+      if (pts.length < 3) pts = p;
+      return { index: i, points: pts, pop: false };
+    });
+    // high geometry: one or two panels are laid on top of the page, a little askew
+    if (g >= 0.7 && n >= 3) {
+      var pops = n >= 8 && g > 0.9 ? 2 : 1, taken = {};
+      for (var q = 0; q < pops; q++) {
+        var idx = 1 + Math.floor(r() * (n - 1));
+        if (taken[idx]) continue;
+        taken[idx] = 1;
+        var pn = panels[idx], c = centroid(pn.points), rot = (r() < 0.5 ? -1 : 1) * (0.025 + r() * 0.03) * g, sc = 1.05;
+        var ca = Math.cos(rot), sa = Math.sin(rot);
+        pn.points = pn.points.map(function (v) {
+          var x = (v[0] - c[0]) * sc, y = (v[1] - c[1]) * sc;
+          return [c[0] + x * ca - y * sa, c[1] + x * sa + y * ca];
+        });
+        pn.pop = true;
+      }
+    }
+    panels.forEach(function (pn) { pn.bbox = bbox(pn.points); pn.safe = safeRect(inset(pn.points, 6)); pn.area = area(pn.points); });
+    return panels;
+  }
+
+  /* ---------- the component ---------- */
+  function px(n) { return Math.round(n * 10) / 10 + "px"; }
+  function num(v, d) { v = parseFloat(v); return isNaN(v) ? d : v; }
+
+  function Frames(el, o) {
+    if (!(this instanceof Frames)) return new Frames(el, o);
+    o = o || {};
+    var self = this;
+    this.el = el;
+    this.panels = [];
+    // content written in the HTML is adopted: one child per panel, in order
+    var kids = Array.prototype.filter.call(el.children, function (c) { return !c.classList.contains("b-frames__ink"); });
+    this.opts = {
+      count: o.count != null ? o.count : num(el.getAttribute("data-count"), kids.length || 4),
+      geometry: o.geometry != null ? o.geometry : num(el.getAttribute("data-geometry"), 0.5),
+      seed: o.seed != null ? o.seed : num(el.getAttribute("data-seed"), 1),
+      gutter: o.gutter, minSize: o.minSize, numbers: !!o.numbers, render: o.render || null
+    };
+    el.classList.add("b-frames");
+    this._bodies = kids.map(function (k) { k.classList.add("b-frame__body"); return k; });
+    this._nodes = [];
+    this._ink = [mk("b-frames__ink"), mk("b-frames__ink b-frames__ink--top")];
+    function mk(cls) {
+      var s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      s.setAttribute("class", cls); s.setAttribute("aria-hidden", "true");
+      return s;
+    }
+    this._ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(function () {
+      if (el.clientWidth !== self._w || el.clientHeight !== self._h) self.layout();
+    }) : null;
+    if (this._ro) this._ro.observe(el);
+    this.layout();
+  }
+  Frames.prototype.layout = function () {
+    var el = this.el, o = this.opts, self = this, w = el.clientWidth, h = el.clientHeight;
+    this._w = w; this._h = h;
+    if (!w || !h) return this;
+    var list = layout(w, h, o);
+    var wob = num(getComputedStyle(el).getPropertyValue("--b-wobble"), 1.2);
+    // one node per panel, reused between layouts so content survives a resize or a new seed
+    while (this._nodes.length > list.length) { var gone = this._nodes.pop(); if (gone.parentNode) el.removeChild(gone); }
+    this._ink.forEach(function (s) { s.innerHTML = ""; s.setAttribute("viewBox", "0 0 " + w + " " + h); s.setAttribute("width", w); s.setAttribute("height", h); });
+    list.forEach(function (pn, i) {
+      var node = self._nodes[i];
+      if (!node) {
+        node = self._nodes[i] = document.createElement("div");
+        node.className = "b-frame";
+        var body = self._bodies[i];
+        if (!body) { body = self._bodies[i] = document.createElement("div"); body.className = "b-frame__body"; }
+        node.appendChild(body);
+        node.__fresh = true;
+      }
+      var bb = pn.bbox, body2 = self._bodies[i];
+      node.style.left = px(bb.x); node.style.top = px(bb.y); node.style.width = px(bb.w); node.style.height = px(bb.h);
+      node.style.clipPath = "polygon(" + pn.points.map(function (v) { return px(v[0] - bb.x) + " " + px(v[1] - bb.y); }).join(",") + ")";
+      node.classList.toggle("b-frame--pop", pn.pop);
+      node.setAttribute("data-frame", i + 1);
+      body2.style.left = px(pn.safe.x - bb.x); body2.style.top = px(pn.safe.y - bb.y);
+      body2.style.width = px(pn.safe.w); body2.style.height = px(pn.safe.h);
+      pn.el = node; pn.body = body2;
+      // the pencil frame
+      var svg = self._ink[pn.pop ? 1 : 0];
+      B.draw(svg, R.poly(pn.points, true, { seed: o.seed * 131 + i * 17 + 5, wobble: wob }), { width: pn.pop ? 2.1 : 1.8, stroke: "var(--b-frame-line, var(--line))" });
+      if (o.numbers) {
+        var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("class", "b-frames__num");
+        t.setAttribute("x", pn.safe.x + 4); t.setAttribute("y", pn.safe.y + 16);
+        t.textContent = i + 1;
+        svg.appendChild(t);
+      }
+    });
+    // DOM order = reading order. The stacking (pencil above panels, popped panels above that) is CSS.
+    this._nodes.forEach(function (n) { el.appendChild(n); });
+    el.appendChild(this._ink[0]);
+    el.appendChild(this._ink[1]);
+    this.panels = list;
+    if (o.render) list.forEach(function (pn, i) { o.render(pn, i, !!pn.el.__fresh); pn.el.__fresh = false; });
+    return this;
+  };
+  /** Change count, geometry, seed, gutter or numbers and lay out again. */
+  Frames.prototype.update = function (patch) {
+    for (var k in patch) this.opts[k] = patch[k];
+    return this.layout();
+  };
+  Frames.prototype.destroy = function () {
+    if (this._ro) this._ro.disconnect();
+    var el = this.el;
+    this._ink.forEach(function (s) { if (s.parentNode) el.removeChild(s); });
+    this._nodes.forEach(function (n) { if (n.parentNode) el.removeChild(n); });
+    el.classList.remove("b-frames");
+  };
+
+  B.frames = function (el, o) { return new Frames(el, o); };
+  B.frames.layout = layout;
+  B.Frames = Frames;
+})();
+
 </script>
 <script>
 (function () {
@@ -2450,13 +2764,14 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       host.appendChild(game.el);
       var th = document.createElement("section");
       th.className = "stack-lg";
-      th.innerHTML = '<div class="sec-head"><h2>Muligheter i systemet</h2><p>Samme blyant, samme tokens, seks andre flater. Klikk på en skisse for å hoppe dit.</p></div><div class="thumbs" id="thumbs"></div>';
+      th.innerHTML = '<div class="sec-head"><h2>Muligheter i systemet</h2><p>Samme blyant, samme tokens, sju andre flater. Klikk på en skisse for å hoppe dit.</p></div><div class="thumbs" id="thumbs"></div>';
       host.appendChild(th);
       var grid = th.querySelector("#thumbs");
       [["nettside", "Nettside", "Navigasjon, hero, kort, skjema, tabell og bunntekst."],
         ["dokument", "Dokument", "Artikkel med ingress, overstrykning, margnotater og figur."],
         ["presentasjon", "Presentasjon", "16:9-slides med håndtegnede diagrammer."],
         ["grafer", "Grafer", "Linjer, stolper, punkter og nøkkeltall i blyant."],
+        ["ruter", "Tegneserieruter", "Fyll en flate med ruter, fra rolig rutenett til skjeve kutt."],
         ["former", "Former i 2D og 3D", "Rå streker, skravur, fargeblyanter og three.js-laben."],
         ["system", "System", "Farger, skrift, avstander og alle komponentene."]].forEach(function (t) {
           var a = document.createElement("a");
@@ -2875,6 +3190,95 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       d.querySelector('[data-range="' + grafRange + '"]').classList.add("b-btn--marker");
       d.querySelector('[data-range="' + grafRange + '"]').setAttribute("aria-pressed", "true");
       d.querySelector('[data-range="' + (grafRange === 7 ? 30 : 7) + '"]').setAttribute("aria-pressed", "false");
+    }
+  };
+
+  /* ---------- Ruter (comic frames) ---------- */
+  var ruter = { count: 6, geometry: 0.6, seed: 4, shape: "bred" };
+  var RUTE_TEKST = ["Hoppet", "Dit bort?", "HOPP!", "Senere, på myra …", "Tre hex igjen.", "Nesten!", "Og så ble det stille."];
+  function fillFrame(pn, i) {
+    var body = pn.body, node = pn.el, w = pn.safe.w, h = pn.safe.h, bb = pn.bbox, kind = i % 6;
+    var old = node.querySelector(".rute-bg");
+    if (old) node.removeChild(old);
+    body.innerHTML = "";
+    body.className = "b-frame__body rute rute--" + kind;
+    var rel = pn.points.map(function (v) { return [v[0] - bb.x, v[1] - bb.y]; });
+    function bg(draw) {
+      var s = B.svg(bb.w, bb.h, null, { "class": "rute-bg", "aria-hidden": "true" });
+      node.insertBefore(s, body);
+      draw(s);
+    }
+    if (kind === 0) {
+      body.innerHTML = '<span class="b-label">Kapittel ' + (1 + Math.floor(i / 6)) + '</span><span class="rute__title">' + esc(RUTE_TEKST[i % 7]) + "</span>";
+    } else if (kind === 1 || kind === 4) {
+      var s1 = B.svg(200, 140, body, { "class": "rute__art", role: "img", "aria-label": kind === 1 ? "Figuren står på en hex" : "Figuren i luften mellom to hex", preserveAspectRatio: "xMidYMid meet" });
+      s1.removeAttribute("width"); s1.removeAttribute("height");
+      var hexA = [[56, 104], [82, 92], [118, 92], [144, 104], [118, 118], [82, 118]];
+      var shapes = kind === 1
+        ? [{ type: "hatch", points: hexA, gap: 5, opacity: 0.5 }, { type: "poly", points: hexA },
+           { type: "ellipse", cx: 100, cy: 74, rx: 15, ry: 20, fill: "var(--dust-blue)" }, { type: "circle", cx: 100, cy: 42, r: 11, fill: "var(--paper)", fillOpacity: 1 }]
+        : [{ type: "poly", points: hexA.map(function (v) { return [v[0] - 52, v[1] + 8]; }) }, { type: "poly", points: hexA.map(function (v) { return [v[0] + 52, v[1] + 8]; }) },
+           { type: "curve", points: [[52, 96], [76, 44], [112, 36], [146, 92]], opacity: 0.55, width: 1.1 },
+           { type: "ellipse", cx: 104, cy: 46, rx: 14, ry: 18, fill: "var(--dust-orange)" }, { type: "circle", cx: 110, cy: 18, r: 10, fill: "var(--paper)", fillOpacity: 1 }];
+      B.figure(s1, shapes.map(function (sh, k) { sh.seed = i * 13 + k + 3; return sh; }));
+    } else if (kind === 2) {
+      var s2 = B.svg(w, h, body, { "class": "rute__bubble", "aria-hidden": "true" });
+      var ry = Math.min(h * 0.34, w * 0.3), rx = Math.min(w * 0.46, ry * 1.9), cx = w / 2, cy = h * 0.46;
+      B.draw(s2, B.rough.ellipse(cx, cy, rx, ry, { seed: i + 9 }), { width: 1.7 });
+      B.draw(s2, B.rough.poly([[cx - rx * 0.3, cy + ry * 0.9], [cx - rx * 0.5, Math.min(h * 0.98, cy + ry * 1.5)], [cx - rx * 0.02, cy + ry * 0.98]], false, { seed: i + 4 }), { width: 1.7 });
+      var p = document.createElement("p");
+      p.className = "rute__say";
+      p.style.cssText = "left:" + (cx - rx * 0.72) + "px;top:" + (cy - ry * 0.62) + "px;width:" + rx * 1.44 + "px;height:" + ry * 1.24 + "px";
+      p.textContent = RUTE_TEKST[(i + 6) % 7 || 1];
+      body.appendChild(p);
+    } else if (kind === 3) {
+      bg(function (s) { B.draw(s, B.rough.hatch(rel, { seed: i + 2, gap: 9, angle: -38 }), { width: 1, opacity: 0.32 }); });
+      body.innerHTML = '<span class="rute__lyd"><mark>HOPP!</mark></span>';
+    } else {
+      bg(function (s) { B.draw(s, B.rough.hatch(rel, { seed: i + 7, gap: 6, angle: 52 }), { width: 1, opacity: 0.5 }); });
+      body.innerHTML = '<span class="rute__cap">' + esc(RUTE_TEKST[(i + 3) % 7]) + "</span>";
+    }
+  }
+  VIEWS.ruter = {
+    title: "Ruter",
+    render: function (host, o) {
+      o = o || {};
+      var d = document.createElement("div");
+      d.className = "stack-lg";
+      d.style.gap = "var(--space-12)";
+      d.innerHTML =
+        (o.thumb ? "" : '<a class="back" href="#spill">← Til hex-flaten</a>') +
+        '<section class="stack-lg"><div class="sec-head"><span class="b-label">Blyant.frames</span><h1>Tegneserieruter</h1><p>Gi verktøyet en flate og et antall. Det kutter flaten i ruter som alltid fyller plassen, og tegner rammene med blyant. Dra i geometrien for å gå fra rolig rutenett til skjeve kutt.</p></div>' +
+        (o.thumb ? "" :
+        '<div class="rute-tools b-box">' +
+        '<label class="b-field"><span class="b-field__label">Antall ruter <output id="rt-n-out"></output></span><input class="b-range" id="rt-n" type="range" min="1" max="14" step="1"></label>' +
+        '<label class="b-field"><span class="b-field__label">Geometri <output id="rt-g-out"></output></span><input class="b-range" id="rt-g" type="range" min="0" max="1" step="0.05"></label>' +
+        '<div class="rute-tools__row"><div class="rute-tools__fmt" role="group" aria-label="Format"><button class="b-btn b-btn--sm" type="button" data-shape="bred">Bred</button><button class="b-btn b-btn--sm" type="button" data-shape="kvadrat">Kvadrat</button><button class="b-btn b-btn--sm" type="button" data-shape="hoy">Høy</button></div>' +
+        '<button class="b-btn b-btn--sm b-btn--primary" type="button" id="rt-seed">Ny side</button></div></div>') +
+        '<div class="rute-stage" data-shape="' + ruter.shape + '"><div id="rt-frames" class="rute-frames"></div></div></section>' +
+        (o.thumb ? "" : '<section class="two"><div class="stack"><span class="b-label">Bruk</span><h2>Én linje per side</h2><p>Samme <code>seed</code> gir samme side hver gang, også når plassen endrer størrelse. Hver rute har et trygt rektangel til innholdet, så tekst aldri klippes av en skrå kant. Rutene ligger i leserekkefølge.</p></div>' +
+        '<pre><code>var side = Blyant.frames(el, {\n  count: 6,       // antall ruter\n  geometry: 0.6,  // 0 = rutenett, 1 = skjevt og vilt\n  seed: 4,\n  render: function (rute, i) {\n    rute.body.textContent = "Rute " + (i + 1);\n  }\n});\n\nside.update({ geometry: 1 });\n\n// eller rett i HTML: ett barn per rute\n// &lt;div data-count="3" data-geometry="0.4"&gt;…&lt;/div&gt;</code></pre></section>');
+      host.appendChild(d);
+      var fr = B.frames(d.querySelector("#rt-frames"), { count: ruter.count, geometry: ruter.geometry, seed: ruter.seed, render: fillFrame });
+      if (o.thumb) return;
+      var nIn = d.querySelector("#rt-n"), gIn = d.querySelector("#rt-g"), stage = d.querySelector(".rute-stage");
+      function sync() {
+        nIn.value = ruter.count; gIn.value = ruter.geometry;
+        d.querySelector("#rt-n-out").textContent = ruter.count;
+        d.querySelector("#rt-g-out").textContent = String(ruter.geometry.toFixed(2)).replace(".", ",");
+        stage.setAttribute("data-shape", ruter.shape);
+        Array.prototype.forEach.call(d.querySelectorAll("[data-shape].b-btn"), function (b) {
+          var on = b.getAttribute("data-shape") === ruter.shape;
+          b.classList.toggle("b-btn--marker", on); b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      }
+      nIn.addEventListener("input", function () { ruter.count = +nIn.value; sync(); fr.update({ count: ruter.count }); });
+      gIn.addEventListener("input", function () { ruter.geometry = +gIn.value; sync(); fr.update({ geometry: ruter.geometry }); });
+      d.querySelector("#rt-seed").addEventListener("click", function () { ruter.seed++; fr.update({ seed: ruter.seed }); });
+      Array.prototype.forEach.call(d.querySelectorAll("[data-shape].b-btn"), function (b) {
+        b.addEventListener("click", function () { ruter.shape = b.getAttribute("data-shape"); sync(); B.reink(d); });
+      });
+      sync();
     }
   };
 
