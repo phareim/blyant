@@ -2,17 +2,19 @@
 
 Blyant er et håndtegnet designsystem for spill, nettsider, dokumenter og presentasjoner. Det lar deg sette rammer, innhold og flyt med blyant før noen bestemmer seg for farger og merkevare. Alt er bygget slik at skisse-laget kan byttes ut med et ferdig design uten å røre strukturen.
 
+**Se den i bruk: <https://phareim.github.io/blyant/>** – en figur hopper fra hex til hex, og skissene under lenker til nettside, dokument, presentasjon, grafer, former og system.
+
 ![Hex-skisse](docs/hex-skisse.png)
 
 ## Kom i gang
 
-Lenk inn stilarket og skriptet, og sett `b-page` på `body`:
+Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Filene ligger i `dist/`, og de publiseres også på siden, så du kan lenke rett dit:
 
 ```html
-<link rel="stylesheet" href="dist/blyant.css">
+<link rel="stylesheet" href="https://phareim.github.io/blyant/dist/blyant.css">
 <!-- bare hvis du skal bruke 3D (Sketch3D / HexBoard): -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="dist/blyant.js"></script>
+<script src="https://phareim.github.io/blyant/dist/blyant.js"></script>
 
 <body class="b-page">
   <h1>Skisseboka</h1>
@@ -182,3 +184,7 @@ Blyant har ingen ikonfont. Tegn små ikoner med `Blyant.figure` i en 64×64 `vie
 - `ink` holder 11:1 eller bedre mot alle papir-tokens. `ink-soft` holder 4,5:1 mot `paper` og `paper-2`, men ikke mot `paper-3` i Papir.
 - Effektfargene er for fyll og streker. `dust-blue` er under 3:1 på `paper-2` i Papir og må aldri bære mening alene der.
 - Animasjon (hopp, kokende strek, hover) respekterer `prefers-reduced-motion`.
+
+## Lisens
+
+MIT, se [LICENSE](LICENSE). Fontene Caveat, Architects Daughter og Cutive Mono hentes fra Google Fonts og har SIL Open Font License.
