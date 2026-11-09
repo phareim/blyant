@@ -1,0 +1,16 @@
+<!-- @dsCard group="Grafer" height=220 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Stat</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"><div class="b-box" id="s1"></div><div class="b-box" id="s2"></div><div class="b-box" id="s3"></div></div>
+<script>
+window.__draw = function(){
+Blyant.chart.stat(document.getElementById("s1"), { label: "Spillere siste 7 dager", value: 1284, delta: 12, deltaUnit: "%", deltaLabel: "mot forrige periode", trend: [880,910,905,960,1010,1120,1050,1180,1210,1240,1260,1284] });
+Blyant.chart.stat(document.getElementById("s2"), { label: "Hopp per runde", value: 27, delta: 4, deltaLabel: "mot forrige periode", trend: [20,21,22,21,23,24,23,25,24,26,26,27] });
+Blyant.chart.stat(document.getElementById("s3"), { label: "Fullførte brett", value: 61, unit: "%", delta: -3, deltaUnit: " poeng", deltaLabel: "mot forrige periode", trend: [66,65,67,64,65,63,64,62,63,62,61,61] });
+};
+window.__draw();
+</script><script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script><script>if(document.fonts)document.fonts.ready.then(function(){window.__draw&&window.__draw()});</script>
+</body>
+</html>

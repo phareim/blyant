@@ -1,0 +1,30 @@
+<!-- @dsCard group="Sider" height=420 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Frames</title>
+<style>
+  .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .side { aspect-ratio: 4 / 5; }
+  .cap { font-family: var(--b-note); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; }
+  .b-frame__body { align-items: center; text-align: center; font-size: clamp(10px, min(13cqmin, 20cqi), 24px); line-height: 1.05; padding: 4px; box-sizing: border-box; }
+  .b-frame__body b { font-family: var(--b-display); font-weight: 700; font-size: 1.25em; }
+</style></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div class="row">
+  <div><p class="cap">geometry: 0</p><div class="side" data-g="0"></div></div>
+  <div><p class="cap">geometry: 0,5</p><div class="side" data-g="0.5"></div></div>
+  <div><p class="cap">geometry: 1</p><div class="side" data-g="1"></div></div>
+</div>
+<script>
+var WORDS = ["<b>Hopp!</b>", "Dit bort?", "Senere …", "<mark>HOPP!</mark>", "Nesten!", "Tre hex igjen.", "Stille."];
+document.querySelectorAll(".side").forEach(function (el, k) {
+  Blyant.frames(el, { count: 6, geometry: +el.getAttribute("data-g"), seed: [4, 5, 15][k],
+    render: function (rute, i) {
+      rute.body.innerHTML = WORDS[(i + k) % WORDS.length];
+      if (i % 3 === 1) rute.el.style.background = "var(--paper-2)";
+    } });
+});
+</script>
+<script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>

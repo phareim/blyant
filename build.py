@@ -7,8 +7,13 @@ dist/tokens.css   – fargene (Papir/Kull), avstander, strek og skrift som CSS-v
 dist/blyant.css   – fonter + tokens + komponenter (én fil å lenke til)
 dist/blyant.js    – Blyant (streker, komponenter, Sketch3D, HexBoard) + Blyant.chart + Blyant.frames
 examples/hex-skisse/index.html – testflaten, ferdig bygget
+
+    python3 build.py --ds
+
+build/ds/project/ – filene til Design System-artefakten i Claude, bygget fra src/,
+                    tokens.json, docs/komponenter/ og designsystem/. Se CLAUDE.md.
 """
-import json, os, re
+import json, os, re, shutil, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 T = json.load(open(os.path.join(ROOT, 'tokens.json')))
@@ -66,10 +71,37 @@ def write(rel, text):
     print('  %-34s %7d bytes' % (rel, len(text.encode())))
 
 
+def design_system():
+    """Assemble the Design System artifact files. Nothing here is hand-copied: every file comes from the repo."""
+    out = os.path.join('build', 'ds', 'project')
+    shutil.rmtree(os.path.join(ROOT, 'build', 'ds'), ignore_errors=True)
+    comps = os.path.join(out, 'components')
+    header = json.loads(re.match(r'/\* @ds-bundle: (\{.*?\}) \*/', read('src', 'blyant.js')).group(1))
+    names = [c['name'] for c in header['components']]
+    previews = sorted(f[:-5] for f in os.listdir(os.path.join(ROOT, 'designsystem', 'forhandsvisning')) if f.endswith('.html'))
+    missing = [n for n in names if n not in previews or not os.path.exists(os.path.join(ROOT, 'docs', 'komponenter', n + '.md'))]
+    extra = [n for n in previews if n not in names and n != 'Cover']
+    if missing or extra:
+        sys.exit('Design System: @ds-bundle i src/blyant.js, designsystem/forhandsvisning/ og docs/komponenter/ er ikke enige.\n'
+                 '  mangler forhåndsvisning eller README: %s\n  forhåndsvisning uten komponent: %s' % (missing, extra))
+    write(os.path.join(out, 'components', 'bundle.css'), '@import url("%s");\n%s' % (FONTS, read('src', 'blyant.css')))
+    write(os.path.join(out, 'components', 'bundle.js'), '\n'.join(read('src', n) for n in JS))
+    write(os.path.join(out, 'components', 'index.d.ts'), read('src', 'blyant.d.ts'))
+    write(os.path.join(out, 'tokens.json'), read('tokens.json'))
+    write(os.path.join(out, 'README.md'), read('designsystem', 'README.md'))
+    write(os.path.join(out, 'design-system.json'), read('designsystem', 'design-system.json'))
+    for n in previews:
+        write(os.path.join(out, 'components', n, 'preview.html'), read('designsystem', 'forhandsvisning', n + '.html'))
+        if n != 'Cover':
+            write(os.path.join(out, 'components', n, 'README.md'), read('docs', 'komponenter', n + '.md'))
+
+
+JS = ('blyant.js', 'blyant-chart.js', 'blyant-frames.js')
+
 if __name__ == '__main__':
     tok = tokens_css()
     css = read('src', 'blyant.css')
-    js = '\n'.join(read('src', n) for n in ('blyant.js', 'blyant-chart.js', 'blyant-frames.js'))
+    js = '\n'.join(read('src', n) for n in JS)
     write('dist/tokens.css', tok)
     write('dist/blyant.css', '@import url("%s");\n\n%s\n%s' % (FONTS, tok, css))
     write('dist/blyant.js', js)
@@ -83,3 +115,5 @@ if __name__ == '__main__':
             '<style>body { margin: 0; } [hidden] { display: none !important; }</style>\n'
             '</head>\n<body>\n' + page + '\n</body>\n</html>\n')
     write(os.path.join(ex, 'index.html'), page)
+    if '--ds' in sys.argv:
+        design_system()

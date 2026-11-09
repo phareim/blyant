@@ -1,0 +1,20 @@
+<!-- @dsCard group="Tegning" height=340 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Sketch3D</title><script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div class="b-canvas" id="s3" style="height:300px"></div>
+<script>
+var sk = new Blyant.Sketch3D(document.getElementById("s3"), {fov: 30});
+var T = THREE, objs = [];
+[[new T.BoxGeometry(1.2,1.2,1.2),"#ffffff",[-2.4,.6,0]],[new T.SphereGeometry(.75,32,20),"--dust-blue",[-.4,.75,-.6]],[new T.ConeGeometry(.7,1.5,24),"--dust-orange",[1.4,.75,.4]],[new T.IcosahedronGeometry(.7,0),"#ffffff",[3,.7,-.4]]].forEach(function(it){
+  if(!it[0].index) it[0].computeVertexNormals();
+  var m = new T.Mesh(it[0], sk.mat(it[1])); m.position.set(it[2][0],it[2][1],it[2][2]); sk.add(m); objs.push(m);
+});
+var g = new T.Mesh(new T.CircleGeometry(4.2,6), sk.mat("#ffffff")); g.rotation.x = -Math.PI/2; sk.add(g);
+sk.camera.position.set(0,4.6,8); sk.camera.lookAt(0,.5,0);
+var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+sk.start(function(dt){ if(!still) objs.forEach(function(m,i){ m.rotation.y += dt*(.3+i*.06); }); });
+</script><script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>

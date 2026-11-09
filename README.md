@@ -8,13 +8,13 @@ Blyant er et håndtegnet designsystem for spill, nettsider, dokumenter og presen
 
 ## Kom i gang
 
-Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Filene ligger i `dist/`, og de publiseres også på siden, så du kan lenke rett dit:
+Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Blyant ligger på npm, så du kan lenke til en fast versjon på jsDelivr:
 
 ```html
-<link rel="stylesheet" href="https://phareim.github.io/blyant/dist/blyant.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/blyant@0.3.0/dist/blyant.css">
 <!-- bare hvis du skal bruke 3D (Sketch3D / HexBoard): -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="https://phareim.github.io/blyant/dist/blyant.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/blyant@0.3.0/dist/blyant.js"></script>
 
 <body class="b-page">
   <h1>Skisseboka</h1>
@@ -32,6 +32,11 @@ Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Filene ligger i `di
 </body>
 ```
 
+Andre måter å hente filene på:
+
+- `npm install blyant`, og importer `blyant/dist/blyant.css` og `blyant/dist/blyant.js` i byggeverktøyet ditt. Typene ligger i `src/blyant.d.ts`.
+- Siste versjon fra `main`, uten fast versjon: `https://phareim.github.io/blyant/dist/blyant.css` og `…/dist/blyant.js`. Greit til skisser, men den endrer seg uten varsel.
+
 | Fil | Hva |
 | --- | --- |
 | `dist/blyant.css` | Fonter, tokens og alle komponenter i én fil |
@@ -43,6 +48,10 @@ Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Filene ligger i `di
 | `examples/hex-skisse/` | Testflaten: hex-spill, nettside, dokument, presentasjon, grafer, former og system |
 
 Endrer du `tokens.json` eller noe i `src/`, kjør `python3 build.py` for å bygge `dist/` og eksempelet på nytt, og commit resultatet. Siden på GitHub Pages bygges av en workflow (`.github/workflows/pages.yml`) ved hver push til `main`, så den er alltid i takt med kildekoden. Workflowen varsler hvis `dist/` i repoet er utdatert.
+
+**Design System i Claude.** Blyant finnes også som en Design System-artefakt i Claude. Den bygges fra repoet med `python3 build.py --ds`, som legger filene i `build/ds/`: kodebunten fra `src/`, README-ene fra `docs/komponenter/`, forhåndsvisningene fra `designsystem/forhandsvisning/` og omslagsteksten fra `designsystem/README.md`. En ny komponent trenger alle tre: navnet i `@ds-bundle`-linja øverst i `src/blyant.js`, en `.md` og en forhåndsvisning. Bygget stopper hvis de ikke stemmer. Se `CLAUDE.md` for hvordan artefakten publiseres.
+
+**Ny versjon på npm.** Øk `version` i `package.json` og i jsDelivr-lenkene over, commit, og lag en tag med samme nummer (`git tag v0.3.1 && git push --tags`). Workflowen `.github/workflows/npm.yml` bygger og publiserer pakken. Den trenger hemmeligheten `NPM_TOKEN` i repoet.
 
 Designsystemet finnes også som artefakt i Claude: <https://claude.ai/artifact/PHdDmrVn92a3Ly1Vx4398B>, og testflaten på <https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs>. Begge er private til du deler dem.
 

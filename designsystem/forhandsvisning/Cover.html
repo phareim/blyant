@@ -1,0 +1,49 @@
+<!-- @dsCard height=300 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Blyant — omslag</title>
+<style>
+  html, body { margin: 0; height: 300px; background: var(--paper); }
+  body { position: relative; width: 960px; overflow: hidden; background-image: var(--b-grain-img); }
+  .ink { fill: var(--graphite-900); }
+  .marker { fill: var(--marker); }
+  .shade { fill: var(--paper-3); }
+  .blue { fill: var(--dust-blue); }
+  .red { fill: var(--dust-red); }
+  .stroke { fill: none; stroke: var(--line); stroke-width: var(--stroke-pencil); stroke-linecap: round; stroke-linejoin: round; }
+  .stroke-paper { fill: none; stroke: var(--paper); stroke-width: var(--stroke-pencil); stroke-linecap: round; }
+  svg { position: absolute; left: 0; top: 0; width: 960px; height: 300px; }
+  .name { position: absolute; left: 40px; bottom: 92px; margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 120px; line-height: .92; color: var(--ink); }
+  .tag { position: absolute; left: 44px; bottom: 44px; max-width: 440px; margin: 0; font-family: var(--font-note); font-size: 14px; color: var(--ink-soft); }
+</style></head>
+<body>
+<svg id="c" viewBox="0 0 960 300" aria-hidden="true">
+  <!--
+    blocks: graphite-900 slab 168×300 (bleeds top+bottom), marker 216×120, paper-3 120×168, dust-blue + dust-red as two filled hexes (r 40)
+    arrangement: one tall ink slab with satellites, right of x=480, slab bleeding off top and bottom
+    pattern: literal motif, the hex the system is tested on: twelve rough hex outlines (r 40, pitch from space-16 + space-4) in line, cut out of the ink slab in paper
+    scales: space-8 / space-12 / space-16 offsets, stroke-pencil strokes, wobble-mid for every outline
+  -->
+</svg>
+<h1 class="name">Blyant</h1>
+<p class="tag">Skisse først, stil etterpå. For spill, nettsider, dokumenter og slides.</p>
+<script>
+(function () {
+  var s = document.getElementById("c"), R = Blyant.rough, NS = "http://www.w3.org/2000/svg";
+  function p(d, cls) { var e = document.createElementNS(NS, "path"); e.setAttribute("d", d); e.setAttribute("class", cls); s.appendChild(e); return e; }
+  var flat = { wobble: 0 };
+  p(R.rect(520, 40, 216, 120, flat), "marker");
+  p(R.rect(800, -10, 168, 320, flat), "ink");
+  p(R.rect(640, 176, 120, 124, flat), "shade");
+  // hex pattern on a pointy-top grid
+  var r = 40, w = Math.sqrt(3) * r, cells = [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[-1,2],[0,2],[1,2],[2,2],[1,-1],[2,-1]];
+  cells.forEach(function (c, i) {
+    var cx = 600 + w * (c[0] + c[1] / 2), cy = 70 + 1.5 * r * c[1];
+    if (i === 4) p(R.hex(cx, cy, r - 3, flat), "blue");
+    if (i === 8) p(R.hex(cx, cy, r - 3, flat), "red");
+    p(R.hex(cx, cy, r - 3, { seed: 40 + i, wobble: 1.2 }), cx > 790 && cx < 975 ? "stroke-paper" : "stroke");
+  });
+})();
+</script>
+</body>
+</html>

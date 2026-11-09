@@ -1,0 +1,19 @@
+<!-- @dsCard group="Tegning" height=220 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Rough</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<svg id="fig" viewBox="0 0 720 180" style="width:100%;height:auto;color:var(--ink)" aria-hidden="true"></svg>
+<script>
+Blyant.figure(document.getElementById("fig"), [
+  {type:"line",x1:20,y1:150,x2:120,y2:40},
+  {type:"rect",x:150,y:40,w:110,h:100},
+  {type:"circle",cx:330,cy:90,r:50,fill:"var(--dust-blue)",fillOpacity:.45},
+  {type:"hex",cx:450,cy:90,r:52,fill:"var(--marker)",fillOpacity:.9},
+  {type:"hatch",points:[[530,40],[620,40],[620,140],[530,140]],gap:7},
+  {type:"rect",x:530,y:40,w:90,h:100},
+  {type:"arrow",x1:640,y1:150,x2:705,y2:40,bend:.2}
+]);
+</script><script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!-- @dsCard group="Grafer" height=330 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>BarChart</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:28px"><div id="a"></div><div id="b"></div></div>
+<script>
+window.__draw = function(){
+Blyant.chart.bar(document.getElementById("a"), { title: "Hopp per runde", categories: ["R1","R2","R3","R4","R5"], series: [{ name: "Hopp", values: [14,22,19,31,27] }], highlight: 3, height: 220 });
+Blyant.chart.bar(document.getElementById("b"), { title: "Hvordan rundene endte", categories: ["Hex-flaten","Myra","Fjellet"], stacked: true, series: [{ name: "Fullført", values: [212,140,61] }, { name: "Ga opp", values: [58,71,66] }, { name: "Tiden gikk ut", values: [30,22,41] }], height: 220 });
+};
+window.__draw();
+</script><script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script><script>if(document.fonts)document.fonts.ready.then(function(){window.__draw&&window.__draw()});</script>
+</body>
+</html>

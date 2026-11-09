@@ -1,0 +1,14 @@
+<!-- @dsCard group="Grafer" height=340 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>ScatterChart</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div id="c" style="max-width:640px"></div>
+<script>
+window.__draw = function(){ Blyant.chart.scatter(document.getElementById("c"), { title: "Tid mot antall hopp", xLabel: "Sekunder", yLabel: "Hopp",
+  series: [{ name: "Mus", points: [[42,18,"Ada"],[55,22],[61,25],[70,31],[38,16],[84,33,"Ola"],[66,24],[49,20]] }, { name: "Tastatur", points: [[30,21],[36,24,"Kim"],[44,29],[52,33],[28,19],[58,37,"Siv"],[40,26],[47,30]] }],
+  labelPoints: ["Ola","Siv"], height: 240 }); };
+window.__draw();
+</script><script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script><script>if(document.fonts)document.fonts.ready.then(function(){window.__draw&&window.__draw()});</script>
+</body>
+</html>

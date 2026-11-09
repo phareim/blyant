@@ -1,0 +1,38 @@
+{
+  "name": "blyant",
+  "version": "0.3.0",
+  "description": "Håndtegnet blyant-designsystem for spill, nettsider, dokumenter og presentasjoner: CSS-komponenter, håndtegnede streker, three.js-blyantshader, grafer og tegneserieruter.",
+  "keywords": [
+    "design-system",
+    "sketch",
+    "hand-drawn",
+    "pencil",
+    "three.js",
+    "charts",
+    "comic"
+  ],
+  "homepage": "https://phareim.github.io/blyant/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phareim/blyant.git"
+  },
+  "bugs": "https://github.com/phareim/blyant/issues",
+  "license": "MIT",
+  "author": "phareim",
+  "main": "dist/blyant.js",
+  "browser": "dist/blyant.js",
+  "style": "dist/blyant.css",
+  "types": "src/blyant.d.ts",
+  "files": [
+    "dist/",
+    "tokens.json",
+    "src/blyant.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "sideEffects": true,
+  "scripts": {
+    "build": "python3 build.py",
+    "prepublishOnly": "python3 build.py"
+  }
+}

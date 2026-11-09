@@ -1,0 +1,13 @@
+<!-- @dsCard group="Grafer" height=360 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>LineChart</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div id="c"></div>
+<script>
+window.__draw = function(){ Blyant.chart.line(document.getElementById("c"), { title: "Spillere per dag", x: ["3.11","4.11","5.11","6.11","7.11","8.11","9.11"],
+  series: [{ name: "Hex-flaten", values: [126,118,131,134,129,126,144] }, { name: "Myra", values: [80,71,83,96,90,91,106] }, { name: "Fjellet", values: [44,41,40,47,51,53,65] }], height: 250 }); };
+window.__draw();
+</script><script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script><script>if(document.fonts)document.fonts.ready.then(function(){window.__draw&&window.__draw()});</script>
+</body>
+</html>

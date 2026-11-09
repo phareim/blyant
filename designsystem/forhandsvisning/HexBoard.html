@@ -1,0 +1,11 @@
+<!-- @dsCard group="Tegning" height=420 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>HexBoard</title><script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div class="b-canvas" id="hb" style="height:380px" tabindex="0" aria-label="Hex-flate. Piltaster snur og hopper, klikk på en hex for å gå dit."></div>
+<script>
+var board = new Blyant.HexBoard(document.getElementById("hb"), {radius: 3, seed: 11, gems: 4});
+</script><script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>
