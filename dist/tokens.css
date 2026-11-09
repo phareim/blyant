@@ -1,0 +1,118 @@
+/* Blyant — generert fra tokens.json. Ikke rediger for hånd. */
+:root {
+  --paper: #fafaf7;
+  --paper-2: #f0f0ec;
+  --paper-3: #e4e4df;
+  --graphite-100: #d5d5cf;
+  --graphite-300: #a8a9a2;
+  --graphite-500: #6b6c66;
+  --graphite-700: #454641;
+  --graphite-900: #252623;
+  --ink: var(--graphite-900);
+  --ink-soft: var(--graphite-500);
+  --line: var(--graphite-700);
+  --line-faint: var(--graphite-100);
+  --dust-red: #c4705f;
+  --dust-orange: #d29358;
+  --dust-yellow: #d8bc55;
+  --dust-green: #86a271;
+  --dust-blue: #6e92b5;
+  --dust-purple: #9480af;
+  --marker: #f6e65a;
+  --on-marker: #252623;
+  --focus: #3d6c99;
+  --chart-1: #2d6da5;
+  --chart-2: #cf8447;
+  --chart-3: #725195;
+  --chart-4: #5b904f;
+  --chart-5: #d3ac41;
+  --chart-6: #bb584d;
+  --shadow-lift: 3px 4px 0 0 rgba(37,38,35,0.13);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-sm: 3px;
+  --radius-md: 8px;
+  --radius-pill: 999px;
+  --stroke-hair: 1px;
+  --stroke-pencil: 1.6px;
+  --stroke-bold: 2.6px;
+  --wobble-low: 0.6;
+  --wobble-mid: 1.2;
+  --wobble-high: 2.4;
+  --font-display: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --font-body: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --font-note: "Architects Daughter", "Caveat", "Comic Sans MS", cursive;
+  --font-mono: "Cutive Mono", "Courier New", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --paper: #1c1d1b;
+  --paper-2: #252623;
+  --paper-3: #30312d;
+  --graphite-100: #3b3c38;
+  --graphite-300: #5f605b;
+  --graphite-500: #a2a39c;
+  --graphite-700: #c8c9c2;
+  --graphite-900: #ecece6;
+  --dust-red: #d98877;
+  --dust-orange: #e1a671;
+  --dust-yellow: #e2c970;
+  --dust-green: #9cb887;
+  --dust-blue: #8aabcc;
+  --dust-purple: #ab98c6;
+  --marker: #e4d24c;
+  --on-marker: #1c1d1b;
+  --focus: #9cc1e6;
+  --chart-1: #3979b2;
+  --chart-2: #ca8042;
+  --chart-3: #916cb9;
+  --chart-4: #447838;
+  --chart-5: #b28f2c;
+  --chart-6: #bb584d;
+  --shadow-lift: 3px 4px 0 0 rgba(0,0,0,0.45);
+  color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #1c1d1b;
+  --paper-2: #252623;
+  --paper-3: #30312d;
+  --graphite-100: #3b3c38;
+  --graphite-300: #5f605b;
+  --graphite-500: #a2a39c;
+  --graphite-700: #c8c9c2;
+  --graphite-900: #ecece6;
+  --dust-red: #d98877;
+  --dust-orange: #e1a671;
+  --dust-yellow: #e2c970;
+  --dust-green: #9cb887;
+  --dust-blue: #8aabcc;
+  --dust-purple: #ab98c6;
+  --marker: #e4d24c;
+  --on-marker: #1c1d1b;
+  --focus: #9cc1e6;
+  --chart-1: #3979b2;
+  --chart-2: #ca8042;
+  --chart-3: #916cb9;
+  --chart-4: #447838;
+  --chart-5: #b28f2c;
+  --chart-6: #bb584d;
+  --shadow-lift: 3px 4px 0 0 rgba(0,0,0,0.45);
+  color-scheme: dark;
+}
+.t-display { font-family: var(--font-display); font-size: 76px; line-height: 1.0; font-weight: 500; }
+.t-h1 { font-family: var(--font-display); font-size: 56px; line-height: 1.0; font-weight: 500; }
+.t-h2 { font-family: var(--font-display); font-size: 40px; line-height: 1.05; font-weight: 500; }
+.t-h3 { font-family: var(--font-display); font-size: 30px; line-height: 1.1; font-weight: 500; }
+.t-lead { font-family: var(--font-body); font-size: 23px; line-height: 1.4; font-weight: 400; }
+.t-body { font-family: var(--font-body); font-size: 20px; line-height: 1.5; font-weight: 400; }
+.t-small { font-family: var(--font-body); font-size: 17px; line-height: 1.35; font-weight: 400; }
+.t-note { font-family: var(--font-note); font-size: 18px; line-height: 1.35; font-weight: 400; }
+.t-label { font-family: var(--font-note); font-size: 13px; line-height: 1.3; font-weight: 400; letter-spacing: 0.08em; }
+.t-code { font-family: var(--font-mono); font-size: 15px; line-height: 1.5; font-weight: 400; }
