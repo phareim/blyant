@@ -42,7 +42,7 @@ Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Filene ligger i `di
 | `docs/komponenter/` | Retningslinjer per komponent |
 | `examples/hex-skisse/` | Testflaten: hex-spill, nettside, dokument, presentasjon, grafer, former og system |
 
-Endrer du `tokens.json` eller noe i `src/`, kjør `python3 build.py` for å bygge `dist/`, eksempelet og `index.html` på nytt, og commit resultatet. GitHub Pages publiserer `main` som den er, så siden oppdateres når du pusher.
+Endrer du `tokens.json` eller noe i `src/`, kjør `python3 build.py` for å bygge `dist/` og eksempelet på nytt, og commit resultatet. Siden på GitHub Pages bygges av en workflow (`.github/workflows/pages.yml`) ved hver push til `main`, så den er alltid i takt med kildekoden. Workflowen varsler hvis `dist/` i repoet er utdatert.
 
 Designsystemet finnes også som artefakt i Claude: <https://claude.ai/artifact/PHdDmrVn92a3Ly1Vx4398B>, og testflaten på <https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs>. Begge er private til du deler dem.
 
