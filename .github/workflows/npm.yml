@@ -28,9 +28,18 @@ jobs:
           if [ "$GITHUB_REF_NAME" != "$want" ]; then
             echo "::error::Taggen $GITHUB_REF_NAME stemmer ikke med package.json ($want)."; exit 1
           fi
+      - name: Finnes versjonen allerede?
+        id: finnes
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          if npm view "blyant@$v" version >/dev/null 2>&1; then
+            echo "::notice::blyant@$v ligger allerede på npm. Hopper over."; echo "ja=1" >> "$GITHUB_OUTPUT"
+          fi
       - name: Bygg
+        if: steps.finnes.outputs.ja != '1'
         run: python3 build.py
       - name: Publiser
+        if: steps.finnes.outputs.ja != '1'
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
