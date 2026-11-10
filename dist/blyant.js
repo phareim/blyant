@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"}]} */
 /* Blyant — hand-drawn pencil design system. Vanilla JS, no dependencies.
    Sketch3D needs window.THREE (three.js r147 UMD) loaded first.          */
 (function () {
@@ -307,6 +307,9 @@
   /** Draw rough outlines on every Blyant component inside root (default: document). Safe to call again. */
   B.ink = function (root) {
     root = root || document;
+    Array.prototype.forEach.call(root.querySelectorAll ? root.querySelectorAll("svg[data-doodle]") : [], function (svg) {
+      if (svg.__bDoodle !== svg.getAttribute("data-doodle")) { svg.__bDoodle = svg.getAttribute("data-doodle"); B.doodle(svg); }
+    });
     AUTO.forEach(function (pair) {
       var list = root.querySelectorAll ? root.querySelectorAll(pair[0]) : [];
       Array.prototype.forEach.call(list, function (node) {
@@ -321,6 +324,7 @@
   B.reink = function (root) {
     root = root || document;
     Array.prototype.forEach.call(root.querySelectorAll(".is-inked"), function (n) { inkOne(n, n.__bShape); });
+    Array.prototype.forEach.call(root.querySelectorAll("svg[data-doodle]"), function (svg) { B.doodle(svg); });
   };
   B.setSkin = function (skin, node) {
     (node || document.documentElement).setAttribute("data-skin", skin);
@@ -361,6 +365,49 @@
     });
     return svg;
   };
+
+
+  /* ------------------------------------------------------------------ */
+  /* Doodles: small ready-made drawings for empty states and margins     */
+  /* ------------------------------------------------------------------ */
+  var DOODLES = {
+    // a blank sheet with a pencil lying on it: nothing written yet
+    ark: [
+      { type: "poly", points: [[26, 12], [80, 7], [86, 80], [32, 85]], fill: "var(--paper-2)", fillOpacity: 1 },
+      { type: "curve", points: [[38, 26], [46, 24], [53, 27], [60, 24]], width: 1.3, opacity: 0.7 },
+      { type: "poly", points: [[65.5, 62.8], [107.6, 30.8], [112.4, 37.2], [70.4, 69.1]], fill: "var(--marker)", fillOpacity: 0.95 },
+      { type: "poly", points: [[65.5, 62.8], [70.4, 69.1], [59.5, 72.5]], fill: "var(--paper)", fillOpacity: 1 },
+      { type: "line", x1: 101.5, y1: 35.4, x2: 106.3, y2: 41.8, width: 1.3 }
+    ],
+    // a light bulb: an idea
+    ide: [
+      { type: "circle", cx: 60, cy: 36, r: 22, fill: "var(--marker)", fillOpacity: 0.85 },
+      { type: "poly", points: [[51, 57], [69, 57], [67, 72], [53, 72]], fill: "var(--paper-2)", fillOpacity: 1 },
+      { type: "line", x1: 52, y1: 64, x2: 68, y2: 63, width: 1.2 },
+      { type: "curve", points: [[52, 40], [56, 34], [60, 40], [64, 34], [68, 40]], width: 1.3 },
+      { type: "line", x1: 24, y1: 36, x2: 14, y2: 35, width: 1.3 },
+      { type: "line", x1: 96, y1: 36, x2: 106, y2: 34, width: 1.3 },
+      { type: "line", x1: 33, y1: 12, x2: 26, y2: 5, width: 1.3 },
+      { type: "line", x1: 87, y1: 12, x2: 94, y2: 5, width: 1.3 }
+    ],
+    // a signpost with a question mark: this place is not on the map
+    ukjent: [
+      { type: "line", x1: 60, y1: 86, x2: 60, y2: 52 },
+      { type: "poly", points: [[30, 10], [84, 8], [98, 30], [85, 52], [31, 50]], fill: "var(--paper-2)", fillOpacity: 1 },
+      { type: "curve", points: [[51, 24], [54, 17], [62, 15], [68, 20], [66, 27], [60, 31], [60, 36]], width: 2 },
+      { type: "circle", cx: 60, cy: 43, r: 1.4, width: 2 },
+      { type: "curve", points: [[40, 86], [52, 84], [68, 87], [82, 85]], width: 1.2, opacity: 0.7 }
+    ]
+  };
+  /** Draw a ready-made doodle ("ark", "ide", "ukjent") in an <svg>. Safe to call again. */
+  B.doodle = function (svg, name) {
+    var shapes = DOODLES[name || svg.getAttribute("data-doodle")];
+    if (!shapes) return svg;
+    if (!svg.getAttribute("viewBox")) svg.setAttribute("viewBox", "0 0 120 90");
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    return B.figure(svg, shapes);
+  };
+  B.doodles = Object.keys(DOODLES);
 
   /* ------------------------------------------------------------------ */
   /* Hex grid math (axial, pointy-top)                                  */

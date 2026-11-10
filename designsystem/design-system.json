@@ -17,8 +17,8 @@
   },
   "lastChange": {
     "by": "Claude",
-    "at": "2026-11-09T21:00:00Z",
+    "at": "2026-11-10T12:30:00Z",
     "via": "Claude Code",
-    "note": "Bygges nå fra github.com/phareim/blyant med python3 build.py --ds."
+    "note": "Nytt for blogg og lange tekster: Prose (b-flow, b-meta, figur), Sidenote, Entries og Empty med tegningene ark, ide og ukjent."
   }
 }

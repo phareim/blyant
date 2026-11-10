@@ -41,7 +41,7 @@ Andre måter å hente filene på:
 | --- | --- |
 | `dist/blyant.css` | Fonter, tokens og alle komponenter i én fil |
 | `dist/tokens.css` | Bare tokens som CSS-variabler (Papir og Kull) |
-| `dist/blyant.js` | `Blyant`: streker, `ink`, `figure`, `Sketch3D`, `HexBoard`, `hexgrid`, `chart` og `frames` |
+| `dist/blyant.js` | `Blyant`: streker, `ink`, `figure`, `doodle`, `Sketch3D`, `HexBoard`, `hexgrid`, `chart` og `frames` |
 | `tokens.json` | Kilden til alle tokens |
 | `src/` | Kildekoden; `src/blyant.d.ts` beskriver API-et |
 | `docs/komponenter/` | Retningslinjer per komponent |
@@ -111,6 +111,7 @@ Temaene heter **Papir** (lyst) og **Kull** (mørkt). I Kull blir blyanten kritt:
 - **Cutive Mono** for kode, taster og tall i kolonner (`t-code`).
 - Stilene: `t-display` (én per side), `t-h1`, `t-h2`, `t-h3`, `t-lead`, `t-body`, `t-small`, `t-label`, `t-note`, `t-code`.
 - Overskrifter i Caveat 500. Ikke fet Architects Daughter: den har bare én vekt.
+- Architects Daughter tegner liten «å» uten ring. Bruk den til etiketter i store bokstaver og korte notater uten å. Løpende norsk tekst, også bildetekster og margnotater, settes i Caveat.
 - Skriv kort og vanlig norsk. Sentence case i titler («Slik bygger du en hex-verden»), verb først på knapper («Meld meg på», «Legg ut steinene igjen»). Ingen emoji.
 
 Fonten lastes fra Google Fonts:
@@ -200,6 +201,7 @@ Se `docs/komponenter/Frames.md`.
 
 - **Nettside:** `.b-page` på `body` gir papir, korn og prosa-stiler for vanlige HTML-elementer. Bruk `.b-nav`, `.b-btn`, `.b-field`, `.b-box`, `.b-table`, `.b-ph` for bilder som ikke finnes ennå.
 - **Dokument:** vanlig HTML inne i `.b-prose`. `<mark>` er tusj, `.b-scribble` er margnotat, `.b-callout` er en tegnet ramme rundt et poeng.
+- **Blogg og notater:** `.b-entries` lister innleggene på forsiden, og hvert innlegg er en `<article class="b-prose b-flow">` med `.b-meta` under tittelen. Fotnoter blir margnotater med `.b-sidenote` (legg `.b-sidenotes` på artikkelen). Er lista kort eller tom, sier en `.b-empty` med en liten tegning fra det. [phareim.md](https://phareim.md) er satt slik.
 - **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`.
 - **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå.
 - **Tegneserie og storyboard:** `Blyant.frames` på en flate med fast sideforhold, innhold i `rute.body`.
