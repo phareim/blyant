@@ -33,10 +33,7 @@ Komponentene er Button, Field, Check, Box, Note, Tag, Marker, Nav, Tabs, Table, 
 
 Med byggeverktøy (Vite, Nuxt): `npm install blyant@X.Y.Z`, og importer `blyant/dist/blyant.css` og `blyant/dist/blyant.js`. Fontene lastes fra Google Fonts gjennom `@import` i `blyant.css`.
 
-**Artefakter i Claude:** en artefakt kan bare hente stilark fra Google Fonts, og skript bare i versjoner som er minst to uker gamle. En jsDelivr-lenke til Blyant virker derfor ikke. Bruk en av disse to måtene:
-
-- Legg `~/github/blyant/dist/blyant.css` og `dist/blyant.js` inline i siden, slik `examples/hex-skisse/index.html` er bygget.
-- Kopier filene fra Design System-artefakten (<https://claude.ai/artifact/PHdDmrVn92a3Ly1Vx4398B>) med `files`, for eksempel `{"blyant.css": {"artifact": "<DS-url>", "path": "components/bundle.css"}, "blyant.js": {"artifact": "<DS-url>", "path": "components/bundle.js"}}`, og lenk til dem relativt.
+**Artefakter i Claude:** en artefakt kan bare hente stilark fra Google Fonts, og skript bare i versjoner som er minst to uker gamle. En jsDelivr-lenke til Blyant virker derfor ikke. Legg `dist/blyant.css` og `dist/blyant.js` inline i siden, slik `examples/hex-skisse/index.html` er bygget. Ta dem fra `~/github/blyant/dist/`, eller last ned den faste versjonen fra jsDelivr hvis repoet ikke er der. Ikke bruk `components/bundle.css` fra Design System-artefakten: den mangler tokenene og Kull-temaet.
 
 Lys og mørk følger `prefers-color-scheme`. `data-theme="light"` eller `"dark"` på `<html>` overstyrer. Temaene heter Papir og Kull.
 
