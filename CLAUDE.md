@@ -27,4 +27,14 @@ Testflaten er også publisert som en artefakt: https://claude.ai/artifact/Eh4C4o
 ## Publisering
 
 - GitHub Pages bygges av `.github/workflows/pages.yml` ved push til `main`.
-- npm-pakken `blyant` publiseres av `.github/workflows/npm.yml` når en tag `v<versjon>` pushes. Versjonen i taggen må være lik `version` i `package.json`. Oppdater også jsDelivr-lenkene i README.
+- **Hver endring i det pakken leverer (`src/`, `tokens.json`) gir en ny versjon på npm, gitt ut i samme økt.** Endringer bare i dokumentasjon, forhåndsvisninger, `skills/`, `CLAUDE.md` eller verktøy gir ingen ny versjon.
+  - `patch` gjelder rettelser og justeringer. `minor` gjelder en ny komponent, et nytt valg eller et endret API. Før 1.0 er brudd også `minor`.
+  - Kjør `python3 release.py patch|minor` fra `main` med et rent arbeidstre. Skriptet øker versjonen i `package.json` og i jsDelivr-lenkene i README, bygger, committer, tagger `v<versjon>` og pusher `main` og taggen. Så venter det til npm viser versjonen.
+  - Workflowen `.github/workflows/npm.yml` publiserer når taggen kommer. Versjonen i taggen må være lik `version` i `package.json`.
+  - Arbeid på en gren eller i en PR gis ut etter merge til `main`, ikke fra grenen.
+  - Utgivelsen er ferdig når `npm view blyant version` viser den nye versjonen. Feiler workflowen, se `gh run list --workflow npm.yml`.
+  - Bygg og publiser også artefaktene over når endringen berører dem.
+
+## Skillen
+
+`skills/blyant/SKILL.md` gjør Blyant til standard-designsystemet på maskinen. Den er symlinket som `~/.claude/skills/blyant` og `~/.agents/skills/blyant`, og forteller agenter i andre prosjekter når de skal bruke Blyant, hvordan de tar det inn og når et nytt element skal bygges inn her. Når komponentlista, måten å ta inn Blyant på eller release-regelen endres, oppdaterer du skillen også.

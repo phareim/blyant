@@ -46,12 +46,14 @@ Andre måter å hente filene på:
 | `src/` | Kildekoden; `src/blyant.d.ts` beskriver API-et |
 | `docs/komponenter/` | Retningslinjer per komponent |
 | `examples/hex-skisse/` | Testflaten: hex-spill, nettside, dokument, presentasjon, grafer, former og system |
+| `skills/blyant/` | Skillen som gjør Blyant til standard-designsystemet for agenter, og som sier når nye elementer skal bygges inn her |
+| `release.py` | Gir ut en ny versjon på npm |
 
 Endrer du `tokens.json` eller noe i `src/`, kjør `python3 build.py` for å bygge `dist/` og eksempelet på nytt, og commit resultatet. Siden på GitHub Pages bygges av en workflow (`.github/workflows/pages.yml`) ved hver push til `main`, så den er alltid i takt med kildekoden. Workflowen varsler hvis `dist/` i repoet er utdatert.
 
 **Design System i Claude.** Blyant finnes også som en Design System-artefakt i Claude. Den bygges fra repoet med `python3 build.py --ds`, som legger filene i `build/ds/`: kodebunten fra `src/`, README-ene fra `docs/komponenter/`, forhåndsvisningene fra `designsystem/forhandsvisning/` og omslagsteksten fra `designsystem/README.md`. En ny komponent trenger alle tre: navnet i `@ds-bundle`-linja øverst i `src/blyant.js`, en `.md` og en forhåndsvisning. Bygget stopper hvis de ikke stemmer. Se `CLAUDE.md` for hvordan artefakten publiseres.
 
-**Ny versjon på npm.** Øk `version` i `package.json` og i jsDelivr-lenkene over, commit, og lag en tag med samme nummer (`git tag v0.3.1 && git push --tags`). Workflowen `.github/workflows/npm.yml` bygger og publiserer pakken. Den trenger hemmeligheten `NPM_TOKEN` i repoet.
+**Ny versjon på npm.** Hver endring i `src/` eller `tokens.json` gir en ny versjon. Kjør `python3 release.py patch` for rettelser og `python3 release.py minor` for nye komponenter og endret API. Skriptet øker versjonen i `package.json` og i jsDelivr-lenkene over, bygger, committer, tagger og pusher, og venter til npm har versjonen. Workflowen `.github/workflows/npm.yml` bygger og publiserer pakken når taggen kommer. Den trenger hemmeligheten `NPM_TOKEN` i repoet.
 
 Designsystemet finnes også som artefakt i Claude: <https://claude.ai/artifact/PHdDmrVn92a3Ly1Vx4398B>, og testflaten på <https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs>. Begge er private til du deler dem.
 
