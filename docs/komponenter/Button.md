@@ -9,7 +9,7 @@ Knapp med blyantkant. Standard er en tom ramme; `b-btn--primary` fylles med graf
 | `b-btn` | Vanlig handling. |
 | `b-btn--primary` | Det siden er til for: «Lagre brettet», «Spill». |
 | `b-btn--marker` | Tusj-knapp. Én oppfordring du vil at øyet skal finne. Ikke sammen med primary i samme rad. |
-| `b-btn--quiet` | Uten ramme, bølget understrek. Sekundære valg. |
+| `b-btn--quiet` | Uten ramme, rett understrek. Sekundære valg. |
 | `b-btn--sm`, `b-btn--icon` | Mindre knapp; kvadratisk ikonknapp (husk `aria-label`). |
 
 - Verb først, vanlig norsk: «Meld meg på», ikke «Påmelding».

@@ -231,14 +231,14 @@
 :where(.b-page, .b-prose) a {
   color: inherit;
   text-decoration-line: underline;
-  text-decoration-style: wavy;
+  text-decoration-style: solid;
   text-decoration-color: var(--graphite-300);
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 1.5px;
   text-underline-offset: 4px;
 }
 :where(.b-page, .b-prose) a:hover { text-decoration-color: var(--ink); }
 [data-skin="clean"] :where(.b-page, .b-prose) a,
-[data-skin="clean"]:where(.b-page, .b-prose) a { text-decoration-style: solid; }
+[data-skin="clean"]:where(.b-page, .b-prose) a { text-decoration-thickness: 1px; }
 :where(.b-page, .b-prose) :where(code, kbd, samp, pre) { font-family: var(--b-mono); font-size: .9em; }
 :where(.b-page, .b-prose) :not(pre) > code {
   background: var(--paper-2);
@@ -376,7 +376,7 @@
 .b-focusable:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
 .b-btn--primary { --_bg: var(--ink); --_fg: var(--paper); }
 .b-btn--marker  { --_bg: var(--marker); --_fg: var(--on-marker); }
-.b-btn--quiet   { border-color: transparent; text-decoration: underline wavy var(--graphite-300) 1px; text-underline-offset: 5px; }
+.b-btn--quiet   { border-color: transparent; text-decoration: underline solid var(--graphite-300) 1.5px; text-underline-offset: 5px; }
 .b-btn--quiet.is-inked { --b-ink-svg: none; }
 .b-btn--sm { min-height: 32px; padding: 3px 12px 5px; font-size: 19px; }
 .b-btn--icon { padding: 0; width: 44px; }
