@@ -25,6 +25,15 @@ export interface PlaceholderProps { ratio?: string; label: string; }
 /** <div class="b-slide"> with __kicker, __title, __body, __foot */
 export interface SlideProps { kicker?: string; title: string; body?: string; foot?: [string, string]; }
 
+/** <article class="b-prose b-flow"> around HTML from Markdown; .b-meta under the title; figure + figcaption for pictures. */
+export interface ProseProps { flow?: boolean; meta?: string[]; }
+/** <label class="b-sidenote__ref" for="n1"></label><input class="b-sidenote__toggle" type="checkbox" id="n1"><span class="b-sidenote">…</span> inside .b-sidenotes */
+export interface SidenoteProps { id: string; text: string; }
+/** <ul class="b-entries"><li class="b-entry"><time class="b-entry__meta"/><a class="b-entry__title"/><p class="b-entry__summary"/></li></ul> */
+export interface EntriesProps { entries: { title: string; href: string; meta?: string; summary?: string }[]; }
+/** <div class="b-empty [b-empty--center]"><svg class="b-empty__art" data-doodle="ark"/><div class="b-empty__body"><p class="b-empty__title"/><p class="b-empty__text"/></div></div> */
+export interface EmptyProps { title: string; text?: string; doodle?: "ark" | "ide" | "ukjent"; center?: boolean; }
+
 export interface RoughOptions { seed?: number; wobble?: number; passes?: number; bow?: number; gap?: number; angle?: number; }
 export type Shape =
   | { type: "line"; x1: number; y1: number; x2: number; y2: number }
@@ -64,7 +73,10 @@ export interface BlyantGlobal {
   };
   figure(svg: SVGSVGElement, shapes: RoughProps["shapes"], defaults?: { wobble?: number }): SVGSVGElement;
   draw(svg: SVGSVGElement, d: string, style?: { stroke?: string; width?: number; fill?: string; opacity?: number }): SVGPathElement;
-  /** Draw pencil outlines on every Blyant component under root. Safe to call again. */
+  /** Draw a ready-made doodle in an <svg> (default viewBox 0 0 120 90). Blyant.ink also draws every svg[data-doodle]. */
+  doodle(svg: SVGSVGElement, name?: "ark" | "ide" | "ukjent"): SVGSVGElement;
+  doodles: string[];
+  /** Draw pencil outlines on every Blyant component under root, and every svg[data-doodle]. Safe to call again. */
   ink(root?: ParentNode): void;
   reink(root?: ParentNode): void;
   setSkin(skin: "sketch" | "clean" | string, node?: Element): void;

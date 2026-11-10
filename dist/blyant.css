@@ -757,6 +757,76 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-frames__ink--top { z-index: 3; }
 .b-frames__num { font-family: var(--b-note); font-size: 13px; fill: var(--ink-soft); }
 
+/* ---------- 8. Reading (blog, notes, long documents) -------------------- */
+
+/* Flow: vertical rhythm for running text that comes out of Markdown or a CMS */
+.b-flow > * { margin-block: 0; }
+.b-flow > * + * { margin-top: var(--b-flow, .85em); }
+.b-flow > :where(h2, h3, h4) { margin-top: var(--space-8); }
+.b-flow > :where(h1, h2, h3, h4) + * { margin-top: var(--space-2); }
+.b-flow :where(li) + li { margin-top: .2em; }
+.b-flow :where(li) > :where(ul, ol) { margin-top: .2em; }
+
+/* Pictures in prose: the image sits in a thin pencil frame, the caption is a note under it */
+:where(.b-page, .b-prose) :where(img, video) { max-width: 100%; height: auto; }
+:where(.b-page, .b-prose) figure { margin-inline: 0; display: grid; gap: var(--space-2); justify-items: start; }
+:where(.b-page, .b-prose) figure > :where(img, video) { display: block; border: 1px solid var(--line-faint); border-radius: 2px; }
+:where(.b-page, .b-prose) figcaption { font-size: 17px; line-height: 1.35; color: var(--ink-soft); max-width: 60ch; }
+
+/* The line under a title: date, reading time, author */
+.b-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); font-family: var(--b-note); font-size: 13px; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+
+/* Sidenote: a footnote that lives in the margin. No script: the number is a label for a hidden checkbox.
+   Put .b-sidenotes on the article; it makes room for the margin when the screen is wide enough. */
+.b-sidenotes { counter-reset: b-sidenote; --b-sidenote-w: 220px; --b-sidenote-gap: 36px; }
+.b-sidenote__ref { counter-increment: b-sidenote; cursor: pointer; }
+.b-sidenote__ref::after,
+.b-sidenote::before { content: counter(b-sidenote); font-family: var(--b-mono); font-variant-numeric: tabular-nums; }
+.b-sidenote__ref::after { font-size: .7em; font-weight: 700; vertical-align: super; line-height: 0; margin-left: .12em; padding: 0 .1em; color: var(--ink); }
+.b-sidenote__toggle { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.b-sidenote__toggle:focus-visible + .b-sidenote { outline: 2.5px solid var(--focus); outline-offset: 3px; }
+.b-sidenote { display: none; font-family: var(--b-body); font-size: 17px; line-height: 1.3; color: var(--ink-soft); }
+.b-sidenote::before { margin-right: .5em; font-size: .8em; font-weight: 700; color: var(--ink); }
+.b-sidenote__toggle:checked + .b-sidenote { display: block; margin: var(--space-2) 0; padding: var(--space-2) var(--space-3); background: var(--paper-2); border-radius: var(--b-radius-sm); }
+@media (min-width: 1100px) {
+  .b-sidenotes { padding-right: calc(var(--b-sidenote-w) + var(--b-sidenote-gap)); }
+  .b-sidenotes .b-sidenote,
+  .b-sidenotes .b-sidenote__toggle:checked + .b-sidenote {
+    display: block;
+    float: right;
+    clear: right;
+    width: var(--b-sidenote-w);
+    margin: .2em calc(-1 * (var(--b-sidenote-w) + var(--b-sidenote-gap))) var(--space-3) 0;
+    padding: 0;
+    background: none;
+  }
+  .b-sidenotes .b-sidenote__ref { cursor: default; }
+  .b-sidenotes .b-sidenote__toggle { display: none; }
+}
+
+/* Entries: a list of posts, notes or documents. Date, title, one line about it. */
+.b-entries { list-style: none; margin: 0; padding: 0; display: grid; }
+.b-entry { display: grid; gap: 2px; padding: var(--space-4) 0 calc(var(--space-4) + 8px); background: var(--b-rule-img) 0 100% / 100% 10px no-repeat; min-width: 0; }
+.b-entry:last-child { background: none; padding-bottom: var(--space-4); }
+.b-entry__meta { font-family: var(--b-note); font-size: 13px; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.b-entry__title { justify-self: start; font-family: var(--b-display); font-weight: 500; font-size: clamp(30px, 5vw, 38px); line-height: 1.05; color: var(--ink); text-decoration: none; text-wrap: balance; padding-bottom: 5px; background: var(--b-rule-img) 0 100% / 0 8px no-repeat; }
+.b-entry__title:hover, .b-entry__title:focus-visible { background-size: 100% 8px; }
+.b-entry__title:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
+.b-entry__summary { margin: 0; color: var(--ink-soft); max-width: 60ch; }
+[data-skin="clean"] .b-entry { background: linear-gradient(var(--line-faint), var(--line-faint)) 0 100% / 100% 1px no-repeat; padding-bottom: var(--space-4); }
+[data-skin="clean"] .b-entry:last-child { background: none; }
+[data-skin="clean"] .b-entry__title { background-image: linear-gradient(var(--ink), var(--ink)); background-position: 0 100%; }
+[data-skin="clean"] .b-entry__title:hover { background-size: 100% 2px; }
+
+/* Empty state: a small drawing, one line that says what is missing, a note under it */
+.b-empty { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-6); padding: var(--space-4) 0; color: var(--ink); min-width: 0; }
+.b-empty__art { flex: none; width: 112px; height: 84px; overflow: visible; color: var(--line); }
+.b-empty__body { display: grid; gap: 2px; flex: 1 1 14em; min-width: 0; }
+.b-empty__title { margin: 0; font-family: var(--b-display); font-weight: 500; font-size: 28px; line-height: 1.1; }
+.b-empty__text { margin: 0; font-size: 19px; line-height: 1.35; color: var(--ink-soft); }
+.b-empty--center { flex-direction: column; text-align: center; padding: var(--space-8) 0; }
+.b-empty--center .b-empty__body { flex: none; justify-items: center; }
+
 /* Range slider */
 .b-range { width: 100%; accent-color: var(--ink); height: 28px; margin: 0; }
 
