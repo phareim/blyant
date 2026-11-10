@@ -9,3 +9,4 @@ Liste over innlegg, notater eller dokumenter: dato, tittel og én linje om hva d
 - En blyantstrek skiller innleggene. Den siste har ingen strek under seg.
 - `b-entry__summary` er valgfri. Skriv én setning, ikke begynnelsen av teksten.
 - Er lista kort eller tom, sett en `Empty` under den i stedet for å fylle på med noe annet.
+- `b-entries--compact` gir én linje per innlegg: tittelen til venstre i brødskrift, `b-entry__meta` til høyre. Bruk den når lista er lang og titlene er det du leter etter, som i en dokumentliste. Lange titler kuttes med «…».

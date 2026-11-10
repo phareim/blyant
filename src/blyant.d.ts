@@ -3,7 +3,7 @@
 /** <button class="b-btn b-btn--primary">. Call Blyant.ink(root) to draw the pencil outline. */
 export interface ButtonProps { variant?: "default" | "primary" | "marker" | "quiet"; size?: "md" | "sm" | "icon"; disabled?: boolean; }
 /** <label class="b-field"><span class="b-field__label"/><input class="b-input"/><span class="b-field__hint"/></label> */
-export interface FieldProps { label: string; hint?: string; invalid?: boolean; control?: "input" | "select" | "textarea"; }
+export interface FieldProps { label: string; hint?: string; invalid?: boolean; control?: "input" | "select" | "textarea"; /** b-input--line: no box, a pencil rule under the text */ line?: boolean; }
 /** <label class="b-check [b-check--radio]"><input/><span class="b-check__box"/>Label</label>, or .b-switch */
 export interface CheckProps { kind?: "checkbox" | "radio" | "switch"; checked?: boolean; label: string; }
 /** <div class="b-box [b-box--raised|--flat|--dashed]"> or .b-callout */
@@ -30,9 +30,15 @@ export interface ProseProps { flow?: boolean; meta?: string[]; }
 /** <label class="b-sidenote__ref" for="n1"></label><input class="b-sidenote__toggle" type="checkbox" id="n1"><span class="b-sidenote">…</span> inside .b-sidenotes */
 export interface SidenoteProps { id: string; text: string; }
 /** <ul class="b-entries"><li class="b-entry"><time class="b-entry__meta"/><a class="b-entry__title"/><p class="b-entry__summary"/></li></ul> */
-export interface EntriesProps { entries: { title: string; href: string; meta?: string; summary?: string }[]; }
+export interface EntriesProps { entries: { title: string; href: string; meta?: string; summary?: string }[]; /** b-entries--compact: one line per entry, meta to the right */ compact?: boolean; }
 /** <div class="b-empty [b-empty--center]"><svg class="b-empty__art" data-doodle="ark"/><div class="b-empty__body"><p class="b-empty__title"/><p class="b-empty__text"/></div></div> */
 export interface EmptyProps { title: string; text?: string; doodle?: "ark" | "ide" | "ukjent"; center?: boolean; }
+/** <ul class="b-menu" role="listbox"><li class="b-menu__label"/><li class="b-menu__item [is-active]" role="option"><span class="b-menu__text"/><span class="b-menu__hint"/></li></ul>; aria-checked on an item draws a tick */
+export interface MenuProps { items: { text: string; hint?: string; active?: boolean; checked?: boolean; disabled?: boolean }[]; label?: string; empty?: string; }
+/** <div class="b-toasts"><div class="b-toast [b-toast--error]" role="status"><span>Text</span><button class="b-toast__action">Angre</button></div></div> */
+export interface ToastProps { text: string; error?: boolean; action?: string; }
+/** class="b-editor" on a textarea, a contenteditable or an editor's content node; parts b-editor__syntax, __h1, __h2, __h3, __quote, __code, __rule, __placeholder. --b-editor-size sets the text size. */
+export interface EditorProps { size?: string; }
 
 export interface RoughOptions { seed?: number; wobble?: number; passes?: number; bow?: number; gap?: number; angle?: number; }
 export type Shape =

@@ -16,3 +16,4 @@ Tekstfelt, nedtrekksliste og tekstområde med etikett og hjelpetekst.
 - Nedtrekksliste: pakk `select.b-input` i `<span class="b-select">` for den tegnede pila.
 - Feil: `aria-invalid="true"` på feltet og `b-field__hint--error` på hjelpeteksten. Teksten sier hva som er galt og hvordan det fikses.
 - Kall `Blyant.reink(skjema)` etter at du har endret feiltilstand.
+- `b-input--line` er et felt uten boks, bare en blyantstrek å skrive på. Bruk det til filter og søk over en liste, der en boks ville tatt oppmerksomheten fra lista. Feltet trenger fortsatt et navn: `aria-label` når det ikke har synlig etikett.

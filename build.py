@@ -5,6 +5,7 @@
 
 dist/tokens.css   – fargene (Papir/Kull), avstander, strek og skrift som CSS-variabler
 dist/blyant.css   – fonter + tokens + komponenter (én fil å lenke til)
+dist/blyant-core.css – det samme uten @import av fontene, for sider som leverer fontene selv
 dist/blyant.js    – Blyant (streker, komponenter, Sketch3D, HexBoard) + Blyant.chart + Blyant.frames
 examples/hex-skisse/index.html – testflaten, ferdig bygget
 
@@ -104,6 +105,7 @@ if __name__ == '__main__':
     js = '\n'.join(read('src', n) for n in JS)
     write('dist/tokens.css', tok)
     write('dist/blyant.css', '@import url("%s");\n\n%s\n%s' % (FONTS, tok, css))
+    write('dist/blyant-core.css', '%s\n%s' % (tok, css))
     write('dist/blyant.js', js)
     ex = os.path.join('examples', 'hex-skisse')
     page = read(ex, 'demo.html')

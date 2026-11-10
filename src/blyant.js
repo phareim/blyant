@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Editor"}]} */
 /* Blyant — hand-drawn pencil design system. Vanilla JS, no dependencies.
    Sketch3D needs window.THREE (three.js r147 UMD) loaded first.          */
 (function () {
@@ -247,13 +247,15 @@
   /* ------------------------------------------------------------------ */
   var AUTO = [
     [".b-btn:not(.b-btn--quiet)", "box"],
-    [".b-input", "box"],
+    [".b-input:not(.b-input--line)", "box"],
     [".b-box:not(.b-box--flat)", "box"],
     [".b-callout", "box"],
     [".b-tag", "box-sm"],
     [".b-kbd", "box-sm"],
     [".b-ph", "cross"],
     [".b-slide", "box"],
+    [".b-menu", "box"],
+    [".b-toast", "box-sm"],
     [".b-tab[aria-selected='true']", "tab"],
     ["[data-ink]", null]
   ];

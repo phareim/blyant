@@ -408,6 +408,9 @@
   box-sizing: border-box;
 }
 .b-input::placeholder { color: var(--ink-soft); opacity: .85; }
+/* A line to write on: no box, just the pencil rule under the text (filter, search, a title) */
+.b-input--line { min-height: 40px; padding: 4px 2px 10px; border: 0; border-radius: 0; background: var(--b-rule-img) 0 100% / 100% 8px no-repeat; }
+[data-skin="clean"] .b-input--line { background: linear-gradient(var(--line), var(--line)) 0 100% / 100% 1px no-repeat; }
 textarea.b-input { min-height: 96px; resize: vertical; line-height: 1.5; }
 select.b-input { appearance: none; padding-right: 40px; }
 .b-select { position: relative; display: block; }
@@ -813,6 +816,11 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-entry__title:hover, .b-entry__title:focus-visible { background-size: 100% 8px; }
 .b-entry__title:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
 .b-entry__summary { margin: 0; color: var(--ink-soft); max-width: 60ch; }
+/* Compact: one line per entry, title to the left and meta to the right. For long lists of documents. */
+.b-entries--compact .b-entry { grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 0 var(--space-4); padding: var(--space-2) 0 calc(var(--space-2) + 6px); background-size: 100% 8px; }
+.b-entries--compact .b-entry__title { max-width: 100%; font-family: var(--b-body); font-weight: 400; font-size: 24px; line-height: 1.25; padding-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.b-entries--compact .b-entry__meta { order: 2; white-space: nowrap; }
+.b-entries--compact .b-entry__summary { order: 3; grid-column: 1 / -1; font-size: 19px; line-height: 1.3; }
 [data-skin="clean"] .b-entry { background: linear-gradient(var(--line-faint), var(--line-faint)) 0 100% / 100% 1px no-repeat; padding-bottom: var(--space-4); }
 [data-skin="clean"] .b-entry:last-child { background: none; }
 [data-skin="clean"] .b-entry__title { background-image: linear-gradient(var(--ink), var(--ink)); background-position: 0 100%; }
@@ -826,6 +834,45 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-empty__text { margin: 0; font-size: 19px; line-height: 1.35; color: var(--ink-soft); }
 .b-empty--center { flex-direction: column; text-align: center; padding: var(--space-8) 0; }
 .b-empty--center .b-empty__body { flex: none; justify-items: center; }
+
+/* ---------- 9. Apps (menus, messages, a surface to write on) ------------- */
+
+/* Menu: a small slip with choices. Command palette, autocomplete, settings. */
+.b-menu { position: relative; display: grid; gap: 2px; min-width: 12em; margin: 0; padding: var(--space-2); list-style: none; font-family: var(--b-body); font-size: 20px; line-height: 1.25; color: var(--ink); background: var(--paper); border: var(--b-border) solid var(--b-border-c); border-radius: var(--b-radius-sm); box-shadow: var(--shadow-lift); }
+.b-menu__label { padding: var(--space-2) var(--space-2) 0; font-family: var(--b-note); font-size: 13px; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.b-menu__item { display: flex; align-items: baseline; gap: var(--space-2); width: 100%; min-width: 0; box-sizing: border-box; margin: 0; padding: 3px var(--space-2) 5px; font: inherit; color: var(--ink); text-align: left; text-decoration: none; background: none; border: 0; border-radius: var(--b-radius-sm); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.b-menu__item:hover, .b-menu__item.is-active, .b-menu__item[aria-selected="true"] { background: var(--paper-2); }
+.b-menu__item:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 1px; }
+.b-menu__item[aria-checked]::before { content: ""; flex: none; align-self: center; width: .8em; height: .7em; background: var(--ink); -webkit-mask: var(--b-tick) center / contain no-repeat; mask: var(--b-tick) center / contain no-repeat; opacity: 0; }
+.b-menu__item[aria-checked="true"]::before { opacity: 1; }
+.b-menu__item[disabled], .b-menu__item[aria-disabled="true"] { opacity: .45; cursor: not-allowed; background: none; }
+.b-menu__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.b-menu__hint { flex: none; margin-left: auto; padding-left: var(--space-3); font-family: var(--b-mono); font-size: 14px; color: var(--ink-soft); }
+.b-menu__empty { margin: 0; padding: 3px var(--space-2) 5px; color: var(--ink-soft); }
+
+/* Toast: a short message that lies on top of the page for a moment, with at most one action */
+.b-toasts { position: fixed; left: 50%; bottom: max(var(--space-6), env(safe-area-inset-bottom)); z-index: 50; transform: translateX(-50%); display: grid; gap: var(--space-2); justify-items: center; width: max-content; max-width: calc(100vw - 2 * var(--space-4)); pointer-events: none; }
+.b-toasts > * { pointer-events: auto; }
+.b-toast { position: relative; display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-4); max-width: 100%; box-sizing: border-box; padding: var(--space-2) var(--space-4) calc(var(--space-2) + 2px); font-family: var(--b-body); font-size: 20px; line-height: 1.3; color: var(--ink); background: var(--paper-2); border: var(--b-border) solid var(--b-border-c); border-radius: var(--b-radius-sm); box-shadow: var(--shadow-lift); }
+.b-toast--error > span:first-of-type::before { content: "✗ "; color: var(--dust-red); font-weight: 600; }
+.b-toast__action { margin: 0; padding: 0; font: inherit; color: var(--ink); background: none; border: 0; cursor: pointer; text-decoration: underline solid var(--graphite-300) 1.5px; text-underline-offset: 4px; }
+.b-toast__action:hover { text-decoration-color: var(--ink); }
+.b-toast__action:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
+
+/* Editor: the surface you write on. Put it on a textarea, a contenteditable or the content node of a code editor.
+   The parts are for editors that style Markdown in place, line by line. */
+.b-editor { font-family: var(--b-body); font-size: var(--b-editor-size, 22px); line-height: 1.5; color: var(--ink); caret-color: var(--ink); }
+.b-editor::selection, .b-editor ::selection { color: var(--on-marker); background: var(--marker); }
+.b-editor::placeholder, .b-editor__placeholder { color: var(--ink-soft); opacity: .85; }
+.b-editor__syntax { color: var(--ink-soft); font-weight: 400; }
+.b-editor__h1, .b-editor__h2, .b-editor__h3 { font-family: var(--b-display); font-weight: 500; }
+.b-editor__h1 { font-size: 2em; line-height: 1.05; }
+.b-editor__h2 { font-size: 1.5em; line-height: 1.1; }
+.b-editor__h3 { font-size: 1.2em; line-height: 1.2; }
+.b-editor__quote { color: var(--ink-soft); }
+.b-editor__code { font-family: var(--b-mono); font-size: .78em; }
+.b-editor__rule { display: inline-block; width: 100%; height: 10px; vertical-align: middle; background: var(--b-rule-img) center / 100% 10px no-repeat; }
+[data-skin="clean"] .b-editor__rule { height: 1px; }
 
 /* Range slider */
 .b-range { width: 100%; accent-color: var(--ink); height: 28px; margin: 0; }
