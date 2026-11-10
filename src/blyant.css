@@ -697,7 +697,7 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-entry__summary { margin: 0; color: var(--ink-soft); max-width: 60ch; }
 /* Compact: one line per entry, title to the left and meta to the right. For long lists of documents. */
 .b-entries--compact .b-entry { grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 0 var(--space-4); padding: var(--space-2) 0 calc(var(--space-2) + 6px); background-size: 100% 8px; }
-.b-entries--compact .b-entry__title { max-width: 100%; font-family: var(--b-body); font-weight: 400; font-size: 24px; line-height: 1.25; padding-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.b-entries--compact .b-entry__title { max-width: 100%; padding-right: .15em; font-family: var(--b-body); font-weight: 400; font-size: 24px; line-height: 1.25; padding-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .b-entries--compact .b-entry__meta { order: 2; white-space: nowrap; }
 .b-entries--compact .b-entry__summary { order: 3; grid-column: 1 / -1; font-size: 19px; line-height: 1.3; }
 [data-skin="clean"] .b-entry { background: linear-gradient(var(--line-faint), var(--line-faint)) 0 100% / 100% 1px no-repeat; padding-bottom: var(--space-4); }
