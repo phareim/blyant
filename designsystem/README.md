@@ -73,7 +73,7 @@ Fonten lastes fra Google Fonts:
 - Skjelving: `wobble-low` for små kontroller, `wobble-mid` som standard, `wobble-high` for løse kruseduller. Et skall med `--b-wobble: 0` tegner med linjal.
 - Tegn i SVG med `Blyant.rough`: `line`, `rect`, `circle`, `ellipse`, `hex`, `poly`, `arrow`, `hatch` (skravur), `scribble`. Funksjonene gir tilbake en `d`-streng. `Blyant.figure(svg, [...])` tegner en hel figur med fargeblyant-fyll.
 - Hver strek tegnes to ganger med litt ulik bue og overheng. Det er dette som gjør den håndtegnet. Ikke legg på `stroke-dasharray` for å få skisse-preg.
-- Komponenter med kant (`.b-btn`, `.b-input`, `.b-box`, `.b-tag`, `.b-kbd`, `.b-ph`, `.b-slide`, valgt `.b-tab`) får ekte blyantstrek når du kaller `Blyant.ink(rot)`. Uten JavaScript faller de tilbake til CSS-kant med skjeve hjørner. Legg `data-ink="box|circle|underline|strike|hex|cross"` på et hvilket som helst element for å tegne rundt det.
+- Komponenter med kant (`.b-btn`, `.b-input`, `.b-box`, `.b-tag`, `.b-kbd`, `.b-ph`, `.b-slide`, `.b-menu`, `.b-toast`, valgt `.b-tab`) får ekte blyantstrek når du kaller `Blyant.ink(rot)`. Uten JavaScript faller de tilbake til CSS-kant med skjeve hjørner. Legg `data-ink="box|circle|underline|strike|hex|cross"` på et hvilket som helst element for å tegne rundt det.
 - Notatlapper står litt skjevt (`--b-tilt`). Ingenting annet roteres.
 
 ## 3D
@@ -148,6 +148,7 @@ Se `docs/komponenter/Frames.md`.
 - **Nettside:** `.b-page` på `body` gir papir, korn og prosa-stiler for vanlige HTML-elementer. Bruk `.b-nav`, `.b-btn`, `.b-field`, `.b-box`, `.b-table`, `.b-ph` for bilder som ikke finnes ennå.
 - **Dokument:** vanlig HTML inne i `.b-prose`. `<mark>` er tusj, `.b-scribble` er margnotat, `.b-callout` er en tegnet ramme rundt et poeng.
 - **Blogg og notater:** `.b-entries` lister innleggene på forsiden, og hvert innlegg er en `<article class="b-prose b-flow">` med `.b-meta` under tittelen. Fotnoter blir margnotater med `.b-sidenote` (legg `.b-sidenotes` på artikkelen). Er lista kort eller tom, sier en `.b-empty` med en liten tegning fra det. [phareim.md](https://phareim.md) er satt slik.
+- **Skriveapp og verktøy:** `.b-editor` er flaten du skriver på, `.b-menu` er lappen med valg (kommandopalett, forslag, innstillinger), `.b-toast` er beskjeden som ligger oppå et øyeblikk, og `.b-entries--compact` lister dokumentene med én linje hver. `.b-input--line` er et filter uten boks. [write.phareim.no](https://write.phareim.no) er satt slik.
 - **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`.
 - **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå.
 - **Tegneserie og storyboard:** `Blyant.frames` på en flate med fast sideforhold, innhold i `rute.body`.
