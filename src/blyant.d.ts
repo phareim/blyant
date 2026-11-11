@@ -43,6 +43,9 @@ export interface EditorProps { size?: string; }
     choices: .b-toolbar__swatch (style="--b-swatch: var(--dust-red)"), .b-toolbar__size (style="--b-size: 4px"), .b-toolbar__text. The app places it. */
 export interface ToolbarProps { tools: { label: string; pressed?: boolean; marker?: boolean; busy?: boolean; disabled?: boolean }[]; vertical?: boolean; compact?: boolean; label: string; }
 
+/** <ul class="b-checklist"><li class="b-checklist__item [is-done] [is-active]"><label class="b-check"><input type="checkbox" aria-label="Ferdig"><span class="b-check__box"/></label><a class="b-checklist__title"/><span class="b-checklist__meta"/></li></ul>; <span class="b-checklist__mark">↻</span> stands in for the box on a row that cannot be ticked */
+export interface ChecklistProps { items: { title: string; href?: string; done?: boolean; active?: boolean; meta?: string; mark?: string }[]; }
+
 export interface RoughOptions { seed?: number; wobble?: number; passes?: number; bow?: number; gap?: number; angle?: number; }
 export type Shape =
   | { type: "line"; x1: number; y1: number; x2: number; y2: number }
@@ -95,6 +98,8 @@ export interface BlyantGlobal {
   /** Draw pencil outlines on every Blyant component under root, and every svg[data-doodle]. Safe to call again. */
   ink(root?: ParentNode): void;
   reink(root?: ParentNode): void;
+  /** For pages a framework re-renders (Vue, React): inks root now and again whenever its DOM changes. Returns a function that stops watching. */
+  watch(root?: Element): () => void;
   setSkin(skin: "sketch" | "clean" | string, node?: Element): void;
   hexgrid: {
     DIRS: [number, number][];

@@ -19,6 +19,6 @@
     "by": "Claude",
     "at": "2026-11-11T12:00:00Z",
     "via": "Claude Code",
-    "note": "Ny: Toolbar, en palett med verktøy for lerret og tavle. Blyantkornet vises nå også i Safari og på iPhone: filteret følger hver strek i stedet for å dekke 8000 px."
+    "note": "Nye: Checklist for gjøremål og Toolbar for lerret og tavle. Blyant.watch holder blyantstrekene i takt med sider som Vue og React tegner på nytt. Blyantkornet vises nå også i Safari og på iPhone."
   }
 }

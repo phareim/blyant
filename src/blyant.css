@@ -738,6 +738,24 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-toast__action:hover { text-decoration-color: var(--ink); }
 .b-toast__action:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
 
+/* Checklist: things to do. A box to tick, the thing itself, a short note to the right. */
+.b-checklist { list-style: none; margin: 0; padding: 0; display: grid; }
+.b-checklist__item { display: flex; align-items: center; gap: var(--space-3); min-width: 0; padding: 4px var(--space-2) 10px; background: var(--b-rule-img) 0 100% / 100% 8px no-repeat; border-radius: var(--b-radius-sm); }
+.b-checklist__item:last-child { background-image: none; padding-bottom: 4px; }
+.b-checklist__item:hover, .b-checklist__item.is-active { background-color: var(--paper-2); }
+.b-checklist__item > .b-check { flex: none; }
+.b-checklist__mark { flex: none; width: 22px; font-family: var(--b-body); font-size: 24px; line-height: 1; text-align: center; color: var(--ink-soft); }
+.b-checklist__title { flex: 0 1 auto; min-width: 0; padding: 0 .15em 3px 0; font-family: var(--b-body); font-size: 24px; line-height: 1.25; color: var(--ink); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--b-rule-img) 0 100% / 0 8px no-repeat; }
+a.b-checklist__title:hover, a.b-checklist__title:focus-visible { background-size: 100% 8px; }
+.b-checklist__title:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
+.b-checklist__meta { flex: none; margin-left: auto; padding-left: var(--space-2); font-family: var(--b-note); font-size: 13px; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+/* Done: the pencil goes through it */
+.b-checklist__item.is-done .b-checklist__title { color: var(--ink-soft); background-position: 0 62%; background-size: 100% 8px; }
+[data-skin="clean"] .b-checklist__item { background-image: linear-gradient(var(--line-faint), var(--line-faint)); background-size: 100% 1px; }
+[data-skin="clean"] .b-checklist__item:last-child { background-image: none; }
+[data-skin="clean"] .b-checklist__title { background-image: linear-gradient(var(--ink-soft), var(--ink-soft)); }
+[data-skin="clean"] a.b-checklist__title:hover, [data-skin="clean"] .b-checklist__item.is-done .b-checklist__title { background-size: 100% 1.5px; }
+
 /* Toolbar: a small floating palette of icon buttons, for tools on a canvas or a board. The app places it.
    Icons are Blyant.figure drawings in a 64×64 viewBox; the chosen tool has aria-pressed="true". */
 .b-toolbar { --b-toolbar-btn: 44px; --b-toolbar-icon: 26px; position: relative; display: inline-flex; align-items: center; gap: 2px; padding: 4px; box-sizing: border-box; color: var(--ink); background: var(--paper); border: var(--b-border) solid var(--b-border-c); border-radius: var(--b-radius-sm); box-shadow: var(--shadow-lift); font-family: var(--b-body); -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }

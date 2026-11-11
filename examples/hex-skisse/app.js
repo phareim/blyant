@@ -675,6 +675,11 @@
         '<div class="b-box"><span class="b-label">Merker</span><div class="row"><span class="b-tag">Utkast</span><span class="b-tag b-tag--green"><span class="b-dot"></span>Klar</span><span class="b-tag b-tag--orange"><span class="b-dot"></span>Venter</span><span class="b-tag b-tag--red"><span class="b-dot"></span>Feil</span><span class="b-tag b-tag--blue">Info</span><span class="b-tag b-tag--purple">Sjelden</span><span class="b-tag b-tag--marker">Ny</span></div><div class="row"><span class="b-avatar">PH</span><span class="b-avatar">IL</span><span class="b-kbd">⌘</span><span class="b-kbd">K</span></div><div class="b-progress" style="--value:62%" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="Fremdrift"><i></i></div></div>' +
         '<div class="b-box"><span class="b-label">Faner</span><div class="b-tabs" role="tablist"><button class="b-tab" role="tab" aria-selected="true" type="button">Brett</button><button class="b-tab" role="tab" aria-selected="false" type="button">Figurer</button><button class="b-tab" role="tab" aria-selected="false" type="button">Regler</button></div><p class="t-small">Fanene er en ramme. Innholdet under er ditt.</p></div>' +
         '<div class="stack"><div class="b-note"><span class="t-h3">Notatlapp</span><p class="t-small" style="margin-top:6px">Til påminnelser, tips og det ene du vil at leseren skal huske.</p></div><div class="b-note b-note--blue" style="--b-tilt:1deg"><span class="t-note">og en blå til info</span></div></div>' +
+        '<div class="b-box"><span class="b-label">Gjøremål</span><ul class="b-checklist">' +
+        '<li class="b-checklist__item"><label class="b-check"><input type="checkbox" id="s-k1" aria-label="Ferdig"><span class="b-check__box"></span></label><a class="b-checklist__title" href="#system">Tegn kartet over myra</a><span class="b-checklist__meta">I dag</span></li>' +
+        '<li class="b-checklist__item"><span class="b-checklist__mark" aria-hidden="true">↻</span><a class="b-checklist__title" href="#system">Vann plantene</a><span class="b-checklist__meta">Mandager</span></li>' +
+        '<li class="b-checklist__item is-done"><label class="b-check"><input type="checkbox" id="s-k2" aria-label="Ferdig" checked><span class="b-check__box"></span></label><a class="b-checklist__title" href="#system">Spiss blyantene</a><span class="b-checklist__meta">I går</span></li>' +
+        '</ul></div>' +
         '<div class="b-box"><span class="b-label">Plassholder</span><div class="b-ph" style="--ratio:16/9"><span>bilde 16:9</span></div></div>' +
         '<div class="b-box"><span class="b-label">Verktøylinje</span>' +
         '<div class="b-toolbar" role="toolbar" aria-label="Verktøy" style="justify-self:start"><button class="b-toolbar__btn" type="button" aria-pressed="true" aria-label="Flytt" title="Flytt"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="flytt"></svg></button><button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Blyant" title="Blyant"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="blyant"></svg></button><button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Tekst" title="Tekst"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="tekst"></svg></button><span class="b-toolbar__sep"></span><button class="b-toolbar__btn b-toolbar__btn--marker" type="button" aria-label="Spør om hjelp" title="Spør om hjelp"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="spor"></svg></button></div>' +
@@ -682,6 +687,9 @@
         '<p class="t-small">Verktøyene på et lerret. Det valgte verktøyet er skyggelagt, og tusjen er den ene viktigste handlingen.</p></div>' +
         "</div></section>";
       host.appendChild(d);
+      Array.prototype.forEach.call(d.querySelectorAll(".b-checklist input"), function (c) {
+        c.addEventListener("change", function () { c.closest(".b-checklist__item").classList.toggle("is-done", c.checked); });
+      });
       // toolbar icons: Blyant.figure in a 64×64 viewBox
       Array.prototype.forEach.call(d.querySelectorAll("svg[data-icon]"), function (sv) {
         B.figure(sv, TOOL_ICONS[sv.getAttribute("data-icon")].map(function (p) { return Object.assign({ width: 3.6 }, p); }), { wobble: 0.7 });
