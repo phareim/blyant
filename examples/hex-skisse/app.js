@@ -42,7 +42,7 @@
         ["presentasjon", "Presentasjon", "16:9-slides med håndtegnede diagrammer."],
         ["grafer", "Grafer", "Linjer, stolper, punkter og nøkkeltall i blyant."],
         ["ruter", "Tegneserieruter", "Fyll en flate med ruter, fra rolig rutenett til skjeve kutt."],
-        ["former", "Former i 2D og 3D", "Rå streker, skravur, fargeblyanter og three.js-laben."],
+        ["former", "Former i 2D og 3D", "Rå streker, skravur, fargeblyanter, three.js-laben og blyanten over et bilde."],
         ["system", "System", "Farger, skrift, avstander og alle komponentene."]].forEach(function (t) {
           var a = document.createElement("a");
           a.className = "thumb";
@@ -552,8 +552,29 @@
     }
   };
 
+  /* En liten pikselscene og lyskartet dens, til Sketch2D-laben. */
+  function pixelScene() {
+    var c = document.createElement("canvas"); c.width = 112; c.height = 64; var g = c.getContext("2d");
+    function r(k, x, y, w, h) { g.fillStyle = k; g.fillRect(x, y, w, h); }
+    r("#bfe0ea", 0, 0, 112, 30); r("#f2cf6b", 84, 5, 10, 10); r("#ffffff", 14, 7, 16, 4); r("#ffffff", 18, 5, 8, 2); r("#ffffff", 52, 11, 14, 3);
+    r("#7fae69", 0, 30, 112, 22); r("#6f9c5c", 0, 30, 112, 2); r("#5b8fb9", 0, 52, 112, 12);
+    for (var i = 0; i < 9; i++) r("#8fb9d8", 4 + i * 12 + (i % 2) * 3, 55 + (i % 3) * 3, 6, 1);
+    r("#e2caa0", 50, 36, 8, 16);
+    r("#b9644f", 28, 14, 36, 4); r("#c97b63", 26, 18, 40, 6); r("#8c4a3a", 26, 24, 40, 1);
+    r("#efe4d0", 29, 25, 34, 13); r("#6b4a3a", 50, 29, 7, 9); r("#8fc7e0", 34, 28, 7, 6); r("#252623", 37, 28, 1, 6); r("#252623", 34, 31, 7, 1);
+    r("#6b4a3a", 85, 28, 4, 12); r("#4f8a54", 76, 12, 22, 18); r("#63a268", 80, 9, 14, 5); r("#3f7446", 76, 24, 22, 6);
+    r("#8a8d86", 12, 40, 9, 6); r("#a8aba3", 13, 40, 6, 2);
+    r("#c4705f", 70, 40, 5, 6); r("#e8c9a8", 71, 36, 3, 4); r("#252623", 70, 46, 2, 2); r("#252623", 73, 46, 2, 2);
+    var l = document.createElement("canvas"); l.width = 112; l.height = 64; var q = l.getContext("2d");
+    var s = q.createRadialGradient(89, 10, 2, 89, 10, 60); s.addColorStop(0, "#ffffff"); s.addColorStop(1, "#b9b9b9"); q.fillStyle = s; q.fillRect(0, 0, 112, 64);
+    q.fillStyle = "rgba(0,0,0,0.55)"; q.fillRect(16, 38, 14, 10); q.fillRect(58, 40, 26, 5); q.fillRect(7, 44, 8, 4);
+    q.fillStyle = "rgba(0,0,0,0.3)"; q.fillRect(29, 25, 34, 13); q.fillRect(76, 24, 22, 6);
+    return { src: c, light: l };
+  }
+
   /* ---------- Former (2D + 3D lab) ---------- */
   var lab = null;
+  var lab2 = null;
   VIEWS.former = {
     title: "Former",
     render: function (host, o) {
@@ -572,6 +593,14 @@
         '<label class="range"><span><span>Skravur-avstand</span><b class="b-mono" id="hg-v">5.5</b></span><input type="range" id="hg" min="3" max="10" step="0.5" value="5.5"></label>' +
         '<label class="b-switch"><input type="checkbox" id="lab-boil"><span class="b-switch__track"></span><span>Kokende strek</span></label>' +
         '<label class="b-switch"><input type="checkbox" id="lab-spin" checked><span class="b-switch__track"></span><span>Roter</span></label>' +
+        "</aside></section>" +
+        '<section class="lab"><div class="lab__stage b-box" data-ink="box" style="padding:0"><div class="stage__canvas" id="lab2-canvas" style="display:grid;place-items:center;overflow:hidden"></div></div>' +
+        '<aside class="side"><div class="sec-head"><span class="b-label">2D · Blyant.Sketch2D</span><h2>Blyanten over et bilde</h2><p>Et ferdig lerret, her pikselkunst på 112 × 64, blir kontur, skravur og fargeblyant. Lyskartet ved siden av blir skravur.</p></div>' +
+        '<label class="range"><span><span>Strektykkelse</span><b class="b-mono" id="l2w-v">1.1</b></span><input type="range" id="l2w" min="0.6" max="2.4" step="0.1" value="1.1"></label>' +
+        '<label class="range"><span><span>Detalj</span><b class="b-mono" id="l2d-v">0.55</b></span><input type="range" id="l2d" min="0" max="1" step="0.05" value="0.55"></label>' +
+        '<label class="range"><span><span>Fargeblyant</span><b class="b-mono" id="l2c-v">1</b></span><input type="range" id="l2c" min="0" max="1" step="0.05" value="1"></label>' +
+        '<label class="b-switch"><input type="checkbox" id="l2-grid" checked><span class="b-switch__track"></span><span>Rutepapir</span></label>' +
+        '<label class="b-switch"><input type="checkbox" id="l2-light" checked><span class="b-switch__track"></span><span>Lyskart</span></label>' +
         "</aside></section>" +
         '<section class="two blender"><div class="stack"><span class="b-label">Fra Blender</span><h2>Egne modeller</h2><ol><li>Modeller i Blender med enkle, flate flater. Rundinger blir glatte konturer.</li><li>Fil → Eksporter → glTF 2.0 (.glb). Ta med normaler.</li><li>Last inn med <code>THREE.GLTFLoader</code> og bytt materialene til <code>sketch.mat(…)</code>.</li><li>Navngi materialer i Blender etter tokens, for eksempel <code>dust-red</code>, så kan de mappes automatisk.</li></ol></div>' +
         '<pre><code>const sketch = new Blyant.Sketch3D(el);\nnew THREE.GLTFLoader().load("hytte.glb", g =&gt; {\n  g.scene.traverse(o =&gt; {\n    if (!o.isMesh) return;\n    const name = o.material.name;          // "dust-red"\n    o.material = sketch.mat(name ? "--" + name : "#fff");\n  });\n  sketch.add(g.scene);\n  sketch.start();\n});</code></pre></section>');
@@ -636,8 +665,25 @@
       d.querySelector("#hg").addEventListener("input", function (e) { sk.set({ hatchGap: +e.target.value }); d.querySelector("#hg-v").textContent = e.target.value; });
       d.querySelector("#lab-boil").addEventListener("change", function (e) { sk.set({ boil: e.target.checked }); });
       d.querySelector("#lab-spin").addEventListener("change", function (e) { spin = e.target.checked; });
+      // 2D lab: the pencil over a small pixel scene
+      var holder2 = d.querySelector("#lab2-canvas");
+      if (lab2) lab2.dispose();
+      var sc = pixelScene(), useLight = true;
+      var pencil = lab2 = new B.Sketch2D({ grid: 16, pixelRatio: 1, exposure: 1.4 });
+      pencil.canvas.style.objectFit = "contain";   // lerretet fyller rammen uten å strekkes
+      holder2.appendChild(pencil.canvas);
+      function sketch2() { pencil.render(sc.src, { pixel: 5, light: useLight ? sc.light : null }); }
+      sketch2();
+      [["l2w", "lineWidth"], ["l2d", "detail"], ["l2c", "colour"]].forEach(function (pair) {
+        d.querySelector("#" + pair[0]).addEventListener("input", function (e) {
+          var patch = {}; patch[pair[1]] = +e.target.value; pencil.set(patch); sketch2();
+          d.querySelector("#" + pair[0] + "-v").textContent = e.target.value;
+        });
+      });
+      d.querySelector("#l2-grid").addEventListener("change", function (e) { pencil.set({ grid: e.target.checked ? 16 : 0 }); sketch2(); });
+      d.querySelector("#l2-light").addEventListener("change", function (e) { useLight = e.target.checked; sketch2(); });
     },
-    leave: function () { if (lab) { lab.dispose(); lab = null; } }
+    leave: function () { if (lab) { lab.dispose(); lab = null; } if (lab2) { lab2.dispose(); lab2 = null; } }
   };
 
   /* ---------- System ---------- */
