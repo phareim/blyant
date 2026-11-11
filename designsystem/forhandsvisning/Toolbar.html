@@ -1,0 +1,51 @@
+<!-- @dsCard group="Handlinger" height=240 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Toolbar</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div style="display:flex;gap:24px;align-items:flex-start">
+<div style="display:grid;gap:14px;justify-items:start">
+<div class="b-toolbar" role="toolbar" aria-label="Verktøy">
+  <button class="b-toolbar__btn" type="button" aria-pressed="true" aria-label="Flytt" title="Flytt"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="flytt"></svg></button>
+  <button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Blyant" title="Blyant"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="blyant"></svg></button>
+  <button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Tekst" title="Tekst"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="tekst"></svg></button>
+  <button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Viskelær" title="Viskelær"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="visk"></svg></button>
+  <span class="b-toolbar__sep"></span>
+  <button class="b-toolbar__btn" type="button" aria-label="Angre" title="Angre" disabled><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="angre"></svg></button>
+  <button class="b-toolbar__btn b-toolbar__btn--marker is-busy" type="button" aria-busy="true" aria-label="Spør om hjelp" title="Spør om hjelp"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="spor"></svg></button>
+</div>
+<div class="b-toolbar b-toolbar--compact" role="toolbar" aria-label="Blyant">
+  <button class="b-toolbar__swatch" type="button" style="--b-swatch: var(--ink)" aria-pressed="true" aria-label="Grafitt" title="Grafitt"></button>
+  <button class="b-toolbar__swatch" type="button" style="--b-swatch: var(--dust-red)" aria-pressed="false" aria-label="Rød" title="Rød"></button>
+  <button class="b-toolbar__swatch" type="button" style="--b-swatch: var(--dust-blue)" aria-pressed="false" aria-label="Blå" title="Blå"></button>
+  <button class="b-toolbar__swatch" type="button" style="--b-swatch: var(--dust-green)" aria-pressed="false" aria-label="Grønn" title="Grønn"></button>
+  <span class="b-toolbar__sep"></span>
+  <button class="b-toolbar__size" type="button" style="--b-size: 3px" aria-pressed="false" aria-label="Tynn" title="Tynn"></button>
+  <button class="b-toolbar__size" type="button" style="--b-size: 6px" aria-pressed="true" aria-label="Middels" title="Middels"></button>
+  <button class="b-toolbar__size" type="button" style="--b-size: 10px" aria-pressed="false" aria-label="Tykk" title="Tykk"></button>
+  <span class="b-toolbar__sep"></span>
+  <button class="b-toolbar__text" type="button" aria-pressed="true" aria-label="Overskrift" title="Overskrift">Aa</button>
+</div>
+</div>
+<div class="b-toolbar b-toolbar--vertical" role="toolbar" aria-label="Verktøy, loddrett">
+  <button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Flytt" title="Flytt"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="flytt"></svg></button>
+  <button class="b-toolbar__btn" type="button" aria-pressed="true" aria-label="Blyant" title="Blyant"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="blyant"></svg></button>
+  <span class="b-toolbar__sep"></span>
+  <button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Lapp" title="Lapp"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="lapp"></svg></button>
+</div>
+</div>
+<script>
+var ICONS = {
+  flytt: [{ type: "poly", points: [[20, 10], [20, 50], [30, 41], [38, 56], [45, 52], [37, 38], [50, 37]] }],
+  blyant: [{ type: "poly", points: [[16, 46], [44, 18], [51, 25], [23, 53]] }, { type: "poly", points: [[16, 46], [23, 53], [11, 57]] }, { type: "line", x1: 39, y1: 23, x2: 46, y2: 30, width: 2.6 }],
+  tekst: [{ type: "line", x1: 15, y1: 15, x2: 49, y2: 14 }, { type: "line", x1: 32, y1: 15, x2: 32, y2: 52 }, { type: "line", x1: 25, y1: 52, x2: 39, y2: 52, width: 2.6 }],
+  visk: [{ type: "poly", points: [[10, 40], [33, 17], [53, 37], [30, 60]] }, { type: "line", x1: 21, y1: 29, x2: 41, y2: 49, width: 2.6 }],
+  angre: [{ type: "arrow", x1: 50, y1: 46, x2: 14, y2: 26, bend: 0.35 }],
+  spor: [{ type: "poly", points: [[10, 14], [54, 14], [54, 42], [30, 42], [19, 53], [21, 42], [10, 42]] }, { type: "curve", points: [[26, 24], [30, 20], [36, 21], [37, 26], [32, 30]], width: 3 }],
+  lapp: [{ type: "poly", points: [[13, 14], [51, 13], [51, 43], [41, 52], [13, 52]] }, { type: "poly", points: [[51, 43], [41, 43], [41, 52]], closed: false, width: 2.6 }]
+};
+Array.prototype.forEach.call(document.querySelectorAll("svg[data-icon]"), function (s) { Blyant.figure(s, ICONS[s.getAttribute("data-icon")].map(function (p) { return Object.assign({ width: 3.6 }, p); }), { wobble: 0.7 }); });
+Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});
+</script>
+</body>
+</html>

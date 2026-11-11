@@ -17,8 +17,8 @@
   },
   "lastChange": {
     "by": "Claude",
-    "at": "2026-11-10T15:00:00Z",
+    "at": "2026-11-11T12:00:00Z",
     "via": "Claude Code",
-    "note": "Nye: Menu, Toast og Editor. Entries har en kompakt variant, og Field har et linjefelt uten boks."
+    "note": "Ny: Toolbar, en palett med verktøy for lerret og tavle. Blyantkornet vises nå også i Safari og på iPhone: filteret følger hver strek i stedet for å dekke 8000 px."
   }
 }

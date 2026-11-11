@@ -835,7 +835,7 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-empty--center { flex-direction: column; text-align: center; padding: var(--space-8) 0; }
 .b-empty--center .b-empty__body { flex: none; justify-items: center; }
 
-/* ---------- 9. Apps (menus, messages, a surface to write on) ------------- */
+/* ---------- 9. Apps (menus, messages, tools, a surface to write on) ------ */
 
 /* Menu: a small slip with choices. Command palette, autocomplete, settings. */
 .b-menu { position: relative; display: grid; gap: 2px; min-width: 12em; margin: 0; padding: var(--space-2); list-style: none; font-family: var(--b-body); font-size: 20px; line-height: 1.25; color: var(--ink); background: var(--paper); border: var(--b-border) solid var(--b-border-c); border-radius: var(--b-radius-sm); box-shadow: var(--shadow-lift); }
@@ -858,6 +858,45 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-toast__action { margin: 0; padding: 0; font: inherit; color: var(--ink); background: none; border: 0; cursor: pointer; text-decoration: underline solid var(--graphite-300) 1.5px; text-underline-offset: 4px; }
 .b-toast__action:hover { text-decoration-color: var(--ink); }
 .b-toast__action:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
+
+/* Toolbar: a small floating palette of icon buttons, for tools on a canvas or a board. The app places it.
+   Icons are Blyant.figure drawings in a 64×64 viewBox; the chosen tool has aria-pressed="true". */
+.b-toolbar { --b-toolbar-btn: 44px; --b-toolbar-icon: 26px; position: relative; display: inline-flex; align-items: center; gap: 2px; padding: 4px; box-sizing: border-box; color: var(--ink); background: var(--paper); border: var(--b-border) solid var(--b-border-c); border-radius: var(--b-radius-sm); box-shadow: var(--shadow-lift); font-family: var(--b-body); -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.b-toolbar--vertical { flex-direction: column; }
+.b-toolbar--compact { --b-toolbar-btn: 30px; --b-toolbar-icon: 22px; gap: 1px; padding: 3px; }
+.b-toolbar__btn, .b-toolbar__swatch, .b-toolbar__size, .b-toolbar__text { position: relative; display: inline-grid; place-items: center; flex: none; width: var(--b-toolbar-btn); height: var(--b-toolbar-btn); margin: 0; padding: 0; color: inherit; font: inherit; background: transparent; border: 0; border-radius: var(--b-radius-sm); cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.b-toolbar--compact .b-toolbar__btn { height: calc(var(--b-toolbar-btn) + 10px); }
+.b-toolbar__btn svg { width: var(--b-toolbar-icon); height: var(--b-toolbar-icon); overflow: visible; }
+.b-toolbar__btn svg path { stroke-linecap: round; stroke-linejoin: round; }
+.b-toolbar__btn svg path:not([fill]) { fill: none; }   /* hand-written paths; Blyant.figure sets its own fill */
+@media (hover: hover) {
+  .b-toolbar__btn:hover:not([disabled]), .b-toolbar__swatch:hover, .b-toolbar__size:hover, .b-toolbar__text:hover { background: var(--paper-2); }
+}
+.b-toolbar__btn[aria-pressed="true"], .b-toolbar__size[aria-pressed="true"], .b-toolbar__text[aria-pressed="true"] { background: var(--paper-3); }
+.b-toolbar__btn:active:not([disabled]) { transform: translate(0.5px, 1px); }
+.b-toolbar__btn[disabled] { opacity: .32; cursor: default; }
+.b-toolbar__btn:focus-visible, .b-toolbar__swatch:focus-visible, .b-toolbar__size:focus-visible, .b-toolbar__text:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 1px; }
+/* The one action that matters most: on marker, at most one per toolbar. */
+.b-toolbar__btn--marker, .b-toolbar__btn--marker[aria-pressed="true"] { color: var(--on-marker); background: var(--marker); }
+@media (hover: hover) { .b-toolbar__btn--marker:hover:not([disabled]) { background: var(--marker); filter: brightness(1.04); } }
+.b-toolbar__sep { flex: none; align-self: stretch; width: var(--b-border); margin: 6px 3px; background: var(--line-faint); }
+.b-toolbar--vertical .b-toolbar__sep { width: auto; height: var(--b-border); margin: 3px 6px; }
+.b-toolbar--compact .b-toolbar__sep { margin: 7px 2px; }
+.b-toolbar--compact.b-toolbar--vertical .b-toolbar__sep { margin: 2px 7px; }
+/* Colour swatches: a pencil-coloured dot, ringed when chosen. */
+.b-toolbar__swatch::after { content: ""; width: 46%; height: 46%; border-radius: 50%; background: var(--b-swatch, var(--ink)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--line) 35%, transparent); }
+.b-toolbar__swatch[aria-pressed="true"]::after { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.6px var(--ink); }
+/* Thicknesses: a dot of the size it draws. */
+.b-toolbar__size::after { content: ""; width: var(--b-size, 4px); height: var(--b-size, 4px); border-radius: 50%; background: var(--ink); }
+/* Text choices (h1, h2, body): the letters in the size they set. */
+.b-toolbar__text { width: auto; min-width: var(--b-toolbar-btn); padding: 0 8px; font-family: var(--b-display); font-size: 22px; line-height: 1; }
+/* A quiet pencil scribble while something is working. */
+.b-toolbar__btn.is-busy svg path { stroke-dasharray: 18 10; animation: b-toolbar-scribble .9s linear infinite; }
+@keyframes b-toolbar-scribble { to { stroke-dashoffset: -56; } }
+@media (prefers-reduced-motion: reduce) {
+  .b-toolbar__btn.is-busy svg path { animation: none; stroke-dasharray: none; }
+  .b-toolbar__btn:active:not([disabled]) { transform: none; }
+}
 
 /* Editor: the surface you write on. Put it on a textarea, a contenteditable or the content node of a code editor.
    The parts are for editors that style Markdown in place, line by line. */

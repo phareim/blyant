@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Editor"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Editor"},{"name":"Toolbar"}]} */
 /* Blyant — hand-drawn pencil design system. Vanilla JS, no dependencies.
    Sketch3D needs window.THREE (three.js r147 UMD) loaded first.          */
 (function () {
@@ -189,9 +189,10 @@
     var s = el("svg", Object.assign({ viewBox: "0 0 " + w + " " + h, width: w, height: h }, attrs || {}), parent);
     return s;
   };
-  /** Draw a path on an svg. style: {stroke, width, fill, opacity, fillOpacity, dash} */
+  /** Draw a path on an svg. style: {stroke, width, fill, opacity, fillOpacity, dash, grain} */
   B.draw = function (svg, d, style) {
     style = style || {};
+    var box = style.grain === false ? null : pathBox(d);
     return el("path", {
       d: d,
       fill: style.fill || "none",
@@ -202,8 +203,17 @@
       "stroke-linejoin": "round",
       "stroke-dasharray": style.dash,
       opacity: style.opacity,
-      filter: style.grain === false ? null : B.grainFilter(svg)
+      filter: box ? B.grainFilter(svg, box, style.stroke === "none" ? 0 : +(style.width || 1.6)) : null
     }, svg);
+  };
+  /** Like draw, but a path too large for one grain region is drawn as one <path> per subpath, so it keeps its grain. */
+  B.drawParts = function (svg, d, style) {
+    var p = B.draw(svg, d, style);
+    if (p.hasAttribute("filter") || (style && style.grain === false) || typeof document === "undefined") return [p];
+    var parts = String(d).split(/(?=[Mm])/);
+    if (parts.length < 2 || parts.slice(1).some(function (s) { return s.charAt(0) === "m"; })) return [p];
+    svg.removeChild(p);
+    return parts.map(function (s) { return B.draw(svg, s, style); });
   };
   // CSS variables are not valid in every browser's SVG presentation attributes: move them to style.
   var _el = el;
@@ -216,23 +226,110 @@
     return e;
   };
 
-  // A graphite-grain filter, defined once per document.
-  var grainId = null;
-  B.grainFilter = function () {
-    if (typeof document === "undefined") return null;
-    if (!grainId) {
-      grainId = "b-graphite";
-      if (!document.getElementById(grainId)) {
-        var s = el("svg", { width: 0, height: 0, "aria-hidden": "true", style: "position:absolute;width:0;height:0;overflow:hidden" });
-        s.innerHTML = '<defs><filter id="' + grainId + '" filterUnits="userSpaceOnUse" x="-3000" y="-3000" width="8000" height="8000">' +
-          '<feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>' +
-          '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.5 1.35" result="m"/>' +
-          '<feComposite in="SourceGraphic" in2="m" operator="in"/></filter></defs>';
+  /* Graphite grain: an SVG filter that eats specks out of a stroke.
+     WebKit (Safari, every browser on iPhone) refuses a filter region larger than 4096 × 4096 device
+     pixels and then draws nothing at all, so the region must follow the path, not cover the world.
+     Each path gets a region around its own bounding box, snapped to a coarse grid so that thousands
+     of paths share a handful of filters. A path too large for the budget at 3× is drawn without grain. */
+  var GRAIN_AREA = 4096 * 4096 * 0.94;   // WebKit's cap, in device pixels, with a little room
+  var grainDefs = null, grainMade = {};
+  function grainDef(id, x, y, w, h) {
+    if (!grainDefs || !grainDefs.isConnected) {
+      var old = document.getElementById("b-graphite-defs");
+      if (old) grainDefs = old;
+      else {
+        var s = el("svg", { id: "b-graphite-defs", width: 0, height: 0, "aria-hidden": "true", focusable: "false", style: "position:absolute;width:0;height:0;overflow:hidden" });
+        grainDefs = el("defs", {}, s);
         (document.body || document.documentElement).appendChild(s);
       }
+      grainMade = {};
     }
-    return "url(#" + grainId + ")";
+    if (grainMade[id] || document.getElementById(id)) return (grainMade[id] = 1);
+    var fl = el("filter", { id: id, filterUnits: "userSpaceOnUse", x: x, y: y, width: w, height: h }, grainDefs);
+    fl.innerHTML = '<feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>' +
+      '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.5 1.35" result="m"/>' +
+      '<feComposite in="SourceGraphic" in2="m" operator="in"/>';
+    grainMade[id] = 1;
+  }
+  // Region edges snap to an 8th of the next power of two (at least 32 units), so near sizes share a filter.
+  function grainStep(n) { return Math.max(32, Math.pow(2, Math.ceil(Math.log(Math.max(n, 1)) / Math.LN2) - 3)); }
+  function grainNum(n) { return (n < 0 ? "m" : "") + Math.abs(n); }
+  /** The grain filter for a box in the svg's user units ({x, y, w, h}, stroke width sw), as "url(#…)",
+      or null when the box is too large to grain safely. Without a box: a region from the svg's viewBox. */
+  B.grainFilter = function (svg, box, sw) {
+    if (typeof document === "undefined") return null;
+    if (!box) {
+      var vb = svg && svg.viewBox && svg.viewBox.baseVal;
+      if (vb && vb.width && vb.height) box = { x: vb.x, y: vb.y, w: vb.width, h: vb.height };
+      else { grainDef("b-graphite", -40, -40, 1300, 1300); return "url(#b-graphite)"; }   // the old id, at a size WebKit draws
+    }
+    var pad = (sw || 0) + 3, gx = grainStep(box.w + pad * 2), gy = grainStep(box.h + pad * 2);
+    var x = Math.floor((box.x - pad) / gx) * gx, y = Math.floor((box.y - pad) / gy) * gy;
+    var w = Math.ceil((box.x + box.w + pad) / gx) * gx - x, h = Math.ceil((box.y + box.h + pad) / gy) * gy - y;
+    var k = Math.max(typeof window !== "undefined" && window.devicePixelRatio || 1, 3);
+    if (!(w * h * k * k <= GRAIN_AREA)) return null;
+    var id = "b-graphite-" + grainNum(x) + "_" + grainNum(y) + "_" + w + "_" + h;
+    grainDef(id, x, y, w, h);
+    return "url(#" + id + ")";
   };
+
+  /* Bounding box of SVG path data, control points included (a safe superset), or null if it can't be read. */
+  var NUM_RE = /[\s,]*([-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)/y, FLAG_RE = /[\s,]*([01])/y, CMD_RE = /[\s,]*([MmLlHhVvCcSsQqTtAaZz])/y;
+  var ARGS = { m: 2, l: 2, h: 1, v: 1, c: 6, s: 4, q: 4, t: 2, a: 7, z: 0 };
+  function pathBox(d) {
+    d = String(d || "");
+    var p = 0, cmd = "", x = 0, y = 0, sx = 0, sy = 0, qx = 0, qy = 0, last = "";
+    var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    function add(px, py) { if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py; }
+    function read(re) { re.lastIndex = p; var m = re.exec(d); if (!m) return null; p = re.lastIndex; return m[1]; }
+    while (p < d.length) {
+      if (/^[\s,]*$/.test(d.slice(p))) break;
+      var c = read(CMD_RE);
+      if (c) cmd = c; else if (!cmd || cmd === "z" || cmd === "Z") return null;
+      var lc = cmd.toLowerCase(), rel = cmd === lc, a = [];
+      for (var i = 0; i < ARGS[lc]; i++) {
+        var v = read(lc === "a" && (i === 3 || i === 4) ? FLAG_RE : NUM_RE);
+        if (v === null) return null;
+        a.push(+v);
+      }
+      var ox = rel ? x : 0, oy = rel ? y : 0, prev = last;
+      last = lc;
+      if (lc === "z") { x = sx; y = sy; continue; }
+      // s and t reflect the previous control point; remember the last one in (qx, qy)
+      if (lc === "s" || lc === "t") {
+        var smooth = lc === "s" ? prev === "c" || prev === "s" : prev === "q" || prev === "t";
+        var rx = smooth ? 2 * x - qx : x, ry = smooth ? 2 * y - qy : y;
+        add(rx, ry);
+        if (lc === "t") { qx = rx; qy = ry; }
+      }
+      if (lc === "h") x = ox + a[0];
+      else if (lc === "v") y = oy + a[0];
+      else if (lc === "a") { arcBox(x, y, a, ox + a[5], oy + a[6], add); x = ox + a[5]; y = oy + a[6]; }
+      else {
+        for (var j = 0; j < a.length; j += 2) add(ox + a[j], oy + a[j + 1]);
+        if (lc === "c" || lc === "s" || lc === "q") { qx = ox + a[a.length - 4]; qy = oy + a[a.length - 3]; }
+        x = ox + a[a.length - 2]; y = oy + a[a.length - 1];
+      }
+      add(x, y);
+      if (lc === "m") { sx = x; sy = y; cmd = rel ? "l" : "L"; }
+    }
+    return x0 <= x1 ? { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } : null;
+  }
+  // The whole ellipse an arc lies on (SVG arc endpoint → centre conversion).
+  function arcBox(px, py, a, ex, ey, add) {
+    var rx = Math.abs(a[0]), ry = Math.abs(a[1]), phi = a[2] * Math.PI / 180, co = Math.cos(phi), si = Math.sin(phi);
+    if (!rx || !ry) return;
+    var dx = (px - ex) / 2, dy = (py - ey) / 2, xp = co * dx + si * dy, yp = -si * dx + co * dy;
+    var lam = xp * xp / (rx * rx) + yp * yp / (ry * ry);
+    if (lam > 1) { rx *= Math.sqrt(lam); ry *= Math.sqrt(lam); }
+    var den = rx * rx * yp * yp + ry * ry * xp * xp;
+    var q = den ? Math.sqrt(Math.max(0, (rx * rx * ry * ry - den) / den)) * (a[3] === a[4] ? -1 : 1) : 0;
+    var cx = co * (q * rx * yp / ry) - si * (-q * ry * xp / rx) + (px + ex) / 2;
+    var cy = si * (q * rx * yp / ry) + co * (-q * ry * xp / rx) + (py + ey) / 2;
+    var hx = Math.sqrt(rx * rx * co * co + ry * ry * si * si), hy = Math.sqrt(rx * rx * si * si + ry * ry * co * co);
+    add(cx - hx, cy - hy); add(cx + hx, cy + hy);
+  }
+  B.pathBox = pathBox;
 
   function cssNum(node, name, fallback) {
     var v = parseFloat(getComputedStyle(node).getPropertyValue(name));
@@ -256,6 +353,7 @@
     [".b-slide", "box"],
     [".b-menu", "box"],
     [".b-toast", "box-sm"],
+    [".b-toolbar", "box"],
     [".b-tab[aria-selected='true']", "tab"],
     ["[data-ink]", null]
   ];
@@ -301,8 +399,8 @@
     else if (shape === "tab") d = poly([[0, h + 1], [0, 2], [w, 2], [w, h + 1]], false, o);
     else d = rect(i, i, w - i * 2, h - i * 2, o);
     svg.innerHTML = "";
-    B.draw(svg, d, { width: sw });
-    if (extra) B.draw(svg, extra, { width: 1, opacity: 0.6 });
+    B.drawParts(svg, d, { width: sw });
+    if (extra) B.drawParts(svg, extra, { width: 1, opacity: 0.6 });
     node.classList.add("is-inked");
   }
 
@@ -363,7 +461,7 @@
           : s.points ? poly(s.points, true, { wobble: 0 }) : null;
         if (flat) B.draw(svg, flat, { stroke: "none", fill: s.fill, fillOpacity: s.fillOpacity != null ? s.fillOpacity : 0.55 });
       }
-      B.draw(svg, d, { stroke: s.stroke, width: s.width || (s.type === "hatch" ? 1 : 1.7), opacity: s.opacity });
+      B.drawParts(svg, d, { stroke: s.stroke, width: s.width || (s.type === "hatch" ? 1 : 1.7), opacity: s.opacity });
     });
     return svg;
   };
@@ -1736,7 +1834,7 @@
       pn.el = node; pn.body = body2;
       // the pencil frame
       var svg = self._ink[pn.pop ? 1 : 0];
-      B.draw(svg, R.poly(pn.points, true, { seed: o.seed * 131 + i * 17 + 5, wobble: wob }), { width: pn.pop ? 2.1 : 1.8, stroke: "var(--b-frame-line, var(--line))" });
+      B.drawParts(svg, R.poly(pn.points, true, { seed: o.seed * 131 + i * 17 + 5, wobble: wob }), { width: pn.pop ? 2.1 : 1.8, stroke: "var(--b-frame-line, var(--line))" });
       if (o.numbers) {
         var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
         t.setAttribute("class", "b-frames__num");

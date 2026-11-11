@@ -239,7 +239,7 @@
       pn.el = node; pn.body = body2;
       // the pencil frame
       var svg = self._ink[pn.pop ? 1 : 0];
-      B.draw(svg, R.poly(pn.points, true, { seed: o.seed * 131 + i * 17 + 5, wobble: wob }), { width: pn.pop ? 2.1 : 1.8, stroke: "var(--b-frame-line, var(--line))" });
+      B.drawParts(svg, R.poly(pn.points, true, { seed: o.seed * 131 + i * 17 + 5, wobble: wob }), { width: pn.pop ? 2.1 : 1.8, stroke: "var(--b-frame-line, var(--line))" });
       if (o.numbers) {
         var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
         t.setAttribute("class", "b-frames__num");

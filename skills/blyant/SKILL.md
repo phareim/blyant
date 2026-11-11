@@ -17,7 +17,7 @@ Blyant er standard-designsystemet. Det gjelder alt som skal ses: nettsider, appe
 
 Uten `~/github/blyant` på maskinen (for eksempel i en sky-økt eller på en annen maskin): klon `https://github.com/phareim/blyant`, eller les de samme filene på GitHub.
 
-Komponentene er Button, Field, Check, Box, Note, Tag, Marker, Nav, Tabs, Table, Placeholder, Slide, Rough, Sketch3D, HexBoard, LineChart, BarChart, ScatterChart, Segments, Stat, Frames, Prose, Sidenote, Entries, Empty, Menu, Toast og Editor. Lista i `@ds-bundle`-linja øverst i `~/github/blyant/src/blyant.js` er alltid den riktige.
+Komponentene er Button, Field, Check, Box, Note, Tag, Marker, Nav, Tabs, Table, Placeholder, Slide, Rough, Sketch3D, HexBoard, LineChart, BarChart, ScatterChart, Segments, Stat, Frames, Prose, Sidenote, Entries, Empty, Menu, Toast, Editor og Toolbar. Lista i `@ds-bundle`-linja øverst i `~/github/blyant/src/blyant.js` er alltid den riktige.
 
 ## Ta det inn
 
