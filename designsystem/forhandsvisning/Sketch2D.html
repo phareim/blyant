@@ -1,0 +1,38 @@
+<!-- @dsCard group="Tegning" height=340 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Sketch2D</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap">
+  <figure style="margin:0"><div id="kilde"></div><figcaption class="b-label" style="margin-top:6px">Kilden, 112 × 64</figcaption></figure>
+  <figure style="margin:0;flex:1;min-width:280px"><div class="b-canvas" id="s2" style="height:260px;display:grid;place-items:center;overflow:hidden"></div><figcaption class="b-label" style="margin-top:6px">Blyant.Sketch2D</figcaption></figure>
+</div>
+<script>
+function blyantScene(){var c=document.createElement("canvas");c.width=112;c.height=64;var g=c.getContext("2d");
+function r(k,x,y,w,h){g.fillStyle=k;g.fillRect(x,y,w,h);}
+r("#bfe0ea",0,0,112,30);r("#f2cf6b",84,5,10,10);r("#ffffff",14,7,16,4);r("#ffffff",18,5,8,2);r("#ffffff",52,11,14,3);
+r("#7fae69",0,30,112,22);r("#6f9c5c",0,30,112,2);r("#5b8fb9",0,52,112,12);
+for(var i=0;i<9;i++)r("#8fb9d8",4+i*12+(i%2)*3,55+(i%3)*3,6,1);
+r("#e2caa0",50,36,8,16);
+r("#b9644f",28,14,36,4);r("#c97b63",26,18,40,6);r("#8c4a3a",26,24,40,1);
+r("#efe4d0",29,25,34,13);r("#6b4a3a",50,29,7,9);r("#8fc7e0",34,28,7,6);r("#252623",37,28,1,6);r("#252623",34,31,7,1);
+r("#6b4a3a",85,28,4,12);r("#4f8a54",76,12,22,18);r("#63a268",80,9,14,5);r("#3f7446",76,24,22,6);
+r("#8a8d86",12,40,9,6);r("#a8aba3",13,40,6,2);
+r("#c4705f",70,40,5,6);r("#e8c9a8",71,36,3,4);r("#252623",70,46,2,2);r("#252623",73,46,2,2);
+var l=document.createElement("canvas");l.width=112;l.height=64;var q=l.getContext("2d");
+q.fillStyle="#ffffff";q.fillRect(0,0,112,64);
+var s=q.createRadialGradient(89,10,2,89,10,60);s.addColorStop(0,"#ffffff");s.addColorStop(1,"#b9b9b9");q.fillStyle=s;q.fillRect(0,0,112,64);
+q.fillStyle="rgba(0,0,0,0.55)";q.fillRect(16,38,14,10);q.fillRect(58,40,26,5);q.fillRect(7,44,8,4);
+q.fillStyle="rgba(0,0,0,0.3)";q.fillRect(29,25,34,13);q.fillRect(76,24,22,6);
+return{src:c,light:l};}
+var sc = blyantScene();
+sc.src.style.cssText = "width:168px;height:96px;image-rendering:pixelated;display:block";
+document.getElementById("kilde").appendChild(sc.src);
+var pencil = new Blyant.Sketch2D({ grid: 16, pixelRatio: 1, exposure: 1.4 });
+pencil.canvas.style.cssText = "max-width:100%;height:auto;display:block";
+document.getElementById("s2").appendChild(pencil.canvas);
+function tegn(){ pencil.render(sc.src, { pixel: 4, light: sc.light }); }
+tegn();
+</script><script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>

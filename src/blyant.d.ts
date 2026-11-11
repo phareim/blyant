@@ -68,6 +68,56 @@ export interface Sketch3DProps {
   camera?: "perspective" | "ortho"; fov?: number; lineWidth?: number; hatch?: boolean; hatchGap?: number;
   grain?: boolean; boil?: boolean; wobble?: number; pixelRatio?: number;
 }
+/** new Blyant.Sketch2D(options) — the pencil over a finished picture (a game canvas, pixel art, a photo). Plain WebGL. */
+export interface Sketch2DProps {
+  /** Draw into this canvas instead of a new one. */
+  canvas?: HTMLCanvasElement;
+  lineWidth?: number; hatch?: boolean; hatchGap?: number; grain?: boolean; boil?: boolean; wobble?: number; pixelRatio?: number;
+  /** 0–1: how small a difference between two colours still gets a line. */
+  detail?: number;
+  /** 0–1: how much coloured pencil (0 is graphite only). */
+  colour?: number;
+  /** 0–2: how hard the pencil presses. */
+  shade?: number;
+  /** Lifts a dark picture before the pencil reads it (2 suits night scenes). */
+  exposure?: number;
+  /** Squared paper: one square per this many source pixels (0: none). */
+  grid?: number;
+  /** Sample the source smoothly (photos) instead of pixel by pixel (pixel art). */
+  smooth?: boolean;
+  /** A token ("--paper"), a hex or a CSS colour; default Blyant's own. */
+  paper?: string | null; ink?: string | null; faint?: string | null;
+  /** Keep the drawing buffer (for toDataURL). */
+  preserve?: boolean;
+  /** The element the tokens are read from (default the document). */
+  node?: Element | null;
+}
+export type Sketch2DSource = HTMLCanvasElement | HTMLImageElement | HTMLVideoElement | ImageBitmap | ImageData;
+export interface Sketch2DFrame {
+  /** Screen pixels per source pixel (default 1; 3–5 for pixel art). */
+  pixel?: number;
+  /** Size of the sketch in screen pixels (default the source's size × pixel). */
+  width?: number; height?: number;
+  /** A second picture, the size of the source: bright where light falls. Becomes hatching. */
+  light?: Sketch2DSource;
+  /** The brightness (0–1) in `light` that counts as plain light (default 1). */
+  lightRef?: number;
+  /** Where the picture lies in a larger world, in source pixels: lines stand still while the camera moves. */
+  origin?: [number, number];
+  /** 0 is the source as it is, 1 the sketch (default 1). */
+  mix?: number;
+  /** Seconds; only used when `boil` is on. */
+  time?: number;
+}
+export interface Sketch2DHandle {
+  canvas: HTMLCanvasElement;
+  /** False without WebGL: the picture is then laid lightly on the sheet instead. */
+  ok: boolean;
+  render(source: Sketch2DSource, frame?: Sketch2DFrame): HTMLCanvasElement;
+  set(patch: Sketch2DProps): Sketch2DHandle;
+  refreshTheme(): void;
+  dispose(): void;
+}
 /** new Blyant.HexBoard(container, options) — a hex world with a hopping figure, built on Sketch3D. */
 export interface HexBoardProps {
   radius?: number; seed?: number; gems?: number; size?: number; interactive?: boolean;
@@ -113,6 +163,7 @@ export interface BlyantGlobal {
     path(a: [number, number], b: [number, number], ok: (q: number, r: number) => boolean): [number, number][] | null;
   };
   Sketch3D: new (container: HTMLElement, options?: Sketch3DProps) => any;
+  Sketch2D: new (options?: Sketch2DProps) => Sketch2DHandle;
   HexBoard: new (container: HTMLElement, options?: HexBoardProps) => any;
 }
 export interface ChartSeries { name: string; values: (number | null)[]; color?: string; }

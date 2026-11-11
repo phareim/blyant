@@ -103,6 +103,26 @@ sketch.start((dt) => { box.rotation.y += dt; });
 
 `Blyant.HexBoard` er en ferdig hex-verden bygget på Sketch3D: terreng, trær, steiner, vann, seks fargesteiner og en figur som hopper. Piltaster snur og hopper, Q E A D Z C hopper direkte, klikk går dit hex for hex. `Blyant.hexgrid` har den aksiale matematikken (`toXZ`, `dist`, `ring`, `path`).
 
+## Blyanten over et bilde
+
+`Blyant.Sketch2D` tegner et ferdig bilde om til skisse: et lerret fra et spill, pikselkunst, et foto. Det er samme hånd som i 3D, uten three.js:
+
+1. Kanten mellom to farger blir kontur, tegnet to ganger med skjelving.
+2. Lys blir skravur. Gi et lyskart ved siden av bildet, eller la blyanten lese bildets egen lyshet.
+3. Farge blir fargeblyant med papirkorn. Grå flater blir grafitt.
+4. I Kull er blyanten kritt: det lyse tegnes, det mørke er arket.
+
+```js
+const pencil = new Blyant.Sketch2D({ grid: 16 });          // rutepapir, én rute per flis
+pencil.render(spillLerret, { pixel: 4, light: lyskart, origin: [kamera.x, kamera.y] });
+ctx.drawImage(pencil.canvas, 0, 0);
+```
+
+- `pixel` er skjermpiksler per kildepiksel. `origin` er utsnittets plass i verden: da står streken stille når kameraet går.
+- `set({ lineWidth, detail, hatchGap, shade, colour, exposure, grid, boil })` justerer hånda. `exposure: 2` løfter en nattscene så arket får stå bart.
+- `mix` i `render` lar skissen komme fram over bildet, til en overgang.
+- Uten WebGL (`pencil.ok` er `false`) legges bildet lett på arket.
+
 ## Grafer
 
 `Blyant.chart` tegner grafer med samme blyant: `line`, `bar` (loddrett, vannrett, stablet), `scatter`, `segments` (del av helhet), `stat` (nøkkeltall) og `spark` (trendlinje). Gi grafen en tom boks og dataene; den fyller bredden og tegner seg på nytt ved ny størrelse.
@@ -154,7 +174,7 @@ Se `docs/komponenter/Frames.md`.
 - **Gjøremål:** `.b-checklist` er lista: en rute å krysse av i, saken og et kort notat til høyre. `.b-tabs` over lista filtrerer den, og `.b-input--line` tar imot en ny sak. [do.phareim.no](https://do.phareim.no) er satt slik.
 - **Lenker og lesing:** `.b-linkcard` er kortet for en lenke eller en artikkel: bilde, nettsted, tittel, beskrivelse og en fot med valg som «Legg i Reader». `.b-linkcard--compact` er uten bilde, til lister, og `.b-linkcard--row` har et lite bilde til venstre. Til lenker limt inn på en tavle og til lister i en leser.
 - **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`.
-- **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå.
+- **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå. Et 2D-spill som tegner på eget lerret, får blyanten med `Blyant.Sketch2D`.
 - **Tegneserie og storyboard:** `Blyant.frames` på en flate med fast sideforhold, innhold i `rute.body`.
 - **Dashbord og rapport:** en rad `Blyant.chart.stat` øverst, ett filter-rad over grafene, og grafer i `.b-box`-kort med en «Vis tabell»-knapp.
 

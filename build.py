@@ -6,7 +6,7 @@
 dist/tokens.css   – fargene (Papir/Kull), avstander, strek og skrift som CSS-variabler
 dist/blyant.css   – fonter + tokens + komponenter (én fil å lenke til)
 dist/blyant-core.css – det samme uten @import av fontene, for sider som leverer fontene selv
-dist/blyant.js    – Blyant (streker, komponenter, Sketch3D, HexBoard) + Blyant.chart + Blyant.frames
+dist/blyant.js    – Blyant (streker, komponenter, Sketch3D, HexBoard) + Blyant.chart + Blyant.frames + Blyant.Sketch2D
 examples/hex-skisse/index.html – testflaten, ferdig bygget
 
     python3 build.py --ds
@@ -97,7 +97,7 @@ def design_system():
             write(os.path.join(out, 'components', n, 'README.md'), read('docs', 'komponenter', n + '.md'))
 
 
-JS = ('blyant.js', 'blyant-chart.js', 'blyant-frames.js')
+JS = ('blyant.js', 'blyant-chart.js', 'blyant-frames.js', 'blyant-sketch2d.js')
 
 if __name__ == '__main__':
     tok = tokens_css()
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     ex = os.path.join('examples', 'hex-skisse')
     page = read(ex, 'demo.html')
     for k, v in {'TOKENS': tok, 'BLYANT_CSS': css, 'APP_CSS': read(ex, 'app.css'),
-                 'BLYANT_JS': read('src', 'blyant.js'), 'CHART_JS': read('src', 'blyant-chart.js'), 'FRAMES_JS': read('src', 'blyant-frames.js'), 'APP_JS': read(ex, 'app.js')}.items():
+                 'BLYANT_JS': read('src', 'blyant.js'), 'CHART_JS': read('src', 'blyant-chart.js'), 'FRAMES_JS': read('src', 'blyant-frames.js'), 'SKETCH2D_JS': read('src', 'blyant-sketch2d.js'), 'APP_JS': read(ex, 'app.js')}.items():
         page = page.replace('/*{{%s}}*/' % k, v)
     page = ('<!doctype html>\n<html lang="nb">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
