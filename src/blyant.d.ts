@@ -45,6 +45,10 @@ export interface ToolbarProps { tools: { label: string; pressed?: boolean; marke
 
 /** <ul class="b-checklist"><li class="b-checklist__item [is-done] [is-active]"><label class="b-check"><input type="checkbox" aria-label="Ferdig"><span class="b-check__box"/></label><a class="b-checklist__title"/><span class="b-checklist__meta"/></li></ul>; <span class="b-checklist__mark">↻</span> stands in for the box on a row that cannot be ticked */
 export interface ChecklistProps { items: { title: string; href?: string; done?: boolean; active?: boolean; meta?: string; mark?: string }[]; }
+/** <a class="b-linkcard [b-linkcard--compact|--row]" href> or <article class="b-linkcard">, children in this order, each optional:
+    <img class="b-linkcard__image" alt="" onerror="this.remove()"><span class="b-linkcard__site"/><strong class="b-linkcard__title"/><p class="b-linkcard__desc"/><div class="b-linkcard__foot"/>.
+    With controls in the foot, use <article> and put the link in the title: <strong class="b-linkcard__title"><a href/></strong>. Blyant.ink draws the outline. --b-linkcard-thumb sets the row thumbnail size. */
+export interface LinkCardProps { href?: string; image?: string; site?: string; title?: string; desc?: string; foot?: boolean; variant?: "default" | "compact" | "row"; }
 
 export interface RoughOptions { seed?: number; wobble?: number; passes?: number; bow?: number; gap?: number; angle?: number; }
 export type Shape =

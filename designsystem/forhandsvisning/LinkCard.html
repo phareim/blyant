@@ -1,0 +1,28 @@
+<!-- @dsCard group="Flater" height=500 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>LinkCard</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:start">
+<a class="b-linkcard" href="#"><img class="b-linkcard__image" id="pic1" alt="" onerror="this.remove()"><span class="b-linkcard__site">skisseboka.no</span><strong class="b-linkcard__title">Slik tegner du et hex-kart for hånd</strong><p class="b-linkcard__desc">Start med midten, tegn ringene utover og la strekene skjelve litt.</p></a>
+<article class="b-linkcard"><span class="b-linkcard__site">blyant.phareim.no</span><strong class="b-linkcard__title"><a href="#">Grafitt bærer alt</a></strong><p class="b-linkcard__desc">Farge er en effekt du legger på det ene leseren skal finne.</p><div class="b-linkcard__foot"><label class="b-check"><input type="checkbox"><span class="b-check__box"></span>Legg i Reader</label></div></article>
+<a class="b-linkcard b-linkcard--compact" href="#"><span class="b-linkcard__site">myra.no</span><strong class="b-linkcard__title">Fem steiner, seks farger og en figur som hopper fra hex til hex</strong></a>
+<a class="b-linkcard b-linkcard--row" href="#" style="grid-column:1/-1;--b-linkcard-thumb:72px"><img class="b-linkcard__image" id="pic2" alt="" onerror="this.remove()"><span class="b-linkcard__site">myra.no</span><strong class="b-linkcard__title">Kartet over myra</strong><p class="b-linkcard__desc">Ti hexer med vann, tre med skog og en sti tvers over.</p></a>
+</div>
+<script>
+// an example picture: a small coloured-pencil scene as a data URL
+function pic(sky) {
+  var r = Blyant.rough;
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><rect width="320" height="180" fill="' + sky + '"/>' +
+    '<path d="' + r.circle(232, 52, 22, { seed: 6, wobble: 1 }) + '" fill="#f2d76a" stroke="#454641" stroke-width="1.6"/>' +
+    '<path d="M0 132 C 70 96 120 104 170 124 S 270 112 320 96 L320 180 L0 180Z" fill="#9db48a"/>' +
+    '<path d="' + r.hex(92, 128, 26, { seed: 10, wobble: 1.2 }) + '" fill="#d29358" stroke="#252623" stroke-width="1.8"/></svg>';
+  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
+document.getElementById("pic1").src = pic("#cfdbe6");
+document.getElementById("pic2").src = pic("#efe2c9");
+Blyant.ink(document);
+if (document.fonts) document.fonts.ready.then(function () { Blyant.reink(document); });
+</script>
+</body>
+</html>

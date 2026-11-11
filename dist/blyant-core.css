@@ -833,6 +833,71 @@ select.b-input { appearance: none; padding-right: 40px; }
 .b-empty--center { flex-direction: column; text-align: center; padding: var(--space-8) 0; }
 .b-empty--center .b-empty__body { flex: none; justify-items: center; }
 
+/* LinkCard: a preview of a link or an article. Image, site, title, description and a foot, each optional.
+   The image sits a little inside the pencil outline so the wobble never runs under it. */
+.b-linkcard {
+  --_pad: var(--space-4);
+  --_inset: var(--space-2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  box-sizing: border-box;
+  padding: var(--_pad);
+  color: var(--ink);
+  font-family: var(--b-body);
+  text-decoration: none;
+  background: var(--paper-2);
+  border: var(--b-border) solid var(--b-border-c);
+  border-radius: var(--b-radius);
+  overflow-wrap: anywhere;
+  -webkit-tap-highlight-color: transparent;
+}
+a.b-linkcard { cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+a.b-linkcard:hover, .b-linkcard:has(.b-linkcard__title a:hover) { transform: translate(-1px, -1px); box-shadow: var(--shadow-lift); }
+a.b-linkcard:active, .b-linkcard:has(.b-linkcard__title a:active) { transform: translate(1px, 1px); box-shadow: none; }
+a.b-linkcard:focus-visible, .b-linkcard:has(.b-linkcard__title a:focus-visible) { outline: 2.5px solid var(--focus); outline-offset: 3px; }
+.b-linkcard__image {
+  display: block;
+  box-sizing: content-box;
+  width: calc(100% + 2 * (var(--_pad) - var(--_inset)));
+  max-width: none;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  margin: calc(var(--_inset) - var(--_pad)) calc(var(--_inset) - var(--_pad)) var(--space-2);
+  padding: 0 0 10px;
+  object-fit: cover;
+  background: var(--b-rule-img) 0 100% / 100% 8px no-repeat;   /* the hairline under the picture */
+  border-radius: 0;
+}
+.b-linkcard__site { display: block; overflow: hidden; font-family: var(--b-mono); font-size: 14px; line-height: 1.3; color: var(--ink-soft); white-space: nowrap; text-overflow: ellipsis; }
+.b-linkcard__title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--b-linkcard-lines, 3); overflow: hidden; font-family: var(--b-display); font-weight: 500; font-size: 26px; line-height: 1.15; color: var(--ink); text-wrap: pretty; }
+.b-linkcard__title a { color: inherit; text-decoration: none; }
+.b-linkcard__title a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }   /* the whole card is the link */
+.b-linkcard__title a:focus-visible { outline: none; }
+.b-linkcard__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; max-width: none; margin: 0; font-size: 18px; line-height: 1.35; color: var(--ink-soft); }
+.b-linkcard__foot { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: auto; padding-top: calc(var(--space-2) + 10px); background: var(--b-rule-img) 0 var(--space-1) / 100% 8px no-repeat; }
+.b-linkcard__foot > .b-check { min-height: 32px; font-size: 19px; }
+/* Compact: no picture, tighter, two lines of title. For lists and small spots on a board. */
+.b-linkcard--compact { --_pad: var(--space-3); --b-linkcard-lines: 2; }
+.b-linkcard--compact .b-linkcard__image { display: none; }
+.b-linkcard--compact .b-linkcard__title { font-size: 22px; }
+.b-linkcard--compact .b-linkcard__desc { font-size: 17px; }
+/* Row: a square thumbnail to the left, the text to the right. Stacks when the card is narrower than 360px. */
+.b-linkcard--row { --_pad: var(--space-3); container: b-linkcard / inline-size; display: grid; grid-template-columns: var(--b-linkcard-thumb, 96px) minmax(0, 1fr); grid-template-rows: auto auto 1fr auto; column-gap: var(--space-4); align-items: start; }
+.b-linkcard--row > :not(.b-inkl) { grid-column: 2; }   /* the ink layer is positioned: keep it out of the grid */
+.b-linkcard--row > .b-linkcard__image { grid-column: 1; grid-row: 1 / 4; width: 100%; aspect-ratio: 1; margin: 0; padding: 0; background: none; border-radius: var(--b-radius-sm); }
+.b-linkcard--row > .b-linkcard__foot { grid-column: 1 / -1; grid-row: 4; margin-top: var(--space-2); }
+@container b-linkcard (max-width: 359.98px) {
+  .b-linkcard--row > :not(.b-inkl) { grid-column: 1 / -1; }
+  .b-linkcard--row > .b-linkcard__image { grid-row: auto; width: calc(100% + 2 * (var(--_pad) - var(--_inset))); aspect-ratio: 16 / 9; margin: calc(var(--_inset) - var(--_pad)) calc(var(--_inset) - var(--_pad)) var(--space-2); padding-bottom: 10px; background: var(--b-rule-img) 0 100% / 100% 8px no-repeat; border-radius: 0; }
+  .b-linkcard--row > .b-linkcard__foot { grid-row: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  a.b-linkcard, a.b-linkcard:hover, a.b-linkcard:active, .b-linkcard:has(.b-linkcard__title a) { transform: none; transition: none; }
+}
+
 /* ---------- 9. Apps (menus, messages, tools, a surface to write on) ------ */
 
 /* Menu: a small slip with choices. Command palette, autocomplete, settings. */
