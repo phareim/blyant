@@ -11,10 +11,10 @@ Blyant er et håndtegnet designsystem for spill, nettsider, dokumenter og presen
 Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Blyant ligger på npm, så du kan lenke til en fast versjon på jsDelivr:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/blyant@0.8.0/dist/blyant.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/blyant@0.9.0/dist/blyant.css">
 <!-- bare hvis du skal bruke 3D (Sketch3D / HexBoard): -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/blyant@0.8.0/dist/blyant.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/blyant@0.9.0/dist/blyant.js"></script>
 
 <body class="b-page">
   <h1>Skisseboka</h1>
