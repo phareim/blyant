@@ -641,6 +641,12 @@
   };
 
   /* ---------- System ---------- */
+  var TOOL_ICONS = {
+    flytt: [{ type: "poly", points: [[20, 10], [20, 50], [30, 41], [38, 56], [45, 52], [37, 38], [50, 37]] }],
+    blyant: [{ type: "poly", points: [[16, 46], [44, 18], [51, 25], [23, 53]] }, { type: "poly", points: [[16, 46], [23, 53], [11, 57]] }, { type: "line", x1: 39, y1: 23, x2: 46, y2: 30, width: 2.6 }],
+    tekst: [{ type: "line", x1: 15, y1: 15, x2: 49, y2: 14 }, { type: "line", x1: 32, y1: 15, x2: 32, y2: 52 }, { type: "line", x1: 25, y1: 52, x2: 39, y2: 52, width: 2.6 }],
+    spor: [{ type: "poly", points: [[10, 14], [54, 14], [54, 42], [30, 42], [19, 53], [21, 42], [10, 42]] }, { type: "curve", points: [[26, 24], [30, 20], [36, 21], [37, 26], [32, 30]], width: 3 }]
+  };
   VIEWS.system = {
     title: "System",
     render: function (host, o) {
@@ -675,10 +681,18 @@
         '<li class="b-checklist__item is-done"><label class="b-check"><input type="checkbox" id="s-k2" aria-label="Ferdig" checked><span class="b-check__box"></span></label><a class="b-checklist__title" href="#system">Spiss blyantene</a><span class="b-checklist__meta">I går</span></li>' +
         '</ul></div>' +
         '<div class="b-box"><span class="b-label">Plassholder</span><div class="b-ph" style="--ratio:16/9"><span>bilde 16:9</span></div></div>' +
+        '<div class="b-box"><span class="b-label">Verktøylinje</span>' +
+        '<div class="b-toolbar" role="toolbar" aria-label="Verktøy" style="justify-self:start"><button class="b-toolbar__btn" type="button" aria-pressed="true" aria-label="Flytt" title="Flytt"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="flytt"></svg></button><button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Blyant" title="Blyant"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="blyant"></svg></button><button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Tekst" title="Tekst"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="tekst"></svg></button><span class="b-toolbar__sep"></span><button class="b-toolbar__btn b-toolbar__btn--marker" type="button" aria-label="Spør om hjelp" title="Spør om hjelp"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="spor"></svg></button></div>' +
+        '<div class="b-toolbar b-toolbar--compact" role="toolbar" aria-label="Blyant" style="justify-self:start"><button class="b-toolbar__swatch" type="button" style="--b-swatch:var(--ink)" aria-pressed="true" aria-label="Grafitt" title="Grafitt"></button><button class="b-toolbar__swatch" type="button" style="--b-swatch:var(--dust-red)" aria-pressed="false" aria-label="Rød" title="Rød"></button><button class="b-toolbar__swatch" type="button" style="--b-swatch:var(--dust-blue)" aria-pressed="false" aria-label="Blå" title="Blå"></button><span class="b-toolbar__sep"></span><button class="b-toolbar__size" type="button" style="--b-size:3px" aria-pressed="true" aria-label="Tynn" title="Tynn"></button><button class="b-toolbar__size" type="button" style="--b-size:6px" aria-pressed="false" aria-label="Middels" title="Middels"></button><button class="b-toolbar__size" type="button" style="--b-size:10px" aria-pressed="false" aria-label="Tykk" title="Tykk"></button><span class="b-toolbar__sep"></span><button class="b-toolbar__text" type="button" aria-pressed="true" aria-label="Overskrift" title="Overskrift">Aa</button></div>' +
+        '<p class="t-small">Verktøyene på et lerret. Det valgte verktøyet er skyggelagt, og tusjen er den ene viktigste handlingen.</p></div>' +
         "</div></section>";
       host.appendChild(d);
       Array.prototype.forEach.call(d.querySelectorAll(".b-checklist input"), function (c) {
         c.addEventListener("change", function () { c.closest(".b-checklist__item").classList.toggle("is-done", c.checked); });
+      });
+      // toolbar icons: Blyant.figure in a 64×64 viewBox
+      Array.prototype.forEach.call(d.querySelectorAll("svg[data-icon]"), function (sv) {
+        B.figure(sv, TOOL_ICONS[sv.getAttribute("data-icon")].map(function (p) { return Object.assign({ width: 3.6 }, p); }), { wobble: 0.7 });
       });
       // resolve token values
       Array.prototype.forEach.call(d.querySelectorAll("[data-val]"), function (c) { c.textContent = B.css(c.getAttribute("data-val")) || ""; });

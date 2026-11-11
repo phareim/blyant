@@ -39,6 +39,9 @@ export interface MenuProps { items: { text: string; hint?: string; active?: bool
 export interface ToastProps { text: string; error?: boolean; action?: string; }
 /** class="b-editor" on a textarea, a contenteditable or an editor's content node; parts b-editor__syntax, __h1, __h2, __h3, __quote, __code, __rule, __placeholder. --b-editor-size sets the text size. */
 export interface EditorProps { size?: string; }
+/** <div class="b-toolbar [b-toolbar--vertical|--compact]" role="toolbar" aria-label="Verktøy"><button class="b-toolbar__btn [b-toolbar__btn--marker] [is-busy]" aria-pressed aria-label title><svg viewBox="0 0 64 64"/></button><span class="b-toolbar__sep"/></div>;
+    choices: .b-toolbar__swatch (style="--b-swatch: var(--dust-red)"), .b-toolbar__size (style="--b-size: 4px"), .b-toolbar__text. The app places it. */
+export interface ToolbarProps { tools: { label: string; pressed?: boolean; marker?: boolean; busy?: boolean; disabled?: boolean }[]; vertical?: boolean; compact?: boolean; label: string; }
 
 /** <ul class="b-checklist"><li class="b-checklist__item [is-done] [is-active]"><label class="b-check"><input type="checkbox" aria-label="Ferdig"><span class="b-check__box"/></label><a class="b-checklist__title"/><span class="b-checklist__meta"/></li></ul>; <span class="b-checklist__mark">↻</span> stands in for the box on a row that cannot be ticked */
 export interface ChecklistProps { items: { title: string; href?: string; done?: boolean; active?: boolean; meta?: string; mark?: string }[]; }
@@ -81,7 +84,14 @@ export interface BlyantGlobal {
     scribble(points: [number, number][], o?: RoughOptions): string;
   };
   figure(svg: SVGSVGElement, shapes: RoughProps["shapes"], defaults?: { wobble?: number }): SVGSVGElement;
-  draw(svg: SVGSVGElement, d: string, style?: { stroke?: string; width?: number; fill?: string; opacity?: number }): SVGPathElement;
+  /** Draw a path with graphite grain. The grain filter's region follows the path; a path too large for WebKit's filter limit is drawn without grain. grain: false turns it off. */
+  draw(svg: SVGSVGElement, d: string, style?: { stroke?: string; width?: number; fill?: string; fillOpacity?: number; opacity?: number; dash?: string; grain?: boolean }): SVGPathElement;
+  /** Like draw, but a path too large for one grain region becomes one <path> per subpath, so it keeps the grain. ink, figure and frames use it. */
+  drawParts(svg: SVGSVGElement, d: string, style?: { stroke?: string; width?: number; fill?: string; fillOpacity?: number; opacity?: number; dash?: string; grain?: boolean }): SVGPathElement[];
+  /** The shared grain filter for a box in user units, as "url(#…)", or null if the box is too large for WebKit at 3×. Without a box: a region from the svg's viewBox. */
+  grainFilter(svg?: SVGSVGElement, box?: { x: number; y: number; w: number; h: number }, strokeWidth?: number): string | null;
+  /** Bounding box of SVG path data, control points included; null if it can't be read. */
+  pathBox(d: string): { x: number; y: number; w: number; h: number } | null;
   /** Draw a ready-made doodle in an <svg> (default viewBox 0 0 120 90). Blyant.ink also draws every svg[data-doodle]. */
   doodle(svg: SVGSVGElement, name?: "ark" | "ide" | "ukjent"): SVGSVGElement;
   doodles: string[];

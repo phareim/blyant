@@ -21,3 +21,5 @@ Blyant.figure(svg, [
 | `hatch` | `points`, `gap`, `angle` |
 
 Felles: `fill`, `fillOpacity`, `stroke`, `width`, `wobble`, `seed`. Samme `seed` gir samme strek. Standard skjelving leses fra `--b-wobble`, så skallet `clean` gir rette linjer.
+
+**Grafittkorn.** `Blyant.draw(svg, d, stil)` tegner en `d`-streng med korn; `{ grain: false }` slår det av. Filterområdet legges rundt hver strek, fordi Safari og alle nettlesere på iPhone ikke tegner noe som helst når området er større enn 4096 × 4096 skjermpiksler. En strek som er større enn omtrent 1300 × 1300 px (regnet for 3× skjerm), tegnes uten korn i stedet for å forsvinne. `Blyant.drawParts` deler en slik strek i én `<path>` per delstrek, så hver side av et stort omriss beholder kornet; `figure`, `ink` og `frames` gjør det selv. I en SVG som vises forstørret, for eksempel en tavle med zoom, gjelder grensen etter forstørrelsen: slå av kornet når zoomen er stor.

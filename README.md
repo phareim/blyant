@@ -11,10 +11,10 @@ Blyant er et håndtegnet designsystem for spill, nettsider, dokumenter og presen
 Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Blyant ligger på npm, så du kan lenke til en fast versjon på jsDelivr:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/blyant@0.5.0/dist/blyant.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/blyant@0.6.0/dist/blyant.css">
 <!-- bare hvis du skal bruke 3D (Sketch3D / HexBoard): -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/blyant@0.5.0/dist/blyant.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/blyant@0.6.0/dist/blyant.js"></script>
 
 <body class="b-page">
   <h1>Skisseboka</h1>
@@ -131,7 +131,8 @@ Fonten lastes fra Google Fonts:
 - Skjelving: `wobble-low` for små kontroller, `wobble-mid` som standard, `wobble-high` for løse kruseduller. Et skall med `--b-wobble: 0` tegner med linjal.
 - Tegn i SVG med `Blyant.rough`: `line`, `rect`, `circle`, `ellipse`, `hex`, `poly`, `arrow`, `hatch` (skravur), `scribble`. Funksjonene gir tilbake en `d`-streng. `Blyant.figure(svg, [...])` tegner en hel figur med fargeblyant-fyll.
 - Hver strek tegnes to ganger med litt ulik bue og overheng. Det er dette som gjør den håndtegnet. Ikke legg på `stroke-dasharray` for å få skisse-preg.
-- Komponenter med kant (`.b-btn`, `.b-input`, `.b-box`, `.b-tag`, `.b-kbd`, `.b-ph`, `.b-slide`, `.b-menu`, `.b-toast`, valgt `.b-tab`) får ekte blyantstrek når du kaller `Blyant.ink(rot)`. Uten JavaScript faller de tilbake til CSS-kant med skjeve hjørner. Legg `data-ink="box|circle|underline|strike|hex|cross"` på et hvilket som helst element for å tegne rundt det.
+- Grafittkornet er et SVG-filter som `Blyant.draw` legger på hver strek. Filterområdet følger streken, for Safari og alle nettlesere på iPhone tegner ingenting når et filterområde er større enn 4096 × 4096 skjermpiksler. En enkelt strek som er større enn omtrent 1300 × 1300 px, tegnes uten korn, men den tegnes alltid. `Blyant.ink`, `Blyant.figure` og `Blyant.frames` deler store omriss i én strek per side, så de beholder kornet. Tegner du i en SVG som er forstørret (zoom på en tavle), gjelder grensen i skjermpiksler: slå av kornet med `{ grain: false }` når forstørrelsen er stor.
+- Komponenter med kant (`.b-btn`, `.b-input`, `.b-box`, `.b-tag`, `.b-kbd`, `.b-ph`, `.b-slide`, `.b-menu`, `.b-toast`, `.b-toolbar`, valgt `.b-tab`) får ekte blyantstrek når du kaller `Blyant.ink(rot)`. Uten JavaScript faller de tilbake til CSS-kant med skjeve hjørner. Legg `data-ink="box|circle|underline|strike|hex|cross"` på et hvilket som helst element for å tegne rundt det.
 - I en side som et rammeverk tegner på nytt (Vue, React), kaller du `Blyant.watch(rot)` én gang i stedet for `Blyant.ink`. Da får nye komponenter streken sin av seg selv, og en fane som ikke lenger er valgt, mister den. Last `blyant.js` bare i nettleseren, ikke på serveren.
 - Notatlapper står litt skjevt (`--b-tilt`). Ingenting annet roteres.
 
@@ -208,7 +209,7 @@ Se `docs/komponenter/Frames.md`.
 - **Nettside:** `.b-page` på `body` gir papir, korn og prosa-stiler for vanlige HTML-elementer. Bruk `.b-nav`, `.b-btn`, `.b-field`, `.b-box`, `.b-table`, `.b-ph` for bilder som ikke finnes ennå.
 - **Dokument:** vanlig HTML inne i `.b-prose`. `<mark>` er tusj, `.b-scribble` er margnotat, `.b-callout` er en tegnet ramme rundt et poeng.
 - **Blogg og notater:** `.b-entries` lister innleggene på forsiden, og hvert innlegg er en `<article class="b-prose b-flow">` med `.b-meta` under tittelen. Fotnoter blir margnotater med `.b-sidenote` (legg `.b-sidenotes` på artikkelen). Er lista kort eller tom, sier en `.b-empty` med en liten tegning fra det. [phareim.md](https://phareim.md) er satt slik.
-- **Skriveapp og verktøy:** `.b-editor` er flaten du skriver på, `.b-menu` er lappen med valg (kommandopalett, forslag, innstillinger), `.b-toast` er beskjeden som ligger oppå et øyeblikk, og `.b-entries--compact` lister dokumentene med én linje hver. `.b-input--line` er et filter uten boks. [write.phareim.no](https://write.phareim.no) er satt slik.
+- **Skriveapp og verktøy:** `.b-editor` er flaten du skriver på, `.b-menu` er lappen med valg (kommandopalett, forslag, innstillinger), `.b-toast` er beskjeden som ligger oppå et øyeblikk, og `.b-entries--compact` lister dokumentene med én linje hver. `.b-input--line` er et filter uten boks. [write.phareim.no](https://write.phareim.no) er satt slik. `.b-toolbar` er paletten med verktøy på et lerret eller en tavle: ikonknapper, og en kompakt rad med farge, tykkelse og tekstvalg for verktøyet som er i bruk.
 - **Gjøremål:** `.b-checklist` er lista: en rute å krysse av i, saken og et kort notat til høyre. `.b-tabs` over lista filtrerer den, og `.b-input--line` tar imot en ny sak. [do.phareim.no](https://do.phareim.no) er satt slik.
 - **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`.
 - **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå.
