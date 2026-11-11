@@ -40,6 +40,9 @@ export interface ToastProps { text: string; error?: boolean; action?: string; }
 /** class="b-editor" on a textarea, a contenteditable or an editor's content node; parts b-editor__syntax, __h1, __h2, __h3, __quote, __code, __rule, __placeholder. --b-editor-size sets the text size. */
 export interface EditorProps { size?: string; }
 
+/** <ul class="b-checklist"><li class="b-checklist__item [is-done] [is-active]"><label class="b-check"><input type="checkbox" aria-label="Ferdig"><span class="b-check__box"/></label><a class="b-checklist__title"/><span class="b-checklist__meta"/></li></ul>; <span class="b-checklist__mark">↻</span> stands in for the box on a row that cannot be ticked */
+export interface ChecklistProps { items: { title: string; href?: string; done?: boolean; active?: boolean; meta?: string; mark?: string }[]; }
+
 export interface RoughOptions { seed?: number; wobble?: number; passes?: number; bow?: number; gap?: number; angle?: number; }
 export type Shape =
   | { type: "line"; x1: number; y1: number; x2: number; y2: number }
@@ -85,6 +88,8 @@ export interface BlyantGlobal {
   /** Draw pencil outlines on every Blyant component under root, and every svg[data-doodle]. Safe to call again. */
   ink(root?: ParentNode): void;
   reink(root?: ParentNode): void;
+  /** For pages a framework re-renders (Vue, React): inks root now and again whenever its DOM changes. Returns a function that stops watching. */
+  watch(root?: Element): () => void;
   setSkin(skin: "sketch" | "clean" | string, node?: Element): void;
   hexgrid: {
     DIRS: [number, number][];

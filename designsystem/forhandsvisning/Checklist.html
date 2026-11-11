@@ -1,0 +1,19 @@
+<!-- @dsCard group="Skjema" height=300 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Checklist</title></head>
+<body class="b-page" style="margin:0;padding:12px 24px">
+<ul class="b-checklist" style="max-width:560px">
+<li class="b-checklist__item"><label class="b-check"><input type="checkbox" id="k1" aria-label="Ferdig"><span class="b-check__box"></span></label><a class="b-checklist__title" href="#">Tegn kartet over myra</a><span class="b-checklist__meta">I dag</span></li>
+<li class="b-checklist__item is-active"><label class="b-check"><input type="checkbox" id="k2" aria-label="Ferdig"><span class="b-check__box"></span></label><a class="b-checklist__title" href="#">Legg ut steinene igjen</a><span class="b-checklist__meta">Fredag</span></li>
+<li class="b-checklist__item"><span class="b-checklist__mark" aria-hidden="true">↻</span><a class="b-checklist__title" href="#">Vann plantene</a><span class="b-checklist__meta">Hver mandag</span></li>
+<li class="b-checklist__item is-done"><label class="b-check"><input type="checkbox" id="k3" aria-label="Ferdig" checked><span class="b-check__box"></span></label><a class="b-checklist__title" href="#">Spiss blyantene</a><span class="b-checklist__meta">I går</span></li>
+</ul>
+<script>
+Blyant.ink(document);
+Array.prototype.forEach.call(document.querySelectorAll(".b-checklist input"), function (i) {
+  i.addEventListener("change", function () { i.closest(".b-checklist__item").classList.toggle("is-done", i.checked); });
+});
+</script>
+</body>
+</html>

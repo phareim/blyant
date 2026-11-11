@@ -132,6 +132,7 @@ Fonten lastes fra Google Fonts:
 - Tegn i SVG med `Blyant.rough`: `line`, `rect`, `circle`, `ellipse`, `hex`, `poly`, `arrow`, `hatch` (skravur), `scribble`. Funksjonene gir tilbake en `d`-streng. `Blyant.figure(svg, [...])` tegner en hel figur med fargeblyant-fyll.
 - Hver strek tegnes to ganger med litt ulik bue og overheng. Det er dette som gjør den håndtegnet. Ikke legg på `stroke-dasharray` for å få skisse-preg.
 - Komponenter med kant (`.b-btn`, `.b-input`, `.b-box`, `.b-tag`, `.b-kbd`, `.b-ph`, `.b-slide`, `.b-menu`, `.b-toast`, valgt `.b-tab`) får ekte blyantstrek når du kaller `Blyant.ink(rot)`. Uten JavaScript faller de tilbake til CSS-kant med skjeve hjørner. Legg `data-ink="box|circle|underline|strike|hex|cross"` på et hvilket som helst element for å tegne rundt det.
+- I en side som et rammeverk tegner på nytt (Vue, React), kaller du `Blyant.watch(rot)` én gang i stedet for `Blyant.ink`. Da får nye komponenter streken sin av seg selv, og en fane som ikke lenger er valgt, mister den. Last `blyant.js` bare i nettleseren, ikke på serveren.
 - Notatlapper står litt skjevt (`--b-tilt`). Ingenting annet roteres.
 
 ## 3D
@@ -208,6 +209,7 @@ Se `docs/komponenter/Frames.md`.
 - **Dokument:** vanlig HTML inne i `.b-prose`. `<mark>` er tusj, `.b-scribble` er margnotat, `.b-callout` er en tegnet ramme rundt et poeng.
 - **Blogg og notater:** `.b-entries` lister innleggene på forsiden, og hvert innlegg er en `<article class="b-prose b-flow">` med `.b-meta` under tittelen. Fotnoter blir margnotater med `.b-sidenote` (legg `.b-sidenotes` på artikkelen). Er lista kort eller tom, sier en `.b-empty` med en liten tegning fra det. [phareim.md](https://phareim.md) er satt slik.
 - **Skriveapp og verktøy:** `.b-editor` er flaten du skriver på, `.b-menu` er lappen med valg (kommandopalett, forslag, innstillinger), `.b-toast` er beskjeden som ligger oppå et øyeblikk, og `.b-entries--compact` lister dokumentene med én linje hver. `.b-input--line` er et filter uten boks. [write.phareim.no](https://write.phareim.no) er satt slik.
+- **Gjøremål:** `.b-checklist` er lista: en rute å krysse av i, saken og et kort notat til høyre. `.b-tabs` over lista filtrerer den, og `.b-input--line` tar imot en ny sak. [do.phareim.no](https://do.phareim.no) er satt slik.
 - **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`.
 - **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå.
 - **Tegneserie og storyboard:** `Blyant.frames` på en flate med fast sideforhold, innhold i `rute.body`.

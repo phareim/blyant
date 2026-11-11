@@ -17,7 +17,7 @@ Blyant er standard-designsystemet. Det gjelder alt som skal ses: nettsider, appe
 
 Uten `~/github/blyant` på maskinen (for eksempel i en sky-økt eller på en annen maskin): klon `https://github.com/phareim/blyant`, eller les de samme filene på GitHub.
 
-Komponentene er Button, Field, Check, Box, Note, Tag, Marker, Nav, Tabs, Table, Placeholder, Slide, Rough, Sketch3D, HexBoard, LineChart, BarChart, ScatterChart, Segments, Stat, Frames, Prose, Sidenote, Entries, Empty, Menu, Toast og Editor. Lista i `@ds-bundle`-linja øverst i `~/github/blyant/src/blyant.js` er alltid den riktige.
+Komponentene er Button, Field, Check, Box, Note, Tag, Marker, Nav, Tabs, Table, Placeholder, Slide, Rough, Sketch3D, HexBoard, LineChart, BarChart, ScatterChart, Segments, Stat, Frames, Prose, Sidenote, Entries, Empty, Menu, Toast, Editor og Checklist. Lista i `@ds-bundle`-linja øverst i `~/github/blyant/src/blyant.js` er alltid den riktige.
 
 ## Ta det inn
 
@@ -31,7 +31,7 @@ Komponentene er Button, Field, Check, Box, Note, Tag, Marker, Nav, Tabs, Table, 
 <body class="b-page"> … <script>Blyant.ink(document)</script>
 ```
 
-Med byggeverktøy (Vite, Nuxt): `npm install blyant@X.Y.Z`, og importer `blyant/dist/blyant.css` og `blyant/dist/blyant.js`. Fontene lastes fra Google Fonts gjennom `@import` i `blyant.css`. Skal siden virke uten nett, importerer du `blyant/dist/blyant-core.css` og leverer Caveat, Architects Daughter og Cutive Mono selv (`@fontsource`).
+Med byggeverktøy (Vite, Nuxt): `npm install blyant@X.Y.Z`, og importer `blyant/dist/blyant.css` og `blyant/dist/blyant.js`. Fontene lastes fra Google Fonts gjennom `@import` i `blyant.css`. Skal siden virke uten nett, importerer du `blyant/dist/blyant-core.css` og leverer Caveat, Architects Daughter og Cutive Mono selv (`@fontsource`). I Vue, Nuxt og React laster du `blyant.js` bare i nettleseren (i Nuxt: en `plugins/blyant.client.ts`), og kaller `Blyant.watch(document.body)` én gang i stedet for `Blyant.ink`. Da følger blyantstrekene med når rammeverket tegner siden på nytt.
 
 **Artefakter i Claude:** en artefakt kan bare hente stilark fra Google Fonts, og skript bare i versjoner som er minst to uker gamle. En jsDelivr-lenke til Blyant virker derfor ikke. Legg `dist/blyant.css` og `dist/blyant.js` inline i siden, slik `examples/hex-skisse/index.html` er bygget. Ta dem fra `~/github/blyant/dist/`, eller last ned den faste versjonen fra jsDelivr hvis repoet ikke er der. Ikke bruk `components/bundle.css` fra Design System-artefakten: den mangler tokenene og Kull-temaet.
 

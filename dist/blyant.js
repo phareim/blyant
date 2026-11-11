@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Editor"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Editor"},{"name":"Checklist"}]} */
 /* Blyant — hand-drawn pencil design system. Vanilla JS, no dependencies.
    Sketch3D needs window.THREE (three.js r147 UMD) loaded first.          */
 (function () {
@@ -275,9 +275,11 @@
     var svg = node.__bInk;
     if (!svg) {
       svg = el("svg", { "class": host === node ? "b-inkl" : "b-inkl b-inkl--over", "aria-hidden": "true" });
-      host.insertBefore(svg, host.firstChild);
+      svg.__bFor = node;
       node.__bInk = svg;
     }
+    // a framework that re-renders the host's text throws the drawing out: put it back
+    if (svg.parentNode !== host) host.insertBefore(svg, host.firstChild);
     var x0 = host === node ? 0 : node.offsetLeft, y0 = host === node ? 0 : node.offsetTop;
     var bw = parseFloat(getComputedStyle(node).borderTopWidth) || 0;
     var pad = 6;
@@ -327,6 +329,45 @@
     root = root || document;
     Array.prototype.forEach.call(root.querySelectorAll(".is-inked"), function (n) { inkOne(n, n.__bShape); });
     Array.prototype.forEach.call(root.querySelectorAll("svg[data-doodle]"), function (svg) { B.doodle(svg); });
+  };
+  function unink(node) {
+    var svg = node.__bInk;
+    if (svg && svg.parentNode) svg.parentNode.removeChild(svg);
+    node.__bInk = null;
+    node.classList.remove("is-inked");
+    if (ro && observed && observed.has(node)) { observed.delete(node); ro.unobserve(node); }
+  }
+  function inkable(node) {
+    return AUTO.some(function (pair) { return node.matches(pair[0]); });
+  }
+  /** Keep the ink in step with a page that a framework (Vue, React, htmx) re-renders: new components get their
+      outline, and a component that is no longer one (a tab that lost aria-selected) loses it.
+      Returns a function that stops watching. */
+  B.watch = function (root) {
+    root = root || document.body;
+    function sweep() {
+      Array.prototype.forEach.call(root.querySelectorAll(".b-inkl"), function (svg) {
+        var node = svg.__bFor;
+        if (node && (!node.isConnected || !inkable(node))) unink(node);
+      });
+      B.ink(root);
+    }
+    if (typeof MutationObserver === "undefined") { sweep(); return function () {}; }
+    // what the ink itself changes: its own svg, and the drawing inside an svg
+    function own(rec) {
+      if (rec.target.closest && rec.target.closest("svg")) return true;
+      if (rec.type !== "childList" || rec.removedNodes.length || !rec.addedNodes.length) return false;
+      return Array.prototype.every.call(rec.addedNodes, function (n) { return n.nodeType === 1 && n.classList.contains("b-inkl"); });
+    }
+    var mo = new MutationObserver(function (records) {
+      if (records.every(own)) return;
+      sweep();
+      mo.takeRecords();
+    });
+    mo.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "aria-selected", "data-ink", "data-doodle"] });
+    sweep();
+    mo.takeRecords();
+    return function () { mo.disconnect(); };
   };
   B.setSkin = function (skin, node) {
     (node || document.documentElement).setAttribute("data-skin", skin);
