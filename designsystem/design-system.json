@@ -3,7 +3,7 @@
   "layout": "files",
   "createdOnFiles": {
     "v": 1,
-    "at": "2026-11-11T16:00:00Z"
+    "at": "2026-11-09T18:13:48Z"
   },
   "title": "Blyant",
   "namespace": "Blyant",
@@ -17,7 +17,7 @@
   },
   "lastChange": {
     "by": "Claude",
-    "at": "2026-11-11T15:30:00Z",
+    "at": "2026-11-11T16:00:00Z",
     "via": "Claude Code",
     "note": "Note: teipen sitter litt ulikt på hver lapp (Blyant.ink og Blyant.tape, eller --b-tape-x, --b-tape-y og --b-tape-tilt)."
   }
