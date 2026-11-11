@@ -134,7 +134,7 @@ Fonten lastes fra Google Fonts:
 - Grafittkornet er et SVG-filter som `Blyant.draw` legger på hver strek. Filterområdet følger streken, for Safari og alle nettlesere på iPhone tegner ingenting når et filterområde er større enn 4096 × 4096 skjermpiksler. En enkelt strek som er større enn omtrent 1300 × 1300 px, tegnes uten korn, men den tegnes alltid. `Blyant.ink`, `Blyant.figure` og `Blyant.frames` deler store omriss i én strek per side, så de beholder kornet. Tegner du i en SVG som er forstørret (zoom på en tavle), gjelder grensen i skjermpiksler: slå av kornet med `{ grain: false }` når forstørrelsen er stor.
 - Komponenter med kant (`.b-btn`, `.b-input`, `.b-box`, `.b-tag`, `.b-kbd`, `.b-ph`, `.b-slide`, `.b-menu`, `.b-toast`, `.b-toolbar`, `.b-linkcard`, valgt `.b-tab`) får ekte blyantstrek når du kaller `Blyant.ink(rot)`. Uten JavaScript faller de tilbake til CSS-kant med skjeve hjørner. Legg `data-ink="box|circle|underline|strike|hex|cross"` på et hvilket som helst element for å tegne rundt det.
 - I en side som et rammeverk tegner på nytt (Vue, React), kaller du `Blyant.watch(rot)` én gang i stedet for `Blyant.ink`. Da får nye komponenter streken sin av seg selv, og en fane som ikke lenger er valgt, mister den. Last `blyant.js` bare i nettleseren, ikke på serveren.
-- Notatlapper står litt skjevt (`--b-tilt`). Ingenting annet roteres.
+- Notatlapper står litt skjevt (`--b-tilt`), og teipen sitter litt ulikt på hver lapp (`Blyant.ink`, eller `--b-tape-x`, `--b-tape-y`, `--b-tape-tilt`). Ingenting annet roteres.
 
 ## 3D
 

@@ -408,9 +408,25 @@
     node.classList.add("is-inked");
   }
 
+  /** Put the tape of a .b-note a little off centre, a little up or down and at its own angle, from a seed
+      (default: the note's class and text), so no two notes are taped alike. A value set in the note's own
+      style (--b-tape-x, --b-tape-y, --b-tape-tilt) is left alone. */
+  B.tape = function (node, seed) {
+    if (seed == null) seed = node.__bSeed || hashStr((node.className || "") + (node.textContent || "").slice(0, 40)) || 3;
+    seed = seed >>> 0;
+    var st = node.style;
+    if (!st.getPropertyValue("--b-tape-x")) st.setProperty("--b-tape-x", f(50 + ((seed % 201) - 100) / 10) + "%");
+    if (!st.getPropertyValue("--b-tape-y")) st.setProperty("--b-tape-y", f(-10 + (((seed >>> 8) % 41) - 20) / 10) + "px");
+    if (!st.getPropertyValue("--b-tape-tilt")) st.setProperty("--b-tape-tilt", f((((seed >>> 16) % 91) - 45) / 10) + "deg");
+    node.__bTape = 1;
+  };
+
   /** Draw rough outlines on every Blyant component inside root (default: document). Safe to call again. */
   B.ink = function (root) {
     root = root || document;
+    Array.prototype.forEach.call(root.querySelectorAll ? root.querySelectorAll(".b-note") : [], function (note) {
+      if (!note.__bTape) B.tape(note);
+    });
     Array.prototype.forEach.call(root.querySelectorAll ? root.querySelectorAll("svg[data-doodle]") : [], function (svg) {
       if (svg.__bDoodle !== svg.getAttribute("data-doodle")) { svg.__bDoodle = svg.getAttribute("data-doodle"); B.doodle(svg); }
     });

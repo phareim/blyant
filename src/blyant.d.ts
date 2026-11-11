@@ -8,7 +8,7 @@ export interface FieldProps { label: string; hint?: string; invalid?: boolean; c
 export interface CheckProps { kind?: "checkbox" | "radio" | "switch"; checked?: boolean; label: string; }
 /** <div class="b-box [b-box--raised|--flat|--dashed]"> or .b-callout */
 export interface BoxProps { variant?: "default" | "raised" | "flat" | "dashed" | "callout"; }
-/** <div class="b-note [b-note--blue|green|red|purple]" style="--b-tilt:1deg"> */
+/** <div class="b-note [b-note--blue|green|red|purple]" style="--b-tilt:1deg">. Blyant.ink places each note's tape a little differently; --b-tape-x, --b-tape-y and --b-tape-tilt set it by hand. */
 export interface NoteProps { color?: "marker" | "blue" | "green" | "red" | "purple"; tilt?: string; }
 /** <span class="b-tag b-tag--green"><span class="b-dot"/>Klar</span>; also .b-avatar, .b-kbd, .b-progress */
 export interface TagProps { tone?: "neutral" | "red" | "orange" | "yellow" | "green" | "blue" | "purple" | "marker"; dot?: boolean; }
@@ -150,6 +150,8 @@ export interface BlyantGlobal {
   doodle(svg: SVGSVGElement, name?: "ark" | "ide" | "ukjent"): SVGSVGElement;
   doodles: string[];
   /** Draw pencil outlines on every Blyant component under root, and every svg[data-doodle]. Safe to call again. */
+  /** Place the tape of a .b-note from a seed (default: its class and text). Blyant.ink does this for every note inside its root. */
+  tape(node: HTMLElement, seed?: number): void;
   ink(root?: ParentNode): void;
   reink(root?: ParentNode): void;
   /** For pages a framework re-renders (Vue, React): inks root now and again whenever its DOM changes. Returns a function that stops watching. */
