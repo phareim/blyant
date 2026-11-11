@@ -1,6 +1,6 @@
 {
   "name": "blyant",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Håndtegnet blyant-designsystem for spill, nettsider, dokumenter og presentasjoner: CSS-komponenter, håndtegnede streker, three.js-blyantshader, grafer og tegneserieruter.",
   "keywords": [
     "design-system",
