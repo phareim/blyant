@@ -3,7 +3,7 @@
 
     python3 build.py        # bygger malen sammen med resten av dist/
 
-dist/blyant.potx          – malen: temaene Papir og Kull, elleve oppsett i hvert
+dist/blyant.potx          – malen: temaene Papir og Kull, med de samme oppsettene i hvert
 dist/blyant-eksempel.pptx – de samme oppsettene fylt ut, som eksempel og til programmer som ikke leser .potx
 
 Ingenting er tegnet for hånd her. Fargene, skriftene og strektykkelsene kommer fra
@@ -277,7 +277,7 @@ class Del:
         else:
             text = avsnitt(s['prompt'])
         if self.nivaa == 'slide':      # position and style come from the layout
-            if typ == 'pic' and not innhold:
+            if typ in ('pic', 'media') and not innhold:
                 self.xml.append('<p:sp>%s<p:spPr/></p:sp>' % nv)
             else:
                 self.xml.append('<p:sp>%s<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/>%s</p:txBody></p:sp>' % (nv, text))
@@ -344,12 +344,32 @@ def hode(seed, tittel='Klikk for å legge til en tittel'):
             ph('tittel', 'title', None, TITLE_BOX, None, tittel, navn='Tittel')]
 
 
+def bilderute(n, idx, x, y, w, h, seed, type='pic', prompt='Sett inn et bilde'):
+    """.b-ph in a pencil frame: the wireframe box with a cross until a picture covers it, and a caption under.
+    The frame is drawn a little outside the picture, so it shows all the way round."""
+    return [flate(rectpts(x, y, w, h), 'paper-2', navn='Plassholder'),
+            strek({'type': 'line', 'x1': x + 4, 'y1': y + 4, 'x2': x + w - 4, 'y2': y + h - 4, 'seed': seed, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
+            strek({'type': 'line', 'x1': x + w - 4, 'y1': y + 4, 'x2': x + 4, 'y2': y + h - 4, 'seed': seed + 1, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
+            strek({'type': 'rect', 'x': x, 'y': y, 'w': w, 'h': h, 'seed': seed + 2}, navn='Bilderamme'),
+            ph('bilde%s' % n, type, idx, (x + 7, y + 7, w - 14, h - 14), stil(18, 'note', 'ink-soft', algn='ctr'), prompt, anker='ctr', krymp=False, navn='Bilde %s' % n),
+            ph('bildetekst%s' % n, 'body', idx + 1, (x, y + h + 10, w, 26), stil(15, 'note', 'ink-soft'), 'Bildetekst', sz='quarter', krymp=False, navn='Bildetekst %s' % n)]
+
+
+def fullskjerm(navn, key, type, prompt, seed):
+    """Picture or video from edge to edge. Until it is there, the slide is one big .b-ph."""
+    return dict(navn=navn, bg='paper-2', former=[
+        strek({'type': 'line', 'x1': 26, 'y1': 26, 'x2': W - 26, 'y2': H - 26, 'seed': seed + 20, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
+        strek({'type': 'line', 'x1': W - 26, 'y1': 26, 'x2': 26, 'y2': H - 26, 'seed': seed + 21, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
+        ramme(seed),
+        ph(key, type, 2, (0, 0, W, H), stil(18, 'note', 'ink-soft', algn='ctr'), prompt, anker='ctr', krymp=False, navn=navn)])
+
+
 def oppsett(t):
-    """The eleven layouts, the same in every theme."""
+    """The layouts, the same in every theme."""
     dust = ['dust-red', 'dust-orange', 'dust-yellow', 'dust-green', 'dust-blue', 'dust-purple']
     out = []
 
-    # 1. Tittel: the cover from the test page, with the row of hexes
+    # Tittel: the cover from the test page, with the row of hexes
     f = [ramme(1),
          ph('kicker', 'body', 13, (ML, 132, 900, 32), stil(18, 'note', 'ink-soft', caps=True, spc=.06), 'Stikkord', sz='quarter', krymp=False),
          ph('tittel', 'ctrTitle', None, (ML, 170, 1000, 206), stil(72, 'display', linje=80), 'Klikk for å legge til en tittel', navn='Tittel'),
@@ -362,7 +382,7 @@ def oppsett(t):
     f.append(strek({'type': 'arrow', 'x1': 536, 'y1': 600, 'x2': 632, 'y2': 550, 'bend': .3, 'seed': 984}, navn='Pil'))
     out.append(dict(navn='Tittel', type='title', former=f + fot()))
 
-    # 2. Seksjon: a new sheet on top, and one big hatched hex
+    # Seksjon: a new sheet on top, and one big hatched hex
     f = [ramme(2),
          ph('kicker', 'body', 13, (ML, 236, 640, 30), stil(18, 'note', 'ink-soft', caps=True, spc=.06), 'Stikkord', sz='quarter', krymp=False),
          ph('tittel', 'title', None, (ML, 272, 660, 150), stil(60, 'display', linje=80), 'Klikk for å legge til en seksjonstittel', navn='Tittel'),
@@ -373,17 +393,17 @@ def oppsett(t):
          strek({'type': 'hex', 'cx': 822, 'cy': 508, 'r': 60, 'seed': 23}, navn='Hex')]
     out.append(dict(navn='Seksjon', type='secHead', bg='paper-2', former=f + fot()))
 
-    # 3. Tittel og innhold
+    # Tittel og innhold
     out.append(dict(navn='Tittel og innhold', type='obj', former=hode(3) + [
         ph('innhold', None, 1, BODY_BOX, None, 'Klikk for å legge til tekst', navn='Innhold')] + fot()))
 
-    # 4. To kolonner, with a light pencil line between them
+    # To kolonner, with a light pencil line between them
     out.append(dict(navn='To kolonner', type='twoObj', former=hode(4) + [
         ph('venstre', None, 1, (ML, 206, 520, 408), None, 'Klikk for å legge til tekst', navn='Innhold venstre', sz='half'),
         ph('hoyre', None, 2, (670, 206, 520, 408), None, 'Klikk for å legge til tekst', navn='Innhold høyre', sz='half'),
         strek({'type': 'line', 'x1': 640, 'y1': 214, 'x2': 640, 'y2': 606, 'seed': 41, 'passes': 1}, 'graphite-300', navn='Skille')] + fot()))
 
-    # 5. Tre bokser: three .b-box frames with a heading and a text each
+    # Tre bokser: three .b-box frames with a heading and a text each
     f = hode(5)
     for i in range(3):
         x = ML + i * 380
@@ -392,18 +412,24 @@ def oppsett(t):
               ph('tekst%d' % (i + 1), 'body', 15 + i * 2, (x + 28, 296, 284, 290), stil(21, 'body', linje=100), 'Klikk for å legge til tekst', sz='quarter', navn='Tekst %d' % (i + 1))]
     out.append(dict(navn='Tre bokser', former=f + fot()))
 
-    # 6. Bilde og tekst: .b-ph, the wireframe box with a cross, until a picture covers it
-    px, py, pw, phh = 640, 210, 550, 372
+    # Bilde og tekst
     out.append(dict(navn='Bilde og tekst', type='picTx', former=hode(6) + [
-        ph('tekst', 'body', 1, (ML, 206, 490, 408), None, 'Klikk for å legge til tekst', sz='half'),
-        flate(rectpts(px, py, pw, phh), 'paper-2', navn='Plassholder'),
-        strek({'type': 'line', 'x1': px + 4, 'y1': py + 4, 'x2': px + pw - 4, 'y2': py + phh - 4, 'seed': 61, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
-        strek({'type': 'line', 'x1': px + pw - 4, 'y1': py + 4, 'x2': px + 4, 'y2': py + phh - 4, 'seed': 62, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
-        strek({'type': 'rect', 'x': px, 'y': py, 'w': pw, 'h': phh, 'seed': 63}, navn='Bilderamme'),
-        ph('bilde', 'pic', 2, (px + 7, py + 7, pw - 14, phh - 14), stil(18, 'note', 'ink-soft', algn='ctr'), 'Bilde', anker='ctr', krymp=False),
-        ph('bildetekst', 'body', 3, (px, py + phh + 10, pw, 26), stil(15, 'note', 'ink-soft'), 'Bildetekst', sz='quarter', krymp=False)] + fot()))
+        ph('tekst', 'body', 1, (ML, 206, 490, 408), None, 'Klikk for å legge til tekst', sz='half')]
+        + bilderute('', 2, 640, 210, 550, 372, 61) + fot()))
 
-    # 7. Stort tall: Stat, with the marker under the one number the eye should find
+    # Bilde, To bilder, Tre bilder: the same framed picture, one to three across
+    out.append(dict(navn='Bilde', former=hode(12) + bilderute('', 2, ML, 206, CW, 376, 121) + fot()))
+    out.append(dict(navn='To bilder', former=hode(13) + bilderute(1, 2, ML, 206, 530, 376, 131) + bilderute(2, 4, 660, 206, 530, 376, 135) + fot()))
+    f = hode(14)
+    for i in range(3):
+        f += bilderute(i + 1, 2 + i * 2, ML + i * 380, 206, 340, 376, 141 + i * 4)
+    out.append(dict(navn='Tre bilder', former=f + fot()))
+
+    # Fullskjerm: no title and no foot, the picture or the video is the whole slide
+    out.append(fullskjerm('Fullskjerm bilde', 'bilde', 'pic', 'Sett inn et bilde', 15))
+    out.append(fullskjerm('Fullskjerm video', 'video', 'media', 'Sett inn en video', 16))
+
+    # Stort tall: Stat, with the marker under the one number the eye should find
     out.append(dict(navn='Stort tall', former=hode(7) + [
         flate([[76, 318], [412, 311], [405, 384], [68, 389]], 'marker', navn='Tusj'),
         ph('merkelapp', 'body', 14, (ML, 214, 500, 26), stil(15, 'note', 'ink-soft', caps=True, spc=.08), 'Merkelapp', sz='quarter', krymp=False),
@@ -411,7 +437,7 @@ def oppsett(t):
         ph('fotnote', 'body', 16, (ML, 414, 500, 60), stil(20, 'body', 'ink-soft', linje=100), 'Hva tallet sammenlignes med', sz='quarter'),
         ph('tekst', 'body', 1, (670, 214, 520, 400), None, 'Klikk for å legge til tekst', sz='half')] + fot()))
 
-    # 8. Notatlapp: .b-note, a little crooked, with a strip of tape
+    # Notatlapp: .b-note, a little crooked, with a strip of tape
     tilt = -1.2
     out.append(dict(navn='Notatlapp', former=hode(8) + [
         ph('tekst', 'body', 1, (ML, 206, 560, 408), None, 'Klikk for å legge til tekst', sz='half'),
@@ -419,13 +445,13 @@ def oppsett(t):
         rekt(906, 204, 116, 30, 'tape', 70, rot=2, kant=('ink', .8, 25), navn='Teip'),
         ph('notat', 'body', 2, (750, 222, 420, 360), stil(24, 'note', 'on-marker', linje=105), 'husk: skriv det ene her', sz='quarter', rot=tilt, ins=30, anker='ctr', navn='Notat')] + fot()))
 
-    # 9. Innhold og margnotat: .b-scribble in the margin and an arrow that points at the content
+    # Innhold og margnotat: .b-scribble in the margin and an arrow that points at the content
     out.append(dict(navn='Innhold og margnotat', former=hode(9) + [
         ph('innhold', None, 1, (ML, 206, 790, 408), None, 'Klikk for å legge til tekst', navn='Innhold'),
         ph('margnotat', 'body', 2, (940, 250, 250, 170), stil(19, 'note', 'ink-soft', linje=105), 'en kommentar i margen', sz='quarter'),
         strek({'type': 'arrow', 'x1': 1010, 'y1': 440, 'x2': 900, 'y2': 500, 'bend': -.25, 'seed': 91, 'wobble': 2.4}, navn='Pil')] + fot()))
 
-    # 10. Bare tittel, 11. Tomt
+    # Bare tittel, Tomt
     out.append(dict(navn='Bare tittel', type='titleOnly', former=hode(10) + fot()))
     out.append(dict(navn='Tomt', type='blank', former=[ramme(11)] + fot()))
     return out
@@ -525,7 +551,7 @@ def eksempel(versjon):
             (1, 'Skriv «Hopp per runde økte i R4», ikke «Resultater».'),
             (1, 'Farge er effekt: tusj på det ene øyet skal finne.'),
             (1, 'Merk eksempeldata som eksempeldata i stikkordet eller bunnteksten.')]), []),
-        (0, 'Seksjon', dict(bunn, kicker='Del 2', tittel='Oppsettene', tekst='Elleve oppsett i Papir, og de samme elleve i Kull.'), []),
+        (0, 'Seksjon', dict(bunn, kicker='Del 2', tittel='Oppsettene', tekst='De samme oppsettene i Papir og i Kull.'), []),
         (0, 'To kolonner', dict(bunn, kicker='Temaer', tittel='Papir i dagslys, Kull i et mørkt rom', venstre=[
             'Papir er det lyse arket. Det passer på skjerm, på utskrift og i et lyst møterom.',
             (1, 'Grafitt på nesten hvitt papir.'), (1, 'Standardvalget.')], hoyre=[
@@ -539,6 +565,9 @@ def eksempel(versjon):
             'Ruta med kryss står der til bildet kommer. Den sier at noe mangler, uten å late som noe annet.',
             'Slipp et bilde på ruta, så dekker det krysset og blir liggende inni blyantramma.'],
             bilde=None, bildetekst='Plassholder for et bilde'), []),
+        (0, 'Tre bilder', dict(bunn, kicker='Bilder', tittel='Hvert bilde får sin egen blyantramme',
+                               bilde1=None, bildetekst1='Før', bilde2=None, bildetekst2='Underveis', bilde3=None, bildetekst3='Etter'), []),
+        (0, 'Fullskjerm bilde', dict(bilde=None), []),
         (0, 'Stort tall', dict(bunn, kicker='Testflaten · eksempeldata', tittel='Hopp per runde økte i R4',
                                merkelapp='Hopp i runde 4', tall='31', fotnote='mot 19 i runde 3',
                                tekst=['Ett tall får hele venstre side, og tusjen ligger under det.',
@@ -553,7 +582,7 @@ def eksempel(versjon):
                  [3, 2, 2, 2], idx=1)]),
         (0, 'Bare tittel', dict(bunn, kicker='Testflaten · eksempeldata', tittel='Hopp per runde'), bars),
         (1, 'Tittel', dict(bunn, kicker='Blyant · Kull', tittel='Det samme arket,\ni mørket',
-                           undertittel='Kull har de samme elleve oppsettene. Velg tema når du lager en ny slide.'), []),
+                           undertittel='Kull har de samme oppsettene. Velg tema når du lager en ny slide.'), []),
         (1, 'Tre bokser', dict(bunn, kicker='Arkitektur', tittel='Tre lag',
                                boks1='Struktur', tekst1='Rammer og hierarki. Endres sjelden når den først sitter.',
                                boks2='Skall', tekst2='Font, strek og hjørner. Det eneste laget som byttes når merkevaren kommer.',

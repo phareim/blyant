@@ -1,6 +1,6 @@
 # Presentasjonsmal for PowerPoint
 
-Blyant som PowerPoint-mal: temaene Papir og Kull, elleve oppsett i hvert, skriftene, graf-fargene, en tabellstil og blyantstreker som er tegnet av `Blyant.rough`. Malen bygges fra `tokens.json` og `src/blyant.js`, så den følger designsystemet og har samme versjon som pakken.
+Blyant som PowerPoint-mal: temaene Papir og Kull, seksten oppsett i hvert, skriftene, graf-fargene, en tabellstil og blyantstreker som er tegnet av `Blyant.rough`. Malen bygges fra `tokens.json` og `src/blyant.js`, så den følger designsystemet og har samme versjon som pakken.
 
 ![Oppsett fra malen](presentasjonsmal.png)
 
@@ -45,14 +45,21 @@ En graf du setter inn i PowerPoint, får graf-fargene av seg selv. En ny form er
 | Tittel og innhold | Det vanlige: tekst, tabell, graf eller bilde under tittelen. |
 | To kolonner | To ting ved siden av hverandre, med en lett blyantstrek mellom. |
 | Tre bokser | Tre likestilte poeng, hvert i sin `Box` med overskrift og tekst. |
-| Bilde og tekst | Tekst til venstre, bilde til høyre. Ruta med kryss (`Placeholder`) står til bildet kommer. |
+| Bilde og tekst | Tekst til venstre, bilde til høyre i blyantramme. |
+| Bilde | Ett stort bilde i blyantramme under tittelen, med bildetekst. |
+| To bilder | To bilder side om side, hvert i sin ramme med bildetekst. |
+| Tre bilder | Tre bilder på rad: før, underveis, etter. |
+| Fullskjerm bilde | Bildet er hele lysbildet, fra kant til kant. Ingen tittel og ingen bunntekst. |
+| Fullskjerm video | Det samme for en video. |
 | Stort tall | Ett tall (`Stat`) med tusj under, og teksten som sier hva det betyr. |
 | Notatlapp | En `Note` med teip, litt skjev. Til det ene de skal huske. |
 | Innhold og margnotat | Innhold med en kommentar i margen og en pil som peker. |
 | Bare tittel | Til en figur du tegner selv. |
 | Tomt | Bare ramma. |
 
-Alle oppsett har stikkordet over tittelen og en bunntekst i mono: tekst til venstre, dato og nummer til høyre. Bunnteksten slår du på under Sett inn → Topptekst og bunntekst. Første nivå i en tekstboks er et avsnitt uten punkt. Trykk Tab for en liste med den lille ringen fra prosa-listene.
+**Bilder.** Der et bilde skal inn, står ruta med kryss (`Placeholder`) til bildet kommer. Klikk på ikonet i ruta eller slipp et bilde på den. Bildet beskjæres så det fyller ruta, og blyantramma ligger rundt det. Ramma hører til oppsettet og ikke til bildet: flytter du bildet, blir ramma stående. I fullskjerm dekker bildet hele lysbildet, også ramma rundt arket.
+
+Alle oppsett utenom fullskjerm har stikkordet over tittelen og en bunntekst i mono: tekst til venstre, dato og nummer til høyre. Bunnteksten slår du på under Sett inn → Topptekst og bunntekst. Første nivå i en tekstboks er et avsnitt uten punkt. Trykk Tab for en liste med den lille ringen fra prosa-listene.
 
 ## Retningslinjer
 
@@ -97,7 +104,7 @@ felt[15].text = "31"
 p.save("presentasjon.pptx")
 ```
 
-Plassholderne har faste `idx`: tittel 0, hovedinnhold 1, stikkord 13. Resten står i `oppsett()` i `mal/potx.py`.
+Plassholderne har faste `idx`: tittel 0, hovedinnhold 1, stikkord 13. Bilder har 2, 4 og 6 fra venstre, og bildeteksten under har tallet etter (3, 5 og 7). Et bilde settes inn med `felt[2].insert_picture("bilde.png")`. Resten står i `oppsett()` i `mal/potx.py`.
 
 ## Bygging
 

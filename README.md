@@ -45,7 +45,7 @@ Andre måter å hente filene på:
 | `dist/blyant-core.css` | Det samme uten `@import` av fontene, for sider som leverer fontene selv (se Typografi) |
 | `dist/tokens.css` | Bare tokens som CSS-variabler (Papir og Kull) |
 | `dist/blyant.js` | `Blyant`: streker, `ink`, `figure`, `doodle`, `Sketch3D`, `Sketch2D`, `HexBoard`, `hexgrid`, `chart` og `frames` |
-| `dist/blyant.potx` | PowerPoint-malen: Papir og Kull, elleve oppsett i hvert. `dist/blyant-eksempel.pptx` viser dem fylt ut |
+| `dist/blyant.potx` | PowerPoint-malen: Papir og Kull, seksten oppsett i hvert. `dist/blyant-eksempel.pptx` viser dem fylt ut |
 | `tokens.json` | Kilden til alle tokens |
 | `src/` | Kildekoden; `src/blyant.d.ts` beskriver API-et |
 | `docs/komponenter/` | Retningslinjer per komponent |
