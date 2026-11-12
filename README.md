@@ -37,24 +37,28 @@ Andre måter å hente filene på:
 - `npm install blyant`, og importer `blyant/dist/blyant.css` og `blyant/dist/blyant.js` i byggeverktøyet ditt. Typene ligger i `src/blyant.d.ts`.
 - Siste versjon fra `main`, uten fast versjon: `https://phareim.github.io/blyant/dist/blyant.css` og `…/dist/blyant.js`. Greit til skisser, men den endrer seg uten varsel.
 
+**PowerPoint.** Blyant finnes også som presentasjonsmal, med samme versjon som pakken: [blyant.potx](https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant.potx) er malen, og [blyant-eksempel.pptx](https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant-eksempel.pptx) viser oppsettene fylt ut. Installer Caveat, Architects Daughter og Cutive Mono først. Se [docs/presentasjonsmal.md](docs/presentasjonsmal.md).
+
 | Fil | Hva |
 | --- | --- |
 | `dist/blyant.css` | Fonter, tokens og alle komponenter i én fil |
 | `dist/blyant-core.css` | Det samme uten `@import` av fontene, for sider som leverer fontene selv (se Typografi) |
 | `dist/tokens.css` | Bare tokens som CSS-variabler (Papir og Kull) |
 | `dist/blyant.js` | `Blyant`: streker, `ink`, `figure`, `doodle`, `Sketch3D`, `Sketch2D`, `HexBoard`, `hexgrid`, `chart` og `frames` |
+| `dist/blyant.potx` | PowerPoint-malen: Papir og Kull, elleve oppsett i hvert. `dist/blyant-eksempel.pptx` viser dem fylt ut |
 | `tokens.json` | Kilden til alle tokens |
 | `src/` | Kildekoden; `src/blyant.d.ts` beskriver API-et |
 | `docs/komponenter/` | Retningslinjer per komponent |
+| `mal/` | Bygger PowerPoint-malen fra `tokens.json` og `Blyant.rough` (trenger Node). Se `docs/presentasjonsmal.md` |
 | `examples/hex-skisse/` | Testflaten: hex-spill, nettside, dokument, presentasjon, grafer, former og system |
 | `skills/blyant/` | Skillen som gjør Blyant til standard-designsystemet for agenter, og som sier når nye elementer skal bygges inn her |
 | `release.py` | Gir ut en ny versjon på npm |
 
-Endrer du `tokens.json` eller noe i `src/`, kjør `python3 build.py` for å bygge `dist/` og eksempelet på nytt, og commit resultatet. Siden på GitHub Pages bygges av en workflow (`.github/workflows/pages.yml`) ved hver push til `main`, så den er alltid i takt med kildekoden. Workflowen varsler hvis `dist/` i repoet er utdatert.
+Endrer du `tokens.json`, noe i `src/` eller noe i `mal/`, kjør `python3 build.py` for å bygge `dist/` og eksempelet på nytt, og commit resultatet. Siden på GitHub Pages bygges av en workflow (`.github/workflows/pages.yml`) ved hver push til `main`, så den er alltid i takt med kildekoden. Workflowen varsler hvis `dist/` i repoet er utdatert.
 
 **Design System i Claude.** Blyant finnes også som en Design System-artefakt i Claude. Den bygges fra repoet med `python3 build.py --ds`, som legger filene i `build/ds/`: kodebunten fra `src/`, README-ene fra `docs/komponenter/`, forhåndsvisningene fra `designsystem/forhandsvisning/` og omslagsteksten fra `designsystem/README.md`. En ny komponent trenger alle tre: navnet i `@ds-bundle`-linja øverst i `src/blyant.js`, en `.md` og en forhåndsvisning. Bygget stopper hvis de ikke stemmer. Se `CLAUDE.md` for hvordan artefakten publiseres.
 
-**Ny versjon på npm.** Hver endring i `src/` eller `tokens.json` gir en ny versjon. Kjør `python3 release.py patch` for rettelser og `python3 release.py minor` for nye komponenter og endret API. Skriptet øker versjonen i `package.json` og i jsDelivr-lenkene over, bygger, committer, tagger og pusher, og venter til npm har versjonen. Workflowen `.github/workflows/npm.yml` bygger og publiserer pakken når taggen kommer. Den trenger hemmeligheten `NPM_TOKEN` i repoet.
+**Ny versjon på npm.** Hver endring i `src/`, `tokens.json` eller `mal/` gir en ny versjon, og PowerPoint-malen får den samme. Kjør `python3 release.py patch` for rettelser og `python3 release.py minor` for nye komponenter og endret API. Skriptet øker versjonen i `package.json` og i jsDelivr-lenkene over, bygger, committer, tagger og pusher, og venter til npm har versjonen. Workflowen `.github/workflows/npm.yml` bygger og publiserer pakken når taggen kommer. Den trenger hemmeligheten `NPM_TOKEN` i repoet.
 
 Designsystemet finnes også som artefakt i Claude: <https://claude.ai/artifact/PHdDmrVn92a3Ly1Vx4398B>, og testflaten på <https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs>. Begge er private til du deler dem.
 
@@ -233,7 +237,7 @@ Se `docs/komponenter/Frames.md`.
 - **Gjøremål:** `.b-checklist` er lista: en rute å krysse av i, saken og et kort notat til høyre. `.b-tabs` over lista filtrerer den, og `.b-input--line` tar imot en ny sak. [do.phareim.no](https://do.phareim.no) er satt slik.
 - **Samtale og kommentarer:** `.b-thread` er samtalen mellom leseren og én annen, i ren tekst: hvem, når og teksten. Leserens egne kommentarer står inn fra venstre på en lapp, den andre skriver rett på arket. `--pending` viser tre blyantprikker mens svaret kommer, `--failed` et ✗ og «Prøv igjen». `.b-thread__form` er feltet og knappen under. Den passer like godt i en bred spalte under et dokument som i et sidepanel på 320 px.
 - **Lenker og lesing:** `.b-linkcard` er kortet for en lenke eller en artikkel: bilde, nettsted, tittel, beskrivelse og en fot med valg som «Legg i Reader». `.b-linkcard--compact` er uten bilde, til lister, og `.b-linkcard--row` har et lite bilde til venstre. Til lenker limt inn på en tavle og til lister i en leser.
-- **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`.
+- **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`. Skal presentasjonen lages i PowerPoint, bruk malen `dist/blyant.potx`: de samme delene som oppsett, i Papir og Kull. Se [docs/presentasjonsmal.md](docs/presentasjonsmal.md).
 - **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå. Et 2D-spill som tegner på eget lerret, får blyanten med `Blyant.Sketch2D`.
 - **Tegneserie og storyboard:** `Blyant.frames` på en flate med fast sideforhold, innhold i `rute.body`.
 - **Dashbord og rapport:** en rad `Blyant.chart.stat` øverst, ett filter-rad over grafene, og grafer i `.b-box`-kort med en «Vis tabell»-knapp.

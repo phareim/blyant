@@ -35,6 +35,8 @@ Med byggeverktøy (Vite, Nuxt): `npm install blyant@X.Y.Z`, og importer `blyant/
 
 **Artefakter i Claude:** en artefakt kan bare hente stilark fra Google Fonts, og skript bare i versjoner som er minst to uker gamle. En jsDelivr-lenke til Blyant virker derfor ikke. Legg `dist/blyant.css` og `dist/blyant.js` inline i siden, slik `examples/hex-skisse/index.html` er bygget. Ta dem fra `~/github/blyant/dist/`, eller last ned den faste versjonen fra jsDelivr hvis repoet ikke er der. Ikke bruk `components/bundle.css` fra Design System-artefakten: den mangler tokenene og Kull-temaet.
 
+**PowerPoint:** bruk malen, ikke bygg utseendet for hånd. `dist/blyant.potx` er malen for den som lager presentasjonen selv, og `dist/blyant-eksempel.pptx` er den samme med oppsettene fylt ut. Hent en fast versjon: `https://cdn.jsdelivr.net/npm/blyant@X.Y.Z/dist/blyant-eksempel.pptx`. Lager du filen med kode, start fra eksempelet, fjern eksempel-slidene og legg til nye fra oppsettene i Papir eller Kull. `~/github/blyant/docs/presentasjonsmal.md` har oppsettene, plassholderne og et eksempel med `python-pptx`. Caveat, Architects Daughter og Cutive Mono må være installert der presentasjonen åpnes og der du gjengir den for å se over. Streker og figurer malen ikke har, tegner du med `Blyant.rough`. Mangler et oppsett som kan brukes igjen, legges det inn i `mal/potx.py` i Blyant, slik regelen under sier.
+
 Lys og mørk følger `prefers-color-scheme`. `data-theme="light"` eller `"dark"` på `<html>` overstyrer. Temaene heter Papir og Kull.
 
 Til et ferdig design med en merkevare skriver du et nytt skall med `data-skin`, slik README-en viser. Klassene i markupen blir stående.
@@ -50,7 +52,7 @@ Er du i tvil, regn det som noe som kan brukes igjen. Si i rapporten hva som ble 
 
 ## Når Blyant endres
 
-Hver endring i det pakken leverer (`src/`, `tokens.json`) gir en ny versjon på npm, gitt ut i samme økt. `~/github/blyant/CLAUDE.md` har stegene, og `python3 release.py` gjør dem. Til slutt gjelder dette:
+Hver endring i det pakken leverer (`src/`, `tokens.json`, `mal/`) gir en ny versjon på npm, gitt ut i samme økt. PowerPoint-malen har samme versjon som pakken. `~/github/blyant/CLAUDE.md` har stegene, og `python3 release.py` gjør dem. Til slutt gjelder dette:
 
 - Versjonen gis ut fra `main`. Gjøres arbeidet på en gren eller i en PR, gis den ut etter merge.
 - Utgivelsen er ferdig når `npm view blyant version` viser den nye versjonen. At taggen er pushet, er ikke nok.

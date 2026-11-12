@@ -5,9 +5,11 @@ Håndtegnet designsystem. Vanilla JS og CSS, ingen avhengigheter. Brukeren skriv
 ## Kilder og bygg
 
 - `src/` og `tokens.json` er kilden. `dist/` og `examples/hex-skisse/index.html` er generert: kjør `python3 build.py` og commit resultatet.
+- `mal/` bygger PowerPoint-malen `dist/blyant.potx` og `dist/blyant-eksempel.pptx` fra `tokens.json` og `Blyant.rough`. `build.py` kjører den, og den trenger Node. Retningslinjene står i `docs/presentasjonsmal.md`.
 - `docs/komponenter/<Navn>.md` er retningslinjene per komponent. `designsystem/forhandsvisning/<Navn>.html` er forhåndsvisningen i Design System-artefakten.
 - Ny komponent: legg navnet i `@ds-bundle`-linja øverst i `src/blyant.js`, skriv `docs/komponenter/<Navn>.md` og `designsystem/forhandsvisning/<Navn>.html`, og oppdater `src/blyant.d.ts` og README.
 - Sjekk visuelle endringer med Playwright-skjermbilder av `examples/hex-skisse/index.html`, i både lyst (Papir) og mørkt (Kull) tema og på mobilbredde.
+- Sjekk endringer i malen ved å gjøre `dist/blyant-eksempel.pptx` om til PDF med LibreOffice og se på hver slide, i Papir og Kull. Caveat, Architects Daughter og Cutive Mono må være installert, ellers stemmer ikke bildet. Endres et oppsett, oppdater tabellen i `docs/presentasjonsmal.md` og bildet `docs/presentasjonsmal.png`.
 
 ## Design System-artefakten i Claude
 
@@ -27,9 +29,9 @@ Testflaten er også publisert som en artefakt: https://claude.ai/artifact/Eh4C4o
 ## Publisering
 
 - GitHub Pages bygges av `.github/workflows/pages.yml` ved push til `main`.
-- **Hver endring i det pakken leverer (`src/`, `tokens.json`) gir en ny versjon på npm, gitt ut i samme økt.** Endringer bare i dokumentasjon, forhåndsvisninger, `skills/`, `CLAUDE.md` eller verktøy gir ingen ny versjon.
-  - `patch` gjelder rettelser og justeringer. `minor` gjelder en ny komponent, et nytt valg eller et endret API. Før 1.0 er brudd også `minor`.
-  - Kjør `python3 release.py patch|minor` fra `main` med et rent arbeidstre. Skriptet øker versjonen i `package.json` og i jsDelivr-lenkene i README, bygger, committer, tagger `v<versjon>` og pusher `main` og taggen. Så venter det til npm viser versjonen.
+- **Hver endring i det pakken leverer (`src/`, `tokens.json`, `mal/`) gir en ny versjon på npm, gitt ut i samme økt.** PowerPoint-malen har pakkens versjon i seg, så den versjoneres sammen med resten. Endringer bare i dokumentasjon, forhåndsvisninger, `skills/`, `CLAUDE.md` eller verktøy gir ingen ny versjon.
+  - `patch` gjelder rettelser og justeringer. `minor` gjelder en ny komponent, et nytt valg, et endret API eller et nytt oppsett i malen. Før 1.0 er brudd også `minor`.
+  - Kjør `python3 release.py patch|minor` fra `main` med et rent arbeidstre. Skriptet øker versjonen i `package.json` og i jsDelivr-lenkene i README, bygger (malen får den nye versjonen), committer, tagger `v<versjon>` og pusher `main` og taggen. Så venter det til npm viser versjonen.
   - Workflowen `.github/workflows/npm.yml` publiserer når taggen kommer. Versjonen i taggen må være lik `version` i `package.json`.
   - Arbeid på en gren eller i en PR gis ut etter merge til `main`, ikke fra grenen.
   - Utgivelsen er ferdig når `npm view blyant version` viser den nye versjonen. Feiler workflowen, se `gh run list --workflow npm.yml`.

@@ -7,6 +7,8 @@ dist/tokens.css   – fargene (Papir/Kull), avstander, strek og skrift som CSS-v
 dist/blyant.css   – fonter + tokens + komponenter (én fil å lenke til)
 dist/blyant-core.css – det samme uten @import av fontene, for sider som leverer fontene selv
 dist/blyant.js    – Blyant (streker, komponenter, Sketch3D, HexBoard) + Blyant.chart + Blyant.frames + Blyant.Sketch2D
+dist/blyant.potx  – PowerPoint-malen, med samme versjon som pakken (mal/potx.py, trenger Node)
+dist/blyant-eksempel.pptx – oppsettene i malen fylt ut
 examples/hex-skisse/index.html – testflaten, ferdig bygget
 
     python3 build.py --ds
@@ -15,6 +17,8 @@ build/ds/project/ – filene til Design System-artefakten i Claude, bygget fra s
                     tokens.json, docs/komponenter/ og designsystem/. Se CLAUDE.md.
 """
 import json, os, re, shutil, sys
+
+from mal import potx
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 T = json.load(open(os.path.join(ROOT, 'tokens.json')))
@@ -117,5 +121,6 @@ if __name__ == '__main__':
             '<style>body { margin: 0; } [hidden] { display: none !important; }</style>\n'
             '</head>\n<body>\n' + page + '\n</body>\n</html>\n')
     write(os.path.join(ex, 'index.html'), page)
+    potx.bygg()
     if '--ds' in sys.argv:
         design_system()
