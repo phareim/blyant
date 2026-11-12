@@ -17,8 +17,8 @@
   },
   "lastChange": {
     "by": "Claude",
-    "at": "2026-11-12T09:22:10Z",
+    "at": "2026-11-12T10:20:00Z",
     "via": "Claude Code",
-    "note": "Thread: ny komponent for en samtale i ren tekst mellom leseren og Claude, med egne kommentarer på en lapp, «skriver …» med blyantprikker, feilet svar med «Prøv igjen» og et skjema under."
+    "note": "Testflaten har fått en forside med oversikt over alle flatene og komponentene; hex-spillet er en underside. Thread er ny i 0.11.0."
   }
 }

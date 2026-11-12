@@ -50,7 +50,7 @@ Andre måter å hente filene på:
 | `src/` | Kildekoden; `src/blyant.d.ts` beskriver API-et |
 | `docs/komponenter/` | Retningslinjer per komponent |
 | `mal/` | Bygger PowerPoint-malen fra `tokens.json` og `Blyant.rough` (trenger Node). Se `docs/presentasjonsmal.md` |
-| `examples/hex-skisse/` | Testflaten: hex-spill, nettside, dokument, presentasjon, grafer, former og system |
+| `examples/hex-skisse/` | Testflaten: en forside med oversikt over flatene og komponentene, og undersidene hex-spill, nettside, dokument, presentasjon, grafer, ruter, former og system |
 | `skills/blyant-presentasjon/` | Skillen for presentasjoner: definisjonen fra en samtale, eksporten til `.pptx` (`lag_presentasjon.py`) og reglene for arbeid i PowerPoint |
 | `skills/blyant/` | Skillen som gjør Blyant til standard-designsystemet for agenter, og som sier når nye elementer skal bygges inn her |
 | `release.py` | Gir ut en ny versjon på npm |
@@ -63,7 +63,7 @@ Endrer du `tokens.json`, noe i `src/` eller noe i `mal/`, kjør `python3 build.p
 
 Designsystemet finnes også som artefakt i Claude: <https://claude.ai/artifact/PHdDmrVn92a3Ly1Vx4398B>, og testflaten på <https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs>. Begge er private til du deler dem.
 
-Se systemet i bruk på testflaten: [Hex-skisse](https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs). Der hopper en figur fra hex til hex, og skissene under spillet lenker videre til nettside, dokument, presentasjon, grafer, former og system.
+Se systemet i bruk på testflaten: [Blyant skissebok](https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs). Forsiden gir oversikt over alt som finnes: flatene som skisser (hex-spillet, nettside, dokument, presentasjon, grafer, tegneserieruter, former og system) og hver komponent som en liten prøve.
 
 ## Prinsipper
 

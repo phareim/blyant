@@ -25,36 +25,173 @@
   /* --------------------------------------------------------------- */
   var VIEWS = {};
 
+  /* ---------- Oversikt (front page) ---------- */
+  var DOCS = "https://github.com/phareim/blyant/blob/main/docs/komponenter/";
+  var SURFACES = [
+    ["spill", "Hex-flaten", "Et lite spill: en figur, 61 sekskanter og seks fargesteiner, tegnet i 3D."],
+    ["nettside", "Nettside", "Navigasjon, hero, kort, skjema, tabell og bunntekst."],
+    ["dokument", "Dokument", "Artikkel med ingress, overstrykning, margnotater og figur."],
+    ["presentasjon", "Presentasjon", "16:9-slides med håndtegnede diagrammer."],
+    ["grafer", "Grafer", "Linjer, stolper, punkter og nøkkeltall i blyant."],
+    ["ruter", "Tegneserieruter", "Fyll en flate med ruter, fra rolig rutenett til skjeve kutt."],
+    ["former", "Former i 2D og 3D", "Rå streker, skravur, fargeblyanter, three.js-laben og blyanten over et bilde."],
+    ["system", "System", "Farger, skrift, avstander og komponentene i full størrelse."]
+  ];
+  // A drawing of the hex board for its thumbnail: the real one is a WebGL scene.
+  function hexThumb(stage) {
+    var shapes = [], fills = { "0,0": "--marker", "2,-1": "--dust-blue", "-2,1": "--dust-green", "1,2": "--dust-red", "-1,-2": "--dust-purple", "3,-2": "--dust-orange" };
+    [[0, 0]].concat(B.hexgrid.ring(1), B.hexgrid.ring(2), B.hexgrid.ring(3)).forEach(function (c, i) {
+      var xz = B.hexgrid.toXZ(c[0], c[1], 62), f = fills[c[0] + "," + c[1]];
+      var h = { type: "hex", cx: 564 + xz[0], cy: 400 + xz[1] * 0.82, r: 56, seed: 200 + i };
+      if (f) { h.fill = "var(" + f + ")"; h.fillOpacity = 0.75; }
+      shapes.push(h);
+    });
+    shapes.push({ type: "circle", cx: 564, cy: 372, r: 22, fill: "var(--paper)", width: 3, seed: 7 }, { type: "line", x1: 564, y1: 394, x2: 564, y2: 404, width: 3, seed: 8 });
+    var s = figureInto(stage, 1128, 800, shapes);
+    s.style.width = "100%"; s.style.color = "var(--ink)";
+  }
+  // Every component as a small specimen: [name, what it is, where the site shows it (else its doc), markup or a function that fills the stage].
+  var PIECES = [
+    ["Kontroller", [
+      ["Button", "Knapper: vanlig, viktigst og tusj.", "system", '<div class="row"><button class="b-btn b-btn--primary" type="button">Lagre</button><button class="b-btn" type="button">Avbryt</button><button class="b-btn b-btn--marker b-btn--sm" type="button">Prøv</button></div>'],
+      ["Field", "Felt med navn og hjelpetekst.", "system", '<label class="b-field"><span class="b-field__label">Navn på brett</span><input class="b-input" value="Myra ved vannet"><span class="b-field__hint">Vises øverst på kartet</span></label>'],
+      ["Check", "Avkryssing, radio og bryter.", "system", '<div class="stack" style="gap:6px"><label class="b-check"><input type="checkbox" checked><span class="b-check__box"></span>Vis naboer</label><label class="b-check b-check--radio"><input type="radio" checked><span class="b-check__box"></span>Flat topp</label><label class="b-switch"><input type="checkbox" checked><span class="b-switch__track"></span><span>Skravering</span></label></div>'],
+      ["Tabs", "Faner over innhold som byttes.", "system", '<div class="b-tabs" role="tablist"><button class="b-tab" role="tab" aria-selected="true" type="button">Brett</button><button class="b-tab" role="tab" aria-selected="false" type="button">Figurer</button><button class="b-tab" role="tab" aria-selected="false" type="button">Steiner</button></div>'],
+      ["Menu", "Lappen med valg: palett, forslag, innstillinger.", null, '<ul class="b-menu" role="listbox"><li class="b-menu__item is-active" role="option"><span class="b-menu__text">Dagens dato</span><span class="b-menu__hint">/dato</span></li><li class="b-menu__item" role="option"><span class="b-menu__text">Strek</span><span class="b-menu__hint">/strek</span></li><li class="b-menu__item" role="option" aria-checked="true"><span class="b-menu__text">Papir</span></li></ul>'],
+      ["Toolbar", "Paletten med verktøy på et lerret.", "system", function (st) {
+        st.innerHTML = '<div class="b-toolbar" role="toolbar" aria-label="Verktøy">' + ["flytt", "blyant", "tekst", "spor"].map(function (n, i) { return '<button class="b-toolbar__btn" type="button" aria-pressed="' + (i === 1) + '" aria-label="' + n + '"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="' + n + '"></svg></button>'; }).join("") + "</div>";
+        Array.prototype.forEach.call(st.querySelectorAll("svg[data-icon]"), function (sv) {
+          var ic = TOOL_ICONS[sv.getAttribute("data-icon")];
+          if (ic) B.figure(sv, ic.map(function (p) { return Object.assign({ width: 3.6 }, p); }), { wobble: 0.7 });
+        });
+      }],
+      ["Toast", "Beskjeden som ligger oppå et øyeblikk.", null, '<div class="b-toast" role="status"><span>Slettet «Myra»</span><button class="b-toast__action" type="button">Angre</button></div>']
+    ]],
+    ["Innhold", [
+      ["Box", "Ramme rundt noe som hører sammen.", "system", '<div class="b-box" style="width:100%"><span class="b-label">Brett</span><p class="t-small" style="margin-top:4px">61 sekskanter, seks steiner.</p></div>'],
+      ["Note", "Notatlapp med teip, litt skjev.", "system", '<div class="b-note" style="--b-tilt:-1.5deg"><span class="t-h3">Husk</span><p class="t-small" style="margin-top:4px">Skisse først, stil etterpå.</p></div>'],
+      ["Tag", "Merker og status, alltid med et ord.", "system", '<div class="row"><span class="b-tag">Utkast</span><span class="b-tag b-tag--green"><span class="b-dot"></span>Klar</span><span class="b-tag b-tag--red"><span class="b-dot"></span>Feil</span><span class="b-kbd">Q</span></div>'],
+      ["Marker", "Overstrykningstusj bak det viktige.", "dokument", '<p class="t-lead" style="margin:0">Grafitt bærer alt, og <mark>farge er en effekt</mark>.</p>'],
+      ["Table", "Tabell med tall i kolonner.", "nettside", '<div class="b-table-wrap"><table class="b-table"><thead><tr><th>Brett</th><th class="num">Hexer</th></tr></thead><tbody><tr><td>Myra</td><td class="num">61</td></tr><tr><td>Fjellet</td><td class="num">91</td></tr></tbody></table></div>'],
+      ["Placeholder", "Plass til et bilde som ikke finnes ennå.", "system", '<div class="b-ph" style="--ratio:16/7;width:100%"><span>bilde 16:7</span></div>'],
+      ["Empty", "Tom tilstand med en liten tegning.", null, '<div class="b-empty"><svg class="b-empty__art" data-doodle="ark" aria-hidden="true" style="width:72px"></svg><div class="b-empty__body"><p class="b-empty__title">Ingen brett ennå</p></div></div>'],
+      ["Checklist", "Gjøremål: rute, sak og et kort notat.", "system", '<ul class="b-checklist" style="width:100%"><li class="b-checklist__item"><label class="b-check"><input type="checkbox"><span class="b-check__box"></span></label><span class="b-checklist__title">Tegn kartet</span><span class="b-checklist__meta">I dag</span></li><li class="b-checklist__item is-done"><label class="b-check"><input type="checkbox" checked><span class="b-check__box"></span></label><span class="b-checklist__title">Spiss blyantene</span><span class="b-checklist__meta">I går</span></li></ul>'],
+      ["LinkCard", "Kort for en lenke eller en artikkel.", "system", '<article class="b-linkcard b-linkcard--compact" style="width:100%"><span class="b-linkcard__site">skisseboka.no</span><strong class="b-linkcard__title">Slik tegner du et hex-kart for hånd</strong><p class="b-linkcard__desc">Tre øvelser med blyant og papir.</p></article>'],
+      ["Thread", "Samtale i ren tekst mellom leseren og Claude.", "system", '<ol class="b-thread" style="width:100%"><li class="b-thread__msg b-thread__msg--own"><p class="b-thread__who">Petter <time>09:31</time></p><p class="b-thread__text">Er åpningen for lang?</p></li><li class="b-thread__msg"><p class="b-thread__who">Claude <time>09:31</time></p><p class="b-thread__text">Litt. Stryk første setning.</p></li></ol>'],
+      ["Entries", "Liste over innlegg eller dokumenter.", null, '<ul class="b-entries b-entries--compact" style="width:100%"><li class="b-entry"><span class="b-entry__title">Om å skisse først</span><time class="b-entry__meta">11. nov.</time></li><li class="b-entry"><span class="b-entry__title">Notater fra mandag</span><time class="b-entry__meta">9. nov.</time></li></ul>']
+    ]],
+    ["Tekst og sider", [
+      ["Nav", "Navigasjonslinja øverst på en side.", "nettside", '<nav class="b-nav" style="width:100%"><span class="b-nav__brand">Myra</span><ul class="b-nav__links"><li><span class="b-nav__link" aria-current="page">Brett</span></li><li><span class="b-nav__link">Om</span></li></ul></nav>'],
+      ["Prose", "Løpende tekst fra Markdown.", "dokument", '<article class="b-prose" style="width:100%"><h3 style="margin:0">Skisse først</h3><p style="margin:4px 0 0">Bestem hva som skal være på flaten, og hvordan det henger sammen.</p></article>'],
+      ["Sidenote", "Fotnoter som notater i margen.", "dokument", '<div><p class="t-small" style="margin:0">Streken tegnes to ganger.<sup>1</sup></p><p class="b-scribble" style="margin:6px 0 0">1 derfor ser den tegnet ut</p></div>'],
+      ["Editor", "Flaten du skriver på, med synlige markører.", null, '<div class="b-editor" style="--b-editor-size:19px;width:100%"><div class="b-editor__h2"><span class="b-editor__syntax">## </span>Om brygga</div><div>Brygga er <span class="b-editor__syntax">**</span><strong>gammel</strong><span class="b-editor__syntax">**</span>.</div></div>'],
+      ["Slide", "16:9-ramme som skalerer med bredden.", "presentasjon", '<div class="b-slide" style="width:100%"><div class="b-slide__kicker">Del 1</div><div class="b-slide__title">Én tanke per slide</div></div>']
+    ]],
+    ["Tegning", [
+      ["Rough", "Streker, former, piler og skravur i SVG.", "former", function (st) {
+        var sv = figureInto(st, 260, 110, [
+          { type: "rect", x: 8, y: 14, w: 70, h: 56, seed: 3 }, { type: "circle", cx: 128, cy: 42, r: 30, fill: "var(--dust-blue)", fillOpacity: 0.6, seed: 4 },
+          { type: "hex", cx: 214, cy: 42, r: 32, seed: 5 }, { type: "arrow", x1: 14, y1: 96, x2: 240, y2: 92, bend: 0.08, seed: 6 },
+          { type: "hatch", points: [[12, 18], [74, 18], [74, 66], [12, 66]], gap: 7, angle: 0.7, seed: 7 }]);
+        sv.style.width = "100%"; sv.style.color = "var(--ink)";
+      }],
+      ["Frames", "Tegneserieruter som fyller en flate.", "ruter", function (st) {
+        var box = document.createElement("div"); box.style.cssText = "flex:none;width:100%;height:118px;min-height:0"; st.appendChild(box);
+        B.frames(box, { count: 5, geometry: 0.7, seed: 4, gutter: 6 });
+      }],
+      ["Sketch3D", "three.js-scener tegnet med blyant.", "former", function (st) {
+        var sv = figureInto(st, 260, 120, [
+          { type: "poly", points: [[70, 44], [130, 20], [190, 44], [130, 68]], closed: true, seed: 11 },
+          { type: "poly", points: [[70, 44], [70, 92], [130, 116], [130, 68]], closed: true, fill: "var(--dust-orange)", fillOpacity: 0.5, seed: 12 },
+          { type: "poly", points: [[130, 68], [130, 116], [190, 92], [190, 44]], closed: true, seed: 13 },
+          { type: "hatch", points: [[130, 68], [130, 116], [190, 92], [190, 44]], gap: 6, angle: 0.9, seed: 14 }]);
+        sv.style.width = "100%"; sv.style.color = "var(--ink)";
+      }],
+      ["Sketch2D", "Blyanten over et ferdig bilde.", "former", function (st) {
+        var sv = figureInto(st, 260, 120, [
+          { type: "rect", x: 10, y: 10, w: 240, h: 100, seed: 21 },
+          { type: "poly", points: [[10, 96], [80, 40], [120, 74], [170, 28], [250, 100]], closed: false, seed: 22 },
+          { type: "circle", cx: 212, cy: 36, r: 13, fill: "var(--dust-yellow)", fillOpacity: 0.8, seed: 23 },
+          { type: "hatch", points: [[80, 40], [120, 74], [100, 96], [40, 96]], gap: 6, angle: 0.6, seed: 24 }]);
+        sv.style.width = "100%"; sv.style.color = "var(--ink)";
+      }],
+      ["HexBoard", "En hex-verden med en figur som hopper.", "spill", function (st) {
+        var shapes = [];
+        [[0, 0]].concat(B.hexgrid.ring(1)).forEach(function (c, i) {
+          var xz = B.hexgrid.toXZ(c[0], c[1], 24);
+          shapes.push({ type: "hex", cx: 130 + xz[0], cy: 60 + xz[1] * 0.82, r: 21, seed: 30 + i, fill: i === 0 ? "var(--marker)" : i === 3 ? "var(--dust-green)" : undefined, fillOpacity: 0.75 });
+        });
+        var sv = figureInto(st, 260, 120, shapes);
+        sv.style.width = "100%"; sv.style.color = "var(--ink)";
+      }]
+    ]],
+    ["Grafer", [
+      ["LineChart", "Linjer over tid, med etikett i enden.", "grafer", function (st) { chartBox(st).line({ x: ["man", "tir", "ons", "tor", "fre"], series: [{ name: "Hex-flaten", values: [140, 162, 171, 158, 190] }, { name: "Myra", values: [90, 88, 97, 110, 104] }] }); }],
+      ["BarChart", "Stolper, loddrett, vannrett eller stablet.", "grafer", function (st) { chartBox(st).bar({ categories: ["Myra", "Fjellet", "Øya", "Skogen"], series: [{ name: "Spilt", values: [61, 91, 37, 52] }], highlight: 1 }); }],
+      ["ScatterChart", "Punkter med to mål.", "grafer", function (st) { chartBox(st).scatter({ series: [{ name: "Brett", points: [[19, 4], [37, 9], [61, 12], [91, 21], [127, 26], [52, 15]] }] }); }],
+      ["Segments", "En helhet delt i deler.", "grafer", function (st) { chartBox(st).segments({ parts: [{ name: "Gress", value: 34 }, { name: "Vann", value: 15 }, { name: "Stein", value: 12 }] }); }],
+      ["Stat", "Nøkkeltall med endring og trend.", "grafer", function (st) { var b = document.createElement("div"); b.style.width = "100%"; st.appendChild(b); B.chart.stat(b, { label: "Spillere i dag", value: 190, delta: 12, deltaLabel: "fra i går", trend: [140, 162, 171, 158, 190] }); }]
+    ]]
+  ];
+  function chartBox(st) {
+    var b = document.createElement("div"); b.style.width = "100%"; st.appendChild(b);
+    var run = function (kind) { return function (p) { p.height = 150; try { B.chart[kind](b, p); } catch (e) { b.textContent = ""; } }; };
+    return { line: run("line"), bar: run("bar"), scatter: run("scatter"), segments: run("segments") };
+  }
+  VIEWS.oversikt = {
+    title: "Oversikt",
+    render: function (host) {
+      var count = PIECES.reduce(function (n, g) { return n + g[1].length; }, 0);
+      var d = document.createElement("div");
+      d.className = "stack-lg";
+      d.style.gap = "var(--space-12)";
+      d.innerHTML =
+        '<section class="cover"><span class="b-label">Håndtegnet designsystem</span><h1 class="t-display">Blyant</h1>' +
+        '<p class="b-lead">Sett rammer, innhold og flyt med blyant før noen bestemmer seg for farger og merkevare. Her er alt som finnes: ' + SURFACES.length + " flater og " + count + " komponenter.</p>" +
+        '<div class="row"><code class="cover__npm">npm install blyant</code><a class="back" href="https://github.com/phareim/blyant">Kildekode på GitHub →</a></div></section>' +
+        '<section class="stack-lg"><div class="sec-head"><h2>Flater</h2><p>Samme blyant og samme tokens på hver flate. Klikk på en skisse for å åpne den.</p></div><div class="thumbs" id="thumbs"></div></section>' +
+        PIECES.map(function (g, gi) {
+          return '<section class="stack-lg"><div class="sec-head"><h2>' + g[0] + '</h2></div><div class="pieces" data-group="' + gi + '"></div></section>';
+        }).join("");
+      host.appendChild(d);
+      var grid = d.querySelector("#thumbs");
+      SURFACES.forEach(function (t) {
+        var a = document.createElement("a");
+        a.className = "thumb";
+        a.href = "#" + t[0];
+        a.innerHTML = '<div class="thumb__ink b-box" data-ink="box"><div class="thumb__frame"><div class="thumb__stage b-page" inert aria-hidden="true"></div></div></div>' +
+          '<div><div class="thumb__title">' + t[1] + '</div><div class="thumb__text">' + t[2] + "</div></div>";
+        grid.appendChild(a);
+        var stage = a.querySelector(".thumb__stage");
+        if (t[0] === "spill") hexThumb(stage); else VIEWS[t[0]].render(stage, { thumb: true });
+        a.__stage = stage;
+      });
+      PIECES.forEach(function (g, gi) {
+        var list = d.querySelector('.pieces[data-group="' + gi + '"]');
+        g[1].forEach(function (c) {
+          var a = document.createElement("a");
+          a.className = "piece";
+          a.href = c[2] ? "#" + c[2] : DOCS + c[0] + ".md";
+          a.innerHTML = '<div class="piece__stage" inert aria-hidden="true"></div><div class="piece__name">' + c[0] + '</div><div class="piece__text">' + esc(c[1]) + "</div>";
+          list.appendChild(a);
+          var st = a.querySelector(".piece__stage");
+          if (typeof c[3] === "function") c[3](st); else st.innerHTML = c[3];
+        });
+      });
+      requestAnimationFrame(fitThumbs);
+    }
+  };
+
   /* ---------- Hex-flaten (game) ---------- */
   var game = null;          // { el, board } — created once, kept alive
   VIEWS.spill = {
     title: "Hex-flaten",
     render: function (host) {
       if (!game) game = makeGame();
+      var back = document.createElement("a");
+      back.className = "back"; back.href = "#oversikt"; back.textContent = "← Til oversikten";
+      host.appendChild(back);
       host.appendChild(game.el);
-      var th = document.createElement("section");
-      th.className = "stack-lg";
-      th.innerHTML = '<div class="sec-head"><h2>Muligheter i systemet</h2><p>Samme blyant, samme tokens, sju andre flater. Klikk på en skisse for å hoppe dit.</p></div><div class="thumbs" id="thumbs"></div>';
-      host.appendChild(th);
-      var grid = th.querySelector("#thumbs");
-      [["nettside", "Nettside", "Navigasjon, hero, kort, skjema, tabell og bunntekst."],
-        ["dokument", "Dokument", "Artikkel med ingress, overstrykning, margnotater og figur."],
-        ["presentasjon", "Presentasjon", "16:9-slides med håndtegnede diagrammer."],
-        ["grafer", "Grafer", "Linjer, stolper, punkter og nøkkeltall i blyant."],
-        ["ruter", "Tegneserieruter", "Fyll en flate med ruter, fra rolig rutenett til skjeve kutt."],
-        ["former", "Former i 2D og 3D", "Rå streker, skravur, fargeblyanter, three.js-laben og blyanten over et bilde."],
-        ["system", "System", "Farger, skrift, avstander og alle komponentene."]].forEach(function (t) {
-          var a = document.createElement("a");
-          a.className = "thumb";
-          a.href = "#" + t[0];
-          a.innerHTML = '<div class="thumb__ink b-box" data-ink="box"><div class="thumb__frame"><div class="thumb__stage b-page" inert aria-hidden="true"></div></div></div>' +
-            '<div><div class="thumb__title">' + t[1] + '</div><div class="thumb__text">' + t[2] + "</div></div>";
-          grid.appendChild(a);
-          var stage = a.querySelector(".thumb__stage");
-          VIEWS[t[0]].render(stage, { thumb: true });
-          a.__stage = stage;
-        });
-      requestAnimationFrame(function () { fitThumbs(grid); });
       game.board.enabled = true;
       game.board.sketch.start(function (dt, t) { game.board.tick(dt, t); });
       setTimeout(function () { game.board.sketch.resize(); }, 0);
@@ -63,14 +200,14 @@
       if (game) { game.board.enabled = false; game.board.sketch.stop(); }
     }
   };
-  function fitThumbs(grid) {
-    Array.prototype.forEach.call(grid.querySelectorAll(".thumb"), function (a) {
+  function fitThumbs() {
+    Array.prototype.forEach.call(document.querySelectorAll(".thumb"), function (a) {
       var frame = a.querySelector(".thumb__frame"), st = a.__stage;
-      var k = frame.clientWidth / 1200;
-      st.style.transform = "scale(" + k + ")";
+      if (!frame || !st) return;
+      st.style.transform = "scale(" + frame.clientWidth / 1200 + ")";
     });
   }
-  window.addEventListener("resize", function () { var g = document.getElementById("thumbs"); if (g) fitThumbs(g); });
+  window.addEventListener("resize", fitThumbs);
 
   function makeGame() {
     var el = document.createElement("section");
@@ -134,7 +271,7 @@
       var s = document.createElement("div");
       s.className = "site";
       s.innerHTML =
-        (o.thumb ? "" : '<div class="site-bar"><a class="back" href="#spill">← Til hex-flaten</a></div>') +
+        (o.thumb ? "" : '<div class="site-bar"><a class="back" href="#oversikt">← Til oversikten</a></div>') +
         '<section class="hero">' +
         '  <div class="stack-lg">' +
         '    <span class="b-label">Grafitt spill · vinter 2026</span>' +
@@ -211,7 +348,7 @@
       d.className = "doc";
       d.innerHTML =
         '<div class="doc__main">' +
-        (o.thumb ? "" : '<a class="back" href="#spill">← Til hex-flaten</a>') +
+        (o.thumb ? "" : '<a class="back" href="#oversikt">← Til oversikten</a>') +
         '  <span class="b-label">Notat · Spillmekanikk</span>' +
         "  <h1>Slik bygger du en hex-verden</h1>" +
         '  <div class="doc__meta"><span class="b-avatar" style="width:34px;height:34px;font-size:16px">PH</span><span>Skrevet i skisseboka</span><span>·</span><span>9. november 2026</span><span>·</span><span>4 min lesing</span></div>' +
@@ -336,7 +473,7 @@
       o = o || {};
       var d = document.createElement("section");
       d.className = "deck";
-      d.innerHTML = (o.thumb ? "" : '<div class="deck__bar"><a class="back" href="#spill">← Til hex-flaten</a><div class="row"><button class="b-btn b-btn--sm" type="button" id="prev" aria-label="Forrige slide">←</button><span class="deck__count" id="count"></span><button class="b-btn b-btn--sm" type="button" id="next" aria-label="Neste slide">→</button></div></div>') +
+      d.innerHTML = (o.thumb ? "" : '<div class="deck__bar"><a class="back" href="#oversikt">← Til oversikten</a><div class="row"><button class="b-btn b-btn--sm" type="button" id="prev" aria-label="Forrige slide">←</button><span class="deck__count" id="count"></span><button class="b-btn b-btn--sm" type="button" id="next" aria-label="Neste slide">→</button></div></div>') +
         '<div class="b-slide" id="slide" aria-live="polite"></div>' +
         (o.thumb ? "" : '<div class="deck__strip" id="strip"></div>');
       host.appendChild(d);
@@ -400,7 +537,7 @@
       d.className = "stack-lg";
       d.style.gap = "var(--space-12)";
       d.innerHTML =
-        (o.thumb ? "" : '<a class="back" href="#spill">← Til hex-flaten</a>') +
+        (o.thumb ? "" : '<a class="back" href="#oversikt">← Til oversikten</a>') +
         '<section class="stack-lg"><div class="sec-head"><span class="b-label">Blyant.chart · eksempeldata fra testrunder</span><h1>Grafer med blyant</h1><p>Seks fargeblyanter i fast rekkefølge, hårfine hjelpelinjer og en tabell bak hver graf. Pek på en graf, eller gi den fokus og bruk piltastene.</p></div>' +
         '<div class="row filter-row" role="group" aria-label="Periode"><span class="b-label">Periode</span><button class="b-btn b-btn--sm" type="button" data-range="7" aria-pressed="true">Siste 7 dager</button><button class="b-btn b-btn--sm" type="button" data-range="30" aria-pressed="false">Siste 30 dager</button></div>' +
         '<div class="stats"><div class="b-box" data-stat="0"></div><div class="b-box" data-stat="1"></div><div class="b-box" data-stat="2"></div></div></section>' +
@@ -517,7 +654,7 @@
       d.className = "stack-lg";
       d.style.gap = "var(--space-12)";
       d.innerHTML =
-        (o.thumb ? "" : '<a class="back" href="#spill">← Til hex-flaten</a>') +
+        (o.thumb ? "" : '<a class="back" href="#oversikt">← Til oversikten</a>') +
         '<section class="stack-lg"><div class="sec-head"><span class="b-label">Blyant.frames</span><h1>Tegneserieruter</h1><p>Gi verktøyet en flate og et antall. Det kutter flaten i ruter som alltid fyller plassen, og tegner rammene med blyant. Dra i geometrien for å gå fra rolig rutenett til skjeve kutt.</p></div>' +
         (o.thumb ? "" :
         '<div class="rute-tools b-box">' +
@@ -583,7 +720,7 @@
       d.className = "stack-lg";
       d.style.gap = "var(--space-12)";
       d.innerHTML =
-        (o.thumb ? "" : '<a class="back" href="#spill">← Til hex-flaten</a>') +
+        (o.thumb ? "" : '<a class="back" href="#oversikt">← Til oversikten</a>') +
         '<section class="stack-lg"><div class="sec-head"><span class="b-label">2D · Blyant.rough</span><h1>Håndtegnede streker</h1><p>Hver form er to raske strøk med litt skjelving. Samme frø gir samme strek, så tegningen står stille mellom oppdateringer.</p></div><div class="shapes" id="shapes"></div></section>' +
         '<section class="stack-lg"><div class="sec-head"><span class="b-label">Effektfarger</span><h2>Fargeblyantene</h2><p>Svart, hvitt og grått bærer alt. De seks støvete fargene og tusjen er krydder.</p></div><div class="pencils" id="pencils"></div></section>' +
         (o.thumb ? "" :
@@ -762,7 +899,7 @@
       }
       var typeRows = [["t-display", "Hopp fra hex til hex"], ["t-h1", "Skisseboka"], ["t-h2", "Former og figurer"], ["t-h3", "Håndtegnede streker"], ["t-lead", "Sett rammene først. Pynten kommer etterpå."], ["t-body", "Figuren hopper til nabofeltet når du trykker på pila."], ["t-small", "Sist endret 9. november"], ["t-label", "TASTER"], ["t-note", "husk: farge bare som effekt!"], ["t-code", "Blyant.rough.hex(80, 80, 40)"]];
       d.innerHTML =
-        (o.thumb ? "" : '<a class="back" href="#spill">← Til hex-flaten</a>') +
+        (o.thumb ? "" : '<a class="back" href="#oversikt">← Til oversikten</a>') +
         '<section class="stack-lg"><div class="sec-head"><span class="b-label">Tokens</span><h1>Grafitt og papir</h1><p>Åtte gråtoner gjør jobben. Fargene under er effekter.</p></div><div class="swatches">' + sw(grey) + '</div><div class="swatches">' + sw(dust) + "</div></section>" +
         '<section class="stack"><div class="sec-head"><h2>Skrift</h2><p>Caveat for overskrifter og tekst, Architects Daughter for notater og etiketter, Cutive Mono for kode.</p></div><div>' +
         typeRows.map(function (r) { return '<div class="type-row"><code>.' + r[0] + '</code><div class="' + r[0] + '">' + r[1] + "</div></div>"; }).join("") + "</div></section>" +
@@ -834,8 +971,8 @@
   /* --------------------------------------------------------------- */
   var current = null;
   function route() {
-    var name = (location.hash || "#spill").slice(1);
-    if (!VIEWS[name]) name = "spill";
+    var name = (location.hash || "#oversikt").slice(1);
+    if (!VIEWS[name]) name = "oversikt";
     if (current && VIEWS[current].leave) VIEWS[current].leave();
     if (game && game.el.parentNode) game.el.parentNode.removeChild(game.el);
     viewEl.innerHTML = "";
@@ -845,8 +982,8 @@
     Array.prototype.forEach.call(document.querySelectorAll("[data-view]"), function (a) {
       if (a.getAttribute("data-view") === name) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
-    document.title = name === "spill" ? "Hex-skisse" : "Hex-skisse · " + VIEWS[name].title;
-    if (name !== "spill") window.scrollTo(0, 0);
+    document.title = name === "oversikt" ? "Blyant skissebok" : "Blyant · " + VIEWS[name].title;
+    window.scrollTo(0, 0);
   }
   window.addEventListener("hashchange", route);
 
@@ -863,5 +1000,5 @@
 
   route();
   B.ink(document.querySelector(".top"));
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { B.reink(document); var g = document.getElementById("thumbs"); if (g) fitThumbs(g); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { B.reink(document); fitThumbs(); });
 })();

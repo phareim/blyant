@@ -2,7 +2,7 @@ Blyant er et håndtegnet designsystem for spill, nettsider, dokumenter og presen
 
 Kildekoden ligger i [github.com/phareim/blyant](https://github.com/phareim/blyant), og filene her bygges derfra. Pakken finnes på npm som `blyant`.
 
-Se systemet i bruk på testflaten: [Hex-skisse](https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs). Der hopper en figur fra hex til hex, og skissene under spillet lenker videre til nettside, dokument, presentasjon, grafer, former og system.
+Se systemet i bruk på testflaten: [Blyant skissebok](https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs). Forsiden gir oversikt over alt som finnes: flatene som skisser (hex-spillet, nettside, dokument, presentasjon, grafer, tegneserieruter, former og system) og hver komponent som en liten prøve.
 
 ## Prinsipper
 
