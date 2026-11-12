@@ -28,7 +28,7 @@ Gjøremål: en rute å krysse av i, selve saken, og et kort notat til høyre.
 - Tittelen er en lenke når saken har en egen side, en `<button>` i en plukkliste (se under), ellers en `<span>`. Lange titler kuttes med «…».
 - `b-checklist__mark` står i stedet for ruta på rader som ikke kan krysses av: `↻` for noe som gjentar seg, `·` for et utkast. Ett tegn, og meningen står også et annet sted (i notatet, i et filter eller på saken sin side).
 - `b-checklist__meta` er valgfri: en frist, et navn, en dato. Hold den kort, og skjul den på smale skjermer hvis tittelen trenger plassen.
-- `b-checklist__desc` er en valgfri andre linje under tittelen, i `ink-soft`: sitatet fra en utheving, starten på en tekst. Den står sist i raden, på linje med tittelen, og kuttes med «…» etter én linje. Rader uten den ser ut som før.
+- `b-checklist__desc` er en valgfri andre linje under tittelen, i `ink-soft`: sitatet fra en utheving, starten på en tekst. Den står sist i raden, på linje med tittelen, og kuttes med «…» etter én linje. Rader uten den ser ut som før. I en rad med andre linje fyller tittelen plassen fram til notatet og kuttes med «…» når den er for lang; understrekingen og strykingen følger da hele plassen, ikke bare teksten.
 - `is-active` legger raden på `paper-2`. Bruk den på raden piltastene står på. Bare én om gangen.
 - En blyantstrek skiller radene. Er lista tom, sett en `Empty` i stedet.
 - Skal noe bare velges, ikke gjøres, er det en `Menu` eller en rad med `Check`.
