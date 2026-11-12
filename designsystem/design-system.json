@@ -17,8 +17,8 @@
   },
   "lastChange": {
     "by": "Claude",
-    "at": "2026-11-12T10:20:00Z",
+    "at": "2026-11-12T13:41:00Z",
     "via": "Claude Code",
-    "note": "Testflaten har fått en forside med oversikt over alle flatene og komponentene; hex-spillet er en underside. Thread er ny i 0.11.0."
+    "note": "PowerPoint-malen er ny i 0.12.0: Papir og Kull, seksten oppsett, samme versjon som pakken. Slide og README-en peker til den. Skillen blyant-presentasjon tar en presentasjon fra en samtale til malen."
   }
 }

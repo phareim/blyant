@@ -11,10 +11,10 @@ Blyant er et håndtegnet designsystem for spill, nettsider, dokumenter og presen
 Lenk inn stilarket og skriptet, og sett `b-page` på `body`. Blyant ligger på npm, så du kan lenke til en fast versjon på jsDelivr:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/blyant@0.12.0/dist/blyant.css">
 <!-- bare hvis du skal bruke 3D (Sketch3D / HexBoard): -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/blyant@0.12.0/dist/blyant.js"></script>
 
 <body class="b-page">
   <h1>Skisseboka</h1>
@@ -37,7 +37,7 @@ Andre måter å hente filene på:
 - `npm install blyant`, og importer `blyant/dist/blyant.css` og `blyant/dist/blyant.js` i byggeverktøyet ditt. Typene ligger i `src/blyant.d.ts`.
 - Siste versjon fra `main`, uten fast versjon: `https://phareim.github.io/blyant/dist/blyant.css` og `…/dist/blyant.js`. Greit til skisser, men den endrer seg uten varsel.
 
-**PowerPoint.** Blyant finnes også som presentasjonsmal, med samme versjon som pakken: [blyant.potx](https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant.potx) er malen, og [blyant-eksempel.pptx](https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant-eksempel.pptx) viser oppsettene fylt ut. Installer Caveat, Architects Daughter og Cutive Mono først. Skillen `skills/blyant-presentasjon/` lar deg snakke deg gjennom en presentasjon med Claude, eksportere den til malen og jobbe videre i PowerPoint. Se [docs/presentasjonsmal.md](docs/presentasjonsmal.md).
+**PowerPoint.** Blyant finnes også som presentasjonsmal, med samme versjon som pakken: [blyant.potx](https://cdn.jsdelivr.net/npm/blyant@0.12.0/dist/blyant.potx) er malen, og [blyant-eksempel.pptx](https://cdn.jsdelivr.net/npm/blyant@0.12.0/dist/blyant-eksempel.pptx) viser oppsettene fylt ut. Installer Caveat, Architects Daughter og Cutive Mono først. Skillen `skills/blyant-presentasjon/` lar deg snakke deg gjennom en presentasjon med Claude, eksportere den til malen og jobbe videre i PowerPoint. Se [docs/presentasjonsmal.md](docs/presentasjonsmal.md).
 
 | Fil | Hva |
 | --- | --- |
