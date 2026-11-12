@@ -704,6 +704,50 @@
     d.push('<path d="' + r.line(0, 132, 320, 98, { seed: 3, wobble: 1.4 }) + '" fill="none" stroke="#454641" stroke-width="1.2" opacity=".5"/>');
     return "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice">' + d.join("") + "</svg>");
   }
+  // The conversation in the Thread section. Plain text: line breaks are kept, long words break.
+  function threadHtml(id, long) {
+    return '<ol class="b-thread" id="thread-' + id + '" aria-live="polite">' +
+      '<li class="b-thread__msg b-thread__msg--own"><p class="b-thread__who">Petter <time datetime="2026-11-11T14:02">i går 14:02</time></p><p class="b-thread__text">' + (long ? "Er avsnittet om skravur for langt?\nJeg vil helst at det skal passe på én side." : "Er avsnittet om skravur for langt?") + '</p></li>' +
+      '<li class="b-thread__msg"><p class="b-thread__who">Claude <time datetime="2026-11-11T14:03">i går 14:03</time></p><p class="b-thread__text">' + (long ? "Litt. De to første setningene sier det samme. Stryk den andre, så får du plass til eksemplet med kryss-skravur.\n\nSe også https://phareim.github.io/blyant/examples/hex-skisse/index.html#former-og-en-svært-lang-adresse-uten-mellomrom" : "Litt. Stryk den andre setningen, så får eksemplet plass.") + '</p></li>' +
+      (long ? '<li class="b-thread__msg b-thread__msg--own"><p class="b-thread__who">Petter <time datetime="2026-11-12T09:15">i dag 09:15</time></p><p class="b-thread__text">Gjort. Og overskriften?</p></li>' : '') +
+      '<li class="b-thread__msg b-thread__msg--failed"><p class="b-thread__who">Claude</p><p class="b-thread__text">Fikk ikke svart. <button type="button" class="b-thread__retry">Prøv igjen</button></p></li>' +
+      '<li class="b-thread__msg b-thread__msg--pending"><p class="b-thread__who">Claude</p><p class="b-thread__text"><span class="b-thread__dots" aria-hidden="true"></span> skriver …</p></li>' +
+      '</ol>' +
+      '<form class="b-thread__form" data-thread="' + id + '"><textarea class="b-input b-thread__input" rows="2" placeholder="Skriv en kommentar" aria-label="Kommentar"></textarea><button class="b-btn" type="submit">Send</button></form>';
+  }
+  function threadMsg(kind, who, text) {
+    var li = document.createElement("li"), w = document.createElement("p"), t = document.createElement("p");
+    li.className = "b-thread__msg" + (kind ? " b-thread__msg--" + kind : "");
+    w.className = "b-thread__who"; w.textContent = who + " ";
+    if (kind !== "pending") { var tm = document.createElement("time"); tm.textContent = "nå"; w.appendChild(tm); }
+    t.className = "b-thread__text";
+    if (kind === "pending") t.innerHTML = '<span class="b-thread__dots" aria-hidden="true"></span> skriver …'; else t.textContent = text;
+    li.appendChild(w); li.appendChild(t);
+    return li;
+  }
+  function threadReply(ol, after) {
+    var p = threadMsg("pending", "Claude");
+    if (after) ol.replaceChild(p, after); else ol.appendChild(p);
+    setTimeout(function () { ol.replaceChild(threadMsg("", "Claude", "Godt spørsmål. Kort og vanlig norsk holder."), p); }, 1600);
+  }
+  function wireThreads(root) {
+    Array.prototype.forEach.call(root.querySelectorAll(".b-thread__form"), function (f) {
+      var ol = root.querySelector("#thread-" + f.getAttribute("data-thread")), ta = f.querySelector("textarea");
+      f.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var v = ta.value.trim();
+        if (!v) return;
+        ol.appendChild(threadMsg("own", "Petter", v));
+        ta.value = "";
+        threadReply(ol);
+      });
+      ta.addEventListener("keydown", function (e) { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); f.requestSubmit(); } });
+    });
+    root.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest(".b-thread__retry");
+      if (b) threadReply(b.closest(".b-thread"), b.closest(".b-thread__msg"));
+    });
+  }
   VIEWS.system = {
     title: "System",
     render: function (host, o) {
@@ -751,8 +795,13 @@
         '</div><div class="linkcards linkcards--row">' +
         '<div class="stack"><span class="b-label">Rad</span><a class="b-linkcard b-linkcard--row" href="#system"><img class="b-linkcard__image" src="' + linkPic(1) + '" alt="" onerror="this.remove()"><span class="b-linkcard__site">skisseboka.no</span><strong class="b-linkcard__title">Blyanten først, pynten etterpå</strong><p class="b-linkcard__desc">Hvorfor en skisse holder lenger enn et ferdig design når du ennå ikke vet hva du bygger.</p></a></div>' +
         '<div class="stack linkcards__narrow"><span class="b-label">Rad, smalere enn 360px: stables</span><a class="b-linkcard b-linkcard--row" href="#system"><img class="b-linkcard__image" src="' + linkPic(2) + '" alt="" onerror="this.remove()"><span class="b-linkcard__site">myra.no</span><strong class="b-linkcard__title">Kartet over myra</strong><p class="b-linkcard__desc">Ti hexer med vann, tre med skog og en sti tvers over.</p></a></div>' +
+        "</div></section>" +
+        '<section class="stack-lg" id="samtale"><div class="sec-head"><h2>Samtale</h2><p>Kommentarer mellom leseren og Claude, i ren tekst. Leserens egne kommentarer er satt inn fra venstre på en lapp; den andre skriver rett på arket.</p></div><div class="threads">' +
+        '<div class="stack threads__wide"><span class="b-label">Under et dokument</span>' + threadHtml("a", true) + '</div>' +
+        '<div class="stack"><span class="b-label">Sidepanel, 320 px</span><div class="b-box threads__panel">' + threadHtml("b", false) + '</div></div>' +
         "</div></section>";
       host.appendChild(d);
+      wireThreads(d);
       Array.prototype.forEach.call(d.querySelectorAll(".b-checklist input"), function (c) {
         c.addEventListener("change", function () { c.closest(".b-checklist__item").classList.toggle("is-done", c.checked); });
       });

@@ -955,6 +955,41 @@ a.b-checklist__title:hover, a.b-checklist__title:focus-visible { background-size
 [data-skin="clean"] .b-checklist__title { background-image: linear-gradient(var(--ink-soft), var(--ink-soft)); }
 [data-skin="clean"] a.b-checklist__title:hover, [data-skin="clean"] .b-checklist__item.is-done .b-checklist__title { background-size: 100% 1.5px; }
 
+/* Thread: a conversation in plain text, the reader and one other party (comments under a document, a side panel).
+   The reader's own comments (--own) are set in from the left on a paper-2 slip; the other party writes straight on the page.
+   --b-thread-own sets the slip when the thread already lies on paper-2. */
+.b-thread { --_own: var(--b-thread-own, var(--paper-2)); display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; min-width: 0; }
+.b-thread > .b-thread__msg { margin-block: 0; }
+.b-thread__msg { display: grid; gap: 2px; min-width: 0; padding: var(--space-2) var(--space-3) var(--space-3); border-radius: var(--b-radius-sm); }
+.b-thread__msg--own { margin-inline-start: clamp(var(--space-6), 10%, var(--space-12)); background: var(--_own); }
+.b-thread__who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-2); max-width: none; margin: 0; font-family: var(--b-body); font-size: 17px; line-height: 1.3; color: var(--ink-soft); }
+.b-thread__who time { font-family: var(--b-mono); font-size: 13px; letter-spacing: .02em; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+.b-thread__text { max-width: none; margin: 0; font-family: var(--b-body); font-size: 20px; line-height: 1.4; color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Pending: three pencil dots that take turns */
+.b-thread__msg--pending .b-thread__text { color: var(--ink-soft); }
+.b-thread__dots { position: relative; display: inline-block; width: 6px; height: 6px; margin: 0 9px; vertical-align: .12em; background: var(--graphite-300); border-radius: 50% 45% 55% 48% / 48% 55% 45% 50%; animation: b-thread-dot 1.2s ease-in-out .2s infinite; }
+.b-thread__dots::before, .b-thread__dots::after { content: ""; position: absolute; top: 0; width: 6px; height: 6px; background: var(--graphite-300); animation: b-thread-dot 1.2s ease-in-out infinite; }
+.b-thread__dots::before { left: -9px; border-radius: 45% 55% 48% 52% / 55% 45% 52% 48%; }
+.b-thread__dots::after { left: 9px; top: .5px; border-radius: 55% 48% 50% 45% / 45% 50% 48% 55%; animation-delay: .4s; }
+@keyframes b-thread-dot { 0%, 55%, 100% { background-color: var(--graphite-300); } 25% { background-color: var(--ink); } }
+/* Failed: a red cross before the text, and a way to try again */
+.b-thread__msg--failed .b-thread__text::before { content: "✗\00a0"; content: "✗\00a0" / ""; color: var(--dust-red); font-weight: 600; }
+.b-thread__retry { position: relative; margin: 0; padding: 0; font: inherit; color: var(--ink); background: none; border: 0; border-radius: var(--b-radius-sm); cursor: pointer; white-space: nowrap; text-decoration: underline solid var(--graphite-300) 1.5px; text-underline-offset: 4px; -webkit-tap-highlight-color: transparent; }
+.b-thread__retry:hover { text-decoration-color: var(--ink); }
+.b-thread__retry:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
+@media (pointer: coarse) {
+  .b-thread__retry::after { content: ""; position: absolute; left: -8px; right: -8px; top: 50%; height: 44px; transform: translateY(-50%); }
+}
+/* The form: the text grows to the width, the button sits beside it at the bottom, and drops below under about 360px */
+.b-thread + .b-thread__form { margin-top: var(--space-4); }
+.b-thread__form + .b-thread { margin-top: var(--space-4); }
+.b-thread__form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-2) var(--space-3); min-width: 0; margin: 0; }
+.b-thread__form .b-thread__input { flex: 1 1 260px; width: auto; min-width: 0; min-height: 44px; }
+.b-thread__form > .b-btn { flex: none; margin-inline-start: auto; }
+@media (prefers-reduced-motion: reduce) {
+  .b-thread__dots, .b-thread__dots::before, .b-thread__dots::after { animation: none; background-color: var(--ink-soft); }
+}
+
 /* Toolbar: a small floating palette of icon buttons, for tools on a canvas or a board. The app places it.
    Icons are Blyant.figure drawings in a 64×64 viewBox; the chosen tool has aria-pressed="true". */
 .b-toolbar { --b-toolbar-btn: 44px; --b-toolbar-icon: 26px; position: relative; display: inline-flex; align-items: center; gap: 2px; padding: 4px; box-sizing: border-box; color: var(--ink); background: var(--paper); border: var(--b-border) solid var(--b-border-c); border-radius: var(--b-radius-sm); box-shadow: var(--shadow-lift); font-family: var(--b-body); -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -1156,6 +1191,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .linkcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: var(--space-8); align-items: start; }
 .linkcards--row { grid-template-columns: minmax(0, 1fr) minmax(0, 340px); }
 @media (max-width: 720px) { .linkcards--row { grid-template-columns: minmax(0, 1fr); } }
+.threads { display: grid; grid-template-columns: minmax(0, 700px) 320px; gap: var(--space-8); align-items: start; justify-content: start; }
+.threads__panel { box-sizing: border-box; width: min(100%, 320px); padding: var(--space-3); }
+@media (max-width: 1100px) { .threads { grid-template-columns: minmax(0, 1fr); } }
 .spaces { display: grid; gap: 8px; }
 .spaces div { display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: var(--space-3); font-size: 14px; }
 .spaces i { display: block; height: 12px; background: var(--ink); border-radius: 2px 6px 3px 5px; }
@@ -1244,7 +1282,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
 <script>
-/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"Sketch2D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Editor"},{"name":"Toolbar"},{"name":"Checklist"},{"name":"LinkCard"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"Sketch2D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Editor"},{"name":"Toolbar"},{"name":"Checklist"},{"name":"LinkCard"},{"name":"Thread"}]} */
 /* Blyant — hand-drawn pencil design system. Vanilla JS, no dependencies.
    Sketch3D needs window.THREE (three.js r147 UMD) loaded first.
    Sketch2D (blyant-sketch2d.js) needs nothing but WebGL.                 */
@@ -4170,6 +4208,50 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
     d.push('<path d="' + r.line(0, 132, 320, 98, { seed: 3, wobble: 1.4 }) + '" fill="none" stroke="#454641" stroke-width="1.2" opacity=".5"/>');
     return "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice">' + d.join("") + "</svg>");
   }
+  // The conversation in the Thread section. Plain text: line breaks are kept, long words break.
+  function threadHtml(id, long) {
+    return '<ol class="b-thread" id="thread-' + id + '" aria-live="polite">' +
+      '<li class="b-thread__msg b-thread__msg--own"><p class="b-thread__who">Petter <time datetime="2026-11-11T14:02">i går 14:02</time></p><p class="b-thread__text">' + (long ? "Er avsnittet om skravur for langt?\nJeg vil helst at det skal passe på én side." : "Er avsnittet om skravur for langt?") + '</p></li>' +
+      '<li class="b-thread__msg"><p class="b-thread__who">Claude <time datetime="2026-11-11T14:03">i går 14:03</time></p><p class="b-thread__text">' + (long ? "Litt. De to første setningene sier det samme. Stryk den andre, så får du plass til eksemplet med kryss-skravur.\n\nSe også https://phareim.github.io/blyant/examples/hex-skisse/index.html#former-og-en-svært-lang-adresse-uten-mellomrom" : "Litt. Stryk den andre setningen, så får eksemplet plass.") + '</p></li>' +
+      (long ? '<li class="b-thread__msg b-thread__msg--own"><p class="b-thread__who">Petter <time datetime="2026-11-12T09:15">i dag 09:15</time></p><p class="b-thread__text">Gjort. Og overskriften?</p></li>' : '') +
+      '<li class="b-thread__msg b-thread__msg--failed"><p class="b-thread__who">Claude</p><p class="b-thread__text">Fikk ikke svart. <button type="button" class="b-thread__retry">Prøv igjen</button></p></li>' +
+      '<li class="b-thread__msg b-thread__msg--pending"><p class="b-thread__who">Claude</p><p class="b-thread__text"><span class="b-thread__dots" aria-hidden="true"></span> skriver …</p></li>' +
+      '</ol>' +
+      '<form class="b-thread__form" data-thread="' + id + '"><textarea class="b-input b-thread__input" rows="2" placeholder="Skriv en kommentar" aria-label="Kommentar"></textarea><button class="b-btn" type="submit">Send</button></form>';
+  }
+  function threadMsg(kind, who, text) {
+    var li = document.createElement("li"), w = document.createElement("p"), t = document.createElement("p");
+    li.className = "b-thread__msg" + (kind ? " b-thread__msg--" + kind : "");
+    w.className = "b-thread__who"; w.textContent = who + " ";
+    if (kind !== "pending") { var tm = document.createElement("time"); tm.textContent = "nå"; w.appendChild(tm); }
+    t.className = "b-thread__text";
+    if (kind === "pending") t.innerHTML = '<span class="b-thread__dots" aria-hidden="true"></span> skriver …'; else t.textContent = text;
+    li.appendChild(w); li.appendChild(t);
+    return li;
+  }
+  function threadReply(ol, after) {
+    var p = threadMsg("pending", "Claude");
+    if (after) ol.replaceChild(p, after); else ol.appendChild(p);
+    setTimeout(function () { ol.replaceChild(threadMsg("", "Claude", "Godt spørsmål. Kort og vanlig norsk holder."), p); }, 1600);
+  }
+  function wireThreads(root) {
+    Array.prototype.forEach.call(root.querySelectorAll(".b-thread__form"), function (f) {
+      var ol = root.querySelector("#thread-" + f.getAttribute("data-thread")), ta = f.querySelector("textarea");
+      f.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var v = ta.value.trim();
+        if (!v) return;
+        ol.appendChild(threadMsg("own", "Petter", v));
+        ta.value = "";
+        threadReply(ol);
+      });
+      ta.addEventListener("keydown", function (e) { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); f.requestSubmit(); } });
+    });
+    root.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest(".b-thread__retry");
+      if (b) threadReply(b.closest(".b-thread"), b.closest(".b-thread__msg"));
+    });
+  }
   VIEWS.system = {
     title: "System",
     render: function (host, o) {
@@ -4217,8 +4299,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         '</div><div class="linkcards linkcards--row">' +
         '<div class="stack"><span class="b-label">Rad</span><a class="b-linkcard b-linkcard--row" href="#system"><img class="b-linkcard__image" src="' + linkPic(1) + '" alt="" onerror="this.remove()"><span class="b-linkcard__site">skisseboka.no</span><strong class="b-linkcard__title">Blyanten først, pynten etterpå</strong><p class="b-linkcard__desc">Hvorfor en skisse holder lenger enn et ferdig design når du ennå ikke vet hva du bygger.</p></a></div>' +
         '<div class="stack linkcards__narrow"><span class="b-label">Rad, smalere enn 360px: stables</span><a class="b-linkcard b-linkcard--row" href="#system"><img class="b-linkcard__image" src="' + linkPic(2) + '" alt="" onerror="this.remove()"><span class="b-linkcard__site">myra.no</span><strong class="b-linkcard__title">Kartet over myra</strong><p class="b-linkcard__desc">Ti hexer med vann, tre med skog og en sti tvers over.</p></a></div>' +
+        "</div></section>" +
+        '<section class="stack-lg" id="samtale"><div class="sec-head"><h2>Samtale</h2><p>Kommentarer mellom leseren og Claude, i ren tekst. Leserens egne kommentarer er satt inn fra venstre på en lapp; den andre skriver rett på arket.</p></div><div class="threads">' +
+        '<div class="stack threads__wide"><span class="b-label">Under et dokument</span>' + threadHtml("a", true) + '</div>' +
+        '<div class="stack"><span class="b-label">Sidepanel, 320 px</span><div class="b-box threads__panel">' + threadHtml("b", false) + '</div></div>' +
         "</div></section>";
       host.appendChild(d);
+      wireThreads(d);
       Array.prototype.forEach.call(d.querySelectorAll(".b-checklist input"), function (c) {
         c.addEventListener("change", function () { c.closest(".b-checklist__item").classList.toggle("is-done", c.checked); });
       });

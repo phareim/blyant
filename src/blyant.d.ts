@@ -49,6 +49,10 @@ export interface ChecklistProps { items: { title: string; href?: string; done?: 
     <img class="b-linkcard__image" alt="" onerror="this.remove()"><span class="b-linkcard__site"/><strong class="b-linkcard__title"/><p class="b-linkcard__desc"/><div class="b-linkcard__foot"/>.
     With controls in the foot, use <article> and put the link in the title: <strong class="b-linkcard__title"><a href/></strong>. Blyant.ink draws the outline. --b-linkcard-thumb sets the row thumbnail size. */
 export interface LinkCardProps { href?: string; image?: string; site?: string; title?: string; desc?: string; foot?: boolean; variant?: "default" | "compact" | "row"; }
+/** <ol class="b-thread"><li class="b-thread__msg [b-thread__msg--own|--pending|--failed]"><p class="b-thread__who">Petter <time/></p><p class="b-thread__text">plain text (set with textContent)</p></li></ol>
+    <form class="b-thread__form"><textarea class="b-input b-thread__input" rows="2"/><button class="b-btn" type="submit">Send</button></form>.
+    Pending: <span class="b-thread__dots" aria-hidden="true"></span> skriver …; failed: <button type="button" class="b-thread__retry">Prøv igjen</button> in the text. CSS only. --b-thread-own sets the slip behind own messages. */
+export interface ThreadProps { messages: { who: string; time?: string; text: string; own?: boolean; state?: "pending" | "failed" }[]; form?: boolean; placeholder?: string; }
 
 export interface RoughOptions { seed?: number; wobble?: number; passes?: number; bow?: number; gap?: number; angle?: number; }
 export type Shape =

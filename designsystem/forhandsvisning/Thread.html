@@ -1,0 +1,18 @@
+<!-- @dsCard group="Tekst" height=560 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Thread</title></head>
+<body class="b-page" style="margin:0;padding:16px 24px">
+<div style="max-width:560px">
+<ol class="b-thread">
+<li class="b-thread__msg b-thread__msg--own"><p class="b-thread__who">Petter <time datetime="2026-11-11T14:02">i går 14:02</time></p><p class="b-thread__text">Er avsnittet om skravur for langt?
+Jeg vil helst at det skal passe på én side.</p></li>
+<li class="b-thread__msg"><p class="b-thread__who">Claude <time datetime="2026-11-11T14:03">i går 14:03</time></p><p class="b-thread__text">Litt. De to første setningene sier det samme. Stryk den andre, så får du plass til eksemplet med kryss-skravur.</p></li>
+<li class="b-thread__msg b-thread__msg--failed"><p class="b-thread__who">Claude</p><p class="b-thread__text">Fikk ikke svart. <button type="button" class="b-thread__retry">Prøv igjen</button></p></li>
+<li class="b-thread__msg b-thread__msg--pending"><p class="b-thread__who">Claude</p><p class="b-thread__text"><span class="b-thread__dots" aria-hidden="true"></span> skriver …</p></li>
+</ol>
+<form class="b-thread__form" onsubmit="return false"><textarea class="b-input b-thread__input" rows="2" placeholder="Skriv en kommentar" aria-label="Kommentar"></textarea><button class="b-btn" type="submit">Send</button></form>
+</div>
+<script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>
