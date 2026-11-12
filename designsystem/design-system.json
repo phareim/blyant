@@ -17,8 +17,8 @@
   },
   "lastChange": {
     "by": "Claude",
-    "at": "2026-11-12T21:00:00Z",
+    "at": "2026-11-12T21:40:00Z",
     "via": "Claude Code",
-    "note": "Sheet er ny: et hevet ark over siden for én kort oppgave, midt på eller nederst på telefon. Checklist får en andre linje (b-checklist__desc) og en knapp som tittel (plukkliste). LinkCard får b-linkcard__from, en myk linje i foten."
+    "note": "0.13.1: i en Checklist-rad med andre linje viker en lang tittel for notatet til høyre, og kuttes med «…». Sheet er ny: et hevet ark over siden for én kort oppgave, midt på eller nederst på telefon. Checklist får en andre linje (b-checklist__desc) og en knapp som tittel (plukkliste). LinkCard får b-linkcard__from, en myk linje i foten."
   }
 }
