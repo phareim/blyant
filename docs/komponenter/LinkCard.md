@@ -21,6 +21,13 @@ Et forhåndsvisningskort for en lenke eller en artikkel: et bilde øverst, netts
     <label class="b-check"><input type="checkbox"><span class="b-check__box"></span>Legg i Reader</label>
   </div>
 </article>
+
+<article class="b-linkcard b-linkcard--compact">
+  <span class="b-linkcard__site">skisseboka.no</span>
+  <strong class="b-linkcard__title"><a href="https://skisseboka.no/blyant-forst">Blyanten først, pynten etterpå</a></strong>
+  <p class="b-linkcard__desc">«En skisse holder lenger enn et ferdig design.»</p>
+  <div class="b-linkcard__foot"><span class="b-linkcard__from">Reader · utheving</span></div>
+</article>
 ```
 
 | Klasse | Bruk |
@@ -31,6 +38,7 @@ Et forhåndsvisningskort for en lenke eller en artikkel: et bilde øverst, netts
 | `b-linkcard__title` | Tittelen i håndskrift. Høyst tre linjer, så «…». |
 | `b-linkcard__desc` | Beskrivelsen i `ink-soft`. Høyst tre linjer. |
 | `b-linkcard__foot` | En rad for valg nederst, for eksempel en `Check` eller en `Tag`, skilt fra resten med en strek. |
+| `b-linkcard__from` | En myk tekstlinje i foten som sier hvor kortet kommer fra: «Reader · utheving». Én linje, kuttes med «…». Står i samme høyde som en `Check` ved siden av. |
 | `b-linkcard--compact` | Uten bildefelt, tettere, tittelen høyst to linjer. Til lister og små plasser på en tavle. |
 | `b-linkcard--row` | Bildet som et kvadratisk miniatyrbilde til venstre, teksten til høyre. Smalere enn 360px stables kortet som vanlig. |
 

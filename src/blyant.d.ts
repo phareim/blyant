@@ -37,6 +37,12 @@ export interface EmptyProps { title: string; text?: string; doodle?: "ark" | "id
 export interface MenuProps { items: { text: string; hint?: string; active?: boolean; checked?: boolean; disabled?: boolean }[]; label?: string; empty?: string; }
 /** <div class="b-toasts"><div class="b-toast [b-toast--error]" role="status"><span>Text</span><button class="b-toast__action">Angre</button></div></div> */
 export interface ToastProps { text: string; error?: boolean; action?: string; }
+/** <div class="b-sheet-scrim" hidden><section class="b-sheet" role="dialog" aria-modal="true" aria-labelledby tabindex="-1">
+    <header class="b-sheet__head"><h2 class="b-sheet__title"/><button class="b-sheet__close" aria-label="Lukk"/></header><div class="b-sheet__body"/>
+    <footer class="b-sheet__foot"><p class="b-sheet__note"/><button class="b-btn"/><button class="b-btn b-btn--primary"/></footer></section></div>.
+    The veil may be a <dialog class="b-sheet-scrim"> opened with showModal(). Centred near the top; at the foot when the veil is narrower than 640px.
+    CSS only: the app opens, closes (Esc, a tap on the veil), moves focus in and back. --b-sheet-width, --b-sheet-top. */
+export interface SheetProps { title: string; close?: boolean; note?: string; actions?: { label: string; primary?: boolean }[]; dialog?: boolean; }
 /** class="b-editor" on a textarea, a contenteditable or an editor's content node; parts b-editor__syntax, __h1, __h2, __h3, __quote, __code, __rule, __placeholder. --b-editor-size sets the text size. */
 export interface EditorProps { size?: string; }
 /** <div class="b-toolbar [b-toolbar--vertical|--compact]" role="toolbar" aria-label="Verktøy"><button class="b-toolbar__btn [b-toolbar__btn--marker] [is-busy]" aria-pressed aria-label title><svg viewBox="0 0 64 64"/></button><span class="b-toolbar__sep"/></div>;
@@ -44,11 +50,11 @@ export interface EditorProps { size?: string; }
 export interface ToolbarProps { tools: { label: string; pressed?: boolean; marker?: boolean; busy?: boolean; disabled?: boolean }[]; vertical?: boolean; compact?: boolean; label: string; }
 
 /** <ul class="b-checklist"><li class="b-checklist__item [is-done] [is-active]"><label class="b-check"><input type="checkbox" aria-label="Ferdig"><span class="b-check__box"/></label><a class="b-checklist__title"/><span class="b-checklist__meta"/></li></ul>; <span class="b-checklist__mark">↻</span> stands in for the box on a row that cannot be ticked */
-export interface ChecklistProps { items: { title: string; href?: string; done?: boolean; active?: boolean; meta?: string; mark?: string }[]; }
+export interface ChecklistProps { items: { title: string; href?: string; done?: boolean; active?: boolean; meta?: string; mark?: string; /** <span class="b-checklist__desc">, last in the row: a soft second line */ desc?: string; /** <button class="b-checklist__title">: a pick list, the whole row picks */ pick?: boolean; disabled?: boolean }[]; }
 /** <a class="b-linkcard [b-linkcard--compact|--row]" href> or <article class="b-linkcard">, children in this order, each optional:
-    <img class="b-linkcard__image" alt="" onerror="this.remove()"><span class="b-linkcard__site"/><strong class="b-linkcard__title"/><p class="b-linkcard__desc"/><div class="b-linkcard__foot"/>.
+    <img class="b-linkcard__image" alt="" onerror="this.remove()"><span class="b-linkcard__site"/><strong class="b-linkcard__title"/><p class="b-linkcard__desc"/><div class="b-linkcard__foot"/>; <span class="b-linkcard__from">Reader · utheving</span> is a soft line in the foot.
     With controls in the foot, use <article> and put the link in the title: <strong class="b-linkcard__title"><a href/></strong>. Blyant.ink draws the outline. --b-linkcard-thumb sets the row thumbnail size. */
-export interface LinkCardProps { href?: string; image?: string; site?: string; title?: string; desc?: string; foot?: boolean; variant?: "default" | "compact" | "row"; }
+export interface LinkCardProps { href?: string; image?: string; site?: string; title?: string; desc?: string; foot?: boolean; from?: string; variant?: "default" | "compact" | "row"; }
 /** <ol class="b-thread"><li class="b-thread__msg [b-thread__msg--own|--pending|--failed]"><p class="b-thread__who">Petter <time/></p><p class="b-thread__text">plain text (set with textContent)</p></li></ol>
     <form class="b-thread__form"><textarea class="b-input b-thread__input" rows="2"/><button class="b-btn" type="submit">Send</button></form>.
     Pending: <span class="b-thread__dots" aria-hidden="true"></span> skriver …; failed: <button type="button" class="b-thread__retry">Prøv igjen</button> in the text. CSS only. --b-thread-own sets the slip behind own messages. */

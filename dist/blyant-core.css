@@ -879,6 +879,7 @@ a.b-linkcard:focus-visible, .b-linkcard:has(.b-linkcard__title a:focus-visible) 
 .b-linkcard__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; max-width: none; margin: 0; font-size: 18px; line-height: 1.35; color: var(--ink-soft); }
 .b-linkcard__foot { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: auto; padding-top: calc(var(--space-2) + 10px); background: var(--b-rule-img) 0 var(--space-1) / 100% 8px no-repeat; }
 .b-linkcard__foot > .b-check { min-height: 32px; font-size: 19px; }
+.b-linkcard__from { flex: 0 1 auto; min-width: 0; overflow: hidden; font-size: 19px; line-height: 32px; color: var(--ink-soft); white-space: nowrap; text-overflow: ellipsis; }   /* where the card is from: «Reader · utheving» */
 /* Compact: no picture, tighter, two lines of title. For lists and small spots on a board. */
 .b-linkcard--compact { --_pad: var(--space-3); --b-linkcard-lines: 2; }
 .b-linkcard--compact .b-linkcard__image { display: none; }
@@ -922,6 +923,44 @@ a.b-linkcard:focus-visible, .b-linkcard:has(.b-linkcard__title a:focus-visible) 
 .b-toast__action:hover { text-decoration-color: var(--ink); }
 .b-toast__action:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
 
+/* Sheet: a raised box over the page for one short task (publish, pick, confirm), over a veil of paper.
+   Centred near the top on a wide screen, at the foot of the screen when the veil is narrower than 640px.
+   The veil is a size container, so a sheet in a side panel (position: absolute on the veil) also turns into the foot sheet.
+   The veil may be a <dialog> opened with showModal(): then the browser gives Esc, focus and the inert page.
+   Only the body scrolls, so the pencil outline (Blyant.ink) stays on the sheet. Under the toasts (z-index 50). */
+.b-sheet-scrim { position: fixed; inset: 0; z-index: 45; container: b-sheet / size; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; overflow: hidden; overflow: clip; overscroll-behavior: contain; background: color-mix(in srgb, var(--paper) 60%, transparent); -webkit-tap-highlight-color: transparent; animation: b-sheet-veil .16s ease-out; }
+.b-sheet-scrim[hidden] { display: none; }
+dialog.b-sheet-scrim { width: auto; height: auto; max-width: none; max-height: none; margin: 0; padding: 0; color: inherit; border: 0; }
+dialog.b-sheet-scrim:not([open]) { display: none; }
+dialog.b-sheet-scrim::backdrop { background: transparent; }
+.b-sheet { --_side: var(--space-6); position: relative; display: flex; flex-direction: column; flex: none; width: min(var(--b-sheet-width, 32rem), 100% - 2 * var(--space-4)); max-height: 80vh; max-height: 80cqh; min-height: 0; box-sizing: border-box; padding: var(--space-4) var(--_side) var(--space-6); color: var(--ink); font-family: var(--b-body); font-size: 20px; line-height: 1.45; text-align: left; background: var(--paper-2); border: var(--b-border) solid var(--b-border-c); border-radius: var(--b-radius); box-shadow: var(--shadow-lift); animation: b-sheet-drop .2s cubic-bezier(.2, .8, .3, 1); }
+.b-sheet-scrim > .b-sheet { margin-top: var(--b-sheet-top, 12vh); margin-top: var(--b-sheet-top, 12cqh); }
+.b-sheet:focus { outline: none; }
+.b-sheet__head { display: flex; align-items: flex-start; gap: var(--space-3); flex: none; min-width: 0; padding-bottom: var(--space-3); }
+.b-sheet__title { flex: 1 1 auto; min-width: 0; max-width: none; margin: 0; font-family: var(--b-display); font-weight: 500; font-size: 30px; line-height: 1.1; color: var(--ink); text-wrap: balance; }
+.b-sheet__close { position: relative; flex: none; width: 40px; height: 40px; margin: -6px -10px 0 auto; padding: 0; color: var(--ink-soft); background: none; border: 0; border-radius: var(--b-radius-sm); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.b-sheet__close::before { content: ""; position: absolute; inset: 11px; background: currentColor; -webkit-mask: var(--b-cross) center / contain no-repeat; mask: var(--b-cross) center / contain no-repeat; }
+.b-sheet__close:hover { color: var(--ink); background: var(--paper-3); }
+.b-sheet__close:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 1px; }
+:root { --b-cross: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M5 4.5 C12 11 19 19 27.5 27.5 M27 5 C19 12.5 12 19.5 4.5 27' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+/* The body scrolls. It reaches a little out to the sides so focus rings are not cut off at its edge. */
+.b-sheet__body { flex: 1 1 auto; display: grid; align-content: start; gap: var(--space-3); min-height: 0; margin: 0 calc(-1 * var(--space-2)); padding: var(--space-1) var(--space-2); overflow-y: auto; overscroll-behavior: contain; }
+.b-sheet__body > * { margin-block: 0; }
+.b-sheet__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-2) var(--space-3); flex: none; margin-top: var(--space-3); padding-top: calc(var(--space-3) + 8px); background: var(--b-rule-img) 0 0 / 100% 8px no-repeat; }
+.b-sheet__foot > .b-sheet__note { flex: 1 1 12em; min-width: 0; margin: 0 auto 0 0; font-size: 17px; line-height: 1.3; color: var(--ink-soft); }
+@container b-sheet (max-width: 639.98px) {
+  /* The foot sheet: the full width, its bottom and sides just past the screen edge, so the pencil draws only the top */
+  .b-sheet-scrim > .b-sheet { --_side: var(--space-4); width: calc(100% + 20px); max-height: 85vh; max-height: 85cqh; margin: auto -10px -10px; padding: var(--space-4) calc(var(--_side) + 10px) calc(var(--space-6) + 10px + env(safe-area-inset-bottom, 0px)); border-radius: 14px 12px 0 0 / 12px 14px 0 0; animation-name: b-sheet-up; animation-duration: .24s; }
+  .b-sheet__foot > .b-btn { flex: 1 1 0; }
+  .b-sheet__foot > .b-sheet__note { flex-basis: 100%; }
+}
+@keyframes b-sheet-veil { from { opacity: 0; } }
+@keyframes b-sheet-drop { from { opacity: 0; transform: translateY(-10px); } }
+@keyframes b-sheet-up { from { transform: translateY(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .b-sheet-scrim, .b-sheet { animation: none; }
+}
+
 /* Checklist: things to do. A box to tick, the thing itself, a short note to the right. */
 .b-checklist { list-style: none; margin: 0; padding: 0; display: grid; }
 .b-checklist__item { display: flex; align-items: center; gap: var(--space-3); min-width: 0; padding: 4px var(--space-2) 10px; background: var(--b-rule-img) 0 100% / 100% 8px no-repeat; border-radius: var(--b-radius-sm); }
@@ -933,12 +972,25 @@ a.b-linkcard:focus-visible, .b-linkcard:has(.b-linkcard__title a:focus-visible) 
 a.b-checklist__title:hover, a.b-checklist__title:focus-visible { background-size: 100% 8px; }
 .b-checklist__title:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
 .b-checklist__meta { flex: none; margin-left: auto; padding-left: var(--space-2); font-family: var(--b-note); font-size: 13px; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+/* A second, soft line under the title (a quote, the beginning of a text). It lines up with the title, past the box or the mark. */
+.b-checklist__item:has(> .b-checklist__desc) { flex-wrap: wrap; row-gap: 0; }
+.b-checklist__desc { flex: 1 1 100%; min-width: 0; max-width: none; margin: -2px 0 0; padding-bottom: 2px; overflow: hidden; font-family: var(--b-body); font-size: 17px; line-height: 1.3; color: var(--ink-soft); white-space: nowrap; text-overflow: ellipsis; }
+:is(.b-check, .b-checklist__mark) ~ .b-checklist__desc { margin-left: calc(22px + var(--space-3)); }
+/* A pick list: the title is a button that picks the row. The whole row is the button; the box and links in it stay on top. */
+.b-checklist__item:has(> button.b-checklist__title) { position: relative; }
+.b-checklist__item:has(> button.b-checklist__title) > :is(.b-check, a, button:not(.b-checklist__title)) { position: relative; z-index: 1; }
+button.b-checklist__title { margin: 0; padding-top: 0; text-align: left; border: 0; border-radius: 0; background-color: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button.b-checklist__title::after { content: ""; position: absolute; inset: 0; border-radius: var(--b-radius-sm); }
+button.b-checklist__title:hover:not(:disabled), button.b-checklist__title:focus-visible { background-size: 100% 8px; }
+button.b-checklist__title:disabled { color: var(--ink-soft); cursor: default; }
+.b-checklist__item:not(.is-active):has(> button.b-checklist__title:disabled):hover { background-color: transparent; }
+.b-sheet .b-checklist__item:is(:hover, .is-active) { background-color: var(--paper); }   /* the sheet is paper-2 already */
 /* Done: the pencil goes through it */
 .b-checklist__item.is-done .b-checklist__title { color: var(--ink-soft); background-position: 0 62%; background-size: 100% 8px; }
 [data-skin="clean"] .b-checklist__item { background-image: linear-gradient(var(--line-faint), var(--line-faint)); background-size: 100% 1px; }
 [data-skin="clean"] .b-checklist__item:last-child { background-image: none; }
 [data-skin="clean"] .b-checklist__title { background-image: linear-gradient(var(--ink-soft), var(--ink-soft)); }
-[data-skin="clean"] a.b-checklist__title:hover, [data-skin="clean"] .b-checklist__item.is-done .b-checklist__title { background-size: 100% 1.5px; }
+[data-skin="clean"] a.b-checklist__title:hover, [data-skin="clean"] button.b-checklist__title:hover:not(:disabled), [data-skin="clean"] .b-checklist__item.is-done .b-checklist__title { background-size: 100% 1.5px; }
 
 /* Thread: a conversation in plain text, the reader and one other party (comments under a document, a side panel).
    The reader's own comments (--own) are set in from the left on a paper-2 slip; the other party writes straight on the page.

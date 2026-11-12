@@ -894,6 +894,7 @@ a.b-linkcard:focus-visible, .b-linkcard:has(.b-linkcard__title a:focus-visible) 
 .b-linkcard__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; max-width: none; margin: 0; font-size: 18px; line-height: 1.35; color: var(--ink-soft); }
 .b-linkcard__foot { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: auto; padding-top: calc(var(--space-2) + 10px); background: var(--b-rule-img) 0 var(--space-1) / 100% 8px no-repeat; }
 .b-linkcard__foot > .b-check { min-height: 32px; font-size: 19px; }
+.b-linkcard__from { flex: 0 1 auto; min-width: 0; overflow: hidden; font-size: 19px; line-height: 32px; color: var(--ink-soft); white-space: nowrap; text-overflow: ellipsis; }   /* where the card is from: «Reader · utheving» */
 /* Compact: no picture, tighter, two lines of title. For lists and small spots on a board. */
 .b-linkcard--compact { --_pad: var(--space-3); --b-linkcard-lines: 2; }
 .b-linkcard--compact .b-linkcard__image { display: none; }
@@ -937,6 +938,44 @@ a.b-linkcard:focus-visible, .b-linkcard:has(.b-linkcard__title a:focus-visible) 
 .b-toast__action:hover { text-decoration-color: var(--ink); }
 .b-toast__action:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
 
+/* Sheet: a raised box over the page for one short task (publish, pick, confirm), over a veil of paper.
+   Centred near the top on a wide screen, at the foot of the screen when the veil is narrower than 640px.
+   The veil is a size container, so a sheet in a side panel (position: absolute on the veil) also turns into the foot sheet.
+   The veil may be a <dialog> opened with showModal(): then the browser gives Esc, focus and the inert page.
+   Only the body scrolls, so the pencil outline (Blyant.ink) stays on the sheet. Under the toasts (z-index 50). */
+.b-sheet-scrim { position: fixed; inset: 0; z-index: 45; container: b-sheet / size; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; overflow: hidden; overflow: clip; overscroll-behavior: contain; background: color-mix(in srgb, var(--paper) 60%, transparent); -webkit-tap-highlight-color: transparent; animation: b-sheet-veil .16s ease-out; }
+.b-sheet-scrim[hidden] { display: none; }
+dialog.b-sheet-scrim { width: auto; height: auto; max-width: none; max-height: none; margin: 0; padding: 0; color: inherit; border: 0; }
+dialog.b-sheet-scrim:not([open]) { display: none; }
+dialog.b-sheet-scrim::backdrop { background: transparent; }
+.b-sheet { --_side: var(--space-6); position: relative; display: flex; flex-direction: column; flex: none; width: min(var(--b-sheet-width, 32rem), 100% - 2 * var(--space-4)); max-height: 80vh; max-height: 80cqh; min-height: 0; box-sizing: border-box; padding: var(--space-4) var(--_side) var(--space-6); color: var(--ink); font-family: var(--b-body); font-size: 20px; line-height: 1.45; text-align: left; background: var(--paper-2); border: var(--b-border) solid var(--b-border-c); border-radius: var(--b-radius); box-shadow: var(--shadow-lift); animation: b-sheet-drop .2s cubic-bezier(.2, .8, .3, 1); }
+.b-sheet-scrim > .b-sheet { margin-top: var(--b-sheet-top, 12vh); margin-top: var(--b-sheet-top, 12cqh); }
+.b-sheet:focus { outline: none; }
+.b-sheet__head { display: flex; align-items: flex-start; gap: var(--space-3); flex: none; min-width: 0; padding-bottom: var(--space-3); }
+.b-sheet__title { flex: 1 1 auto; min-width: 0; max-width: none; margin: 0; font-family: var(--b-display); font-weight: 500; font-size: 30px; line-height: 1.1; color: var(--ink); text-wrap: balance; }
+.b-sheet__close { position: relative; flex: none; width: 40px; height: 40px; margin: -6px -10px 0 auto; padding: 0; color: var(--ink-soft); background: none; border: 0; border-radius: var(--b-radius-sm); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.b-sheet__close::before { content: ""; position: absolute; inset: 11px; background: currentColor; -webkit-mask: var(--b-cross) center / contain no-repeat; mask: var(--b-cross) center / contain no-repeat; }
+.b-sheet__close:hover { color: var(--ink); background: var(--paper-3); }
+.b-sheet__close:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 1px; }
+:root { --b-cross: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M5 4.5 C12 11 19 19 27.5 27.5 M27 5 C19 12.5 12 19.5 4.5 27' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+/* The body scrolls. It reaches a little out to the sides so focus rings are not cut off at its edge. */
+.b-sheet__body { flex: 1 1 auto; display: grid; align-content: start; gap: var(--space-3); min-height: 0; margin: 0 calc(-1 * var(--space-2)); padding: var(--space-1) var(--space-2); overflow-y: auto; overscroll-behavior: contain; }
+.b-sheet__body > * { margin-block: 0; }
+.b-sheet__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-2) var(--space-3); flex: none; margin-top: var(--space-3); padding-top: calc(var(--space-3) + 8px); background: var(--b-rule-img) 0 0 / 100% 8px no-repeat; }
+.b-sheet__foot > .b-sheet__note { flex: 1 1 12em; min-width: 0; margin: 0 auto 0 0; font-size: 17px; line-height: 1.3; color: var(--ink-soft); }
+@container b-sheet (max-width: 639.98px) {
+  /* The foot sheet: the full width, its bottom and sides just past the screen edge, so the pencil draws only the top */
+  .b-sheet-scrim > .b-sheet { --_side: var(--space-4); width: calc(100% + 20px); max-height: 85vh; max-height: 85cqh; margin: auto -10px -10px; padding: var(--space-4) calc(var(--_side) + 10px) calc(var(--space-6) + 10px + env(safe-area-inset-bottom, 0px)); border-radius: 14px 12px 0 0 / 12px 14px 0 0; animation-name: b-sheet-up; animation-duration: .24s; }
+  .b-sheet__foot > .b-btn { flex: 1 1 0; }
+  .b-sheet__foot > .b-sheet__note { flex-basis: 100%; }
+}
+@keyframes b-sheet-veil { from { opacity: 0; } }
+@keyframes b-sheet-drop { from { opacity: 0; transform: translateY(-10px); } }
+@keyframes b-sheet-up { from { transform: translateY(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .b-sheet-scrim, .b-sheet { animation: none; }
+}
+
 /* Checklist: things to do. A box to tick, the thing itself, a short note to the right. */
 .b-checklist { list-style: none; margin: 0; padding: 0; display: grid; }
 .b-checklist__item { display: flex; align-items: center; gap: var(--space-3); min-width: 0; padding: 4px var(--space-2) 10px; background: var(--b-rule-img) 0 100% / 100% 8px no-repeat; border-radius: var(--b-radius-sm); }
@@ -948,12 +987,25 @@ a.b-linkcard:focus-visible, .b-linkcard:has(.b-linkcard__title a:focus-visible) 
 a.b-checklist__title:hover, a.b-checklist__title:focus-visible { background-size: 100% 8px; }
 .b-checklist__title:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; }
 .b-checklist__meta { flex: none; margin-left: auto; padding-left: var(--space-2); font-family: var(--b-note); font-size: 13px; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+/* A second, soft line under the title (a quote, the beginning of a text). It lines up with the title, past the box or the mark. */
+.b-checklist__item:has(> .b-checklist__desc) { flex-wrap: wrap; row-gap: 0; }
+.b-checklist__desc { flex: 1 1 100%; min-width: 0; max-width: none; margin: -2px 0 0; padding-bottom: 2px; overflow: hidden; font-family: var(--b-body); font-size: 17px; line-height: 1.3; color: var(--ink-soft); white-space: nowrap; text-overflow: ellipsis; }
+:is(.b-check, .b-checklist__mark) ~ .b-checklist__desc { margin-left: calc(22px + var(--space-3)); }
+/* A pick list: the title is a button that picks the row. The whole row is the button; the box and links in it stay on top. */
+.b-checklist__item:has(> button.b-checklist__title) { position: relative; }
+.b-checklist__item:has(> button.b-checklist__title) > :is(.b-check, a, button:not(.b-checklist__title)) { position: relative; z-index: 1; }
+button.b-checklist__title { margin: 0; padding-top: 0; text-align: left; border: 0; border-radius: 0; background-color: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button.b-checklist__title::after { content: ""; position: absolute; inset: 0; border-radius: var(--b-radius-sm); }
+button.b-checklist__title:hover:not(:disabled), button.b-checklist__title:focus-visible { background-size: 100% 8px; }
+button.b-checklist__title:disabled { color: var(--ink-soft); cursor: default; }
+.b-checklist__item:not(.is-active):has(> button.b-checklist__title:disabled):hover { background-color: transparent; }
+.b-sheet .b-checklist__item:is(:hover, .is-active) { background-color: var(--paper); }   /* the sheet is paper-2 already */
 /* Done: the pencil goes through it */
 .b-checklist__item.is-done .b-checklist__title { color: var(--ink-soft); background-position: 0 62%; background-size: 100% 8px; }
 [data-skin="clean"] .b-checklist__item { background-image: linear-gradient(var(--line-faint), var(--line-faint)); background-size: 100% 1px; }
 [data-skin="clean"] .b-checklist__item:last-child { background-image: none; }
 [data-skin="clean"] .b-checklist__title { background-image: linear-gradient(var(--ink-soft), var(--ink-soft)); }
-[data-skin="clean"] a.b-checklist__title:hover, [data-skin="clean"] .b-checklist__item.is-done .b-checklist__title { background-size: 100% 1.5px; }
+[data-skin="clean"] a.b-checklist__title:hover, [data-skin="clean"] button.b-checklist__title:hover:not(:disabled), [data-skin="clean"] .b-checklist__item.is-done .b-checklist__title { background-size: 100% 1.5px; }
 
 /* Thread: a conversation in plain text, the reader and one other party (comments under a document, a side panel).
    The reader's own comments (--own) are set in from the left on a paper-2 slip; the other party writes straight on the page.
@@ -1303,7 +1355,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
 <script>
-/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"Sketch2D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Editor"},{"name":"Toolbar"},{"name":"Checklist"},{"name":"LinkCard"},{"name":"Thread"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"Sketch2D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Sheet"},{"name":"Editor"},{"name":"Toolbar"},{"name":"Checklist"},{"name":"LinkCard"},{"name":"Thread"}]} */
 /* Blyant — hand-drawn pencil design system. Vanilla JS, no dependencies.
    Sketch3D needs window.THREE (three.js r147 UMD) loaded first.
    Sketch2D (blyant-sketch2d.js) needs nothing but WebGL.                 */
@@ -1659,6 +1711,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
     [".b-slide", "box"],
     [".b-menu", "box"],
     [".b-toast", "box-sm"],
+    [".b-sheet", "box"],
     [".b-toolbar", "box"],
     [".b-linkcard", "box"],
     [".b-tab[aria-selected='true']", "tab"],
@@ -3590,7 +3643,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
           if (ic) B.figure(sv, ic.map(function (p) { return Object.assign({ width: 3.6 }, p); }), { wobble: 0.7 });
         });
       }],
-      ["Toast", "Beskjeden som ligger oppå et øyeblikk.", null, '<div class="b-toast" role="status"><span>Slettet «Myra»</span><button class="b-toast__action" type="button">Angre</button></div>']
+      ["Toast", "Beskjeden som ligger oppå et øyeblikk.", null, '<div class="b-toast" role="status"><span>Slettet «Myra»</span><button class="b-toast__action" type="button">Angre</button></div>'],
+      ["Sheet", "Arket over siden for én kort oppgave.", "system", '<div class="b-sheet" style="width:100%;padding:10px 16px 14px"><div class="b-sheet__head" style="padding-bottom:4px"><h3 class="b-sheet__title" style="font-size:24px">Publiser</h3><button class="b-sheet__close" type="button" aria-label="Lukk"></button></div><div class="b-sheet__body"><p class="t-small" style="color:var(--ink-soft)">Legges ut nå.</p></div><div class="b-sheet__foot" style="margin-top:6px"><button class="b-btn b-btn--sm b-btn--primary" type="button">Publiser</button></div></div>']
     ]],
     ["Innhold", [
       ["Box", "Ramme rundt noe som hører sammen.", "system", '<div class="b-box" style="width:100%"><span class="b-label">Brett</span><p class="t-small" style="margin-top:4px">61 sekskanter, seks steiner.</p></div>'],
@@ -3600,8 +3654,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       ["Table", "Tabell med tall i kolonner.", "nettside", '<div class="b-table-wrap"><table class="b-table"><thead><tr><th>Brett</th><th class="num">Hexer</th></tr></thead><tbody><tr><td>Myra</td><td class="num">61</td></tr><tr><td>Fjellet</td><td class="num">91</td></tr></tbody></table></div>'],
       ["Placeholder", "Plass til et bilde som ikke finnes ennå.", "system", '<div class="b-ph" style="--ratio:16/7;width:100%"><span>bilde 16:7</span></div>'],
       ["Empty", "Tom tilstand med en liten tegning.", null, '<div class="b-empty"><svg class="b-empty__art" data-doodle="ark" aria-hidden="true" style="width:72px"></svg><div class="b-empty__body"><p class="b-empty__title">Ingen brett ennå</p></div></div>'],
-      ["Checklist", "Gjøremål: rute, sak og et kort notat.", "system", '<ul class="b-checklist" style="width:100%"><li class="b-checklist__item"><label class="b-check"><input type="checkbox"><span class="b-check__box"></span></label><span class="b-checklist__title">Tegn kartet</span><span class="b-checklist__meta">I dag</span></li><li class="b-checklist__item is-done"><label class="b-check"><input type="checkbox" checked><span class="b-check__box"></span></label><span class="b-checklist__title">Spiss blyantene</span><span class="b-checklist__meta">I går</span></li></ul>'],
-      ["LinkCard", "Kort for en lenke eller en artikkel.", "system", '<article class="b-linkcard b-linkcard--compact" style="width:100%"><span class="b-linkcard__site">skisseboka.no</span><strong class="b-linkcard__title">Slik tegner du et hex-kart for hånd</strong><p class="b-linkcard__desc">Tre øvelser med blyant og papir.</p></article>'],
+      ["Checklist", "Gjøremål: rute, sak og et kort notat.", "system", '<ul class="b-checklist" style="width:100%"><li class="b-checklist__item"><label class="b-check"><input type="checkbox"><span class="b-check__box"></span></label><span class="b-checklist__title">Tegn kartet</span><span class="b-checklist__meta">I dag</span><span class="b-checklist__desc">Ti hexer med vann og en sti tvers over</span></li><li class="b-checklist__item is-done"><label class="b-check"><input type="checkbox" checked><span class="b-check__box"></span></label><span class="b-checklist__title">Spiss blyantene</span><span class="b-checklist__meta">I går</span></li></ul>'],
+      ["LinkCard", "Kort for en lenke eller en artikkel.", "system", '<article class="b-linkcard b-linkcard--compact" style="width:100%"><span class="b-linkcard__site">skisseboka.no</span><strong class="b-linkcard__title">Slik tegner du et hex-kart for hånd</strong><p class="b-linkcard__desc">Tre øvelser med blyant og papir.</p><div class="b-linkcard__foot"><span class="b-linkcard__from">Reader · utheving</span></div></article>'],
       ["Thread", "Samtale i ren tekst mellom leseren og Claude.", "system", '<ol class="b-thread" style="width:100%"><li class="b-thread__msg b-thread__msg--own"><p class="b-thread__who">Petter <time>09:31</time></p><p class="b-thread__text">Er åpningen for lang?</p></li><li class="b-thread__msg"><p class="b-thread__who">Claude <time>09:31</time></p><p class="b-thread__text">Litt. Stryk første setning.</p></li></ol>'],
       ["Entries", "Liste over innlegg eller dokumenter.", null, '<ul class="b-entries b-entries--compact" style="width:100%"><li class="b-entry"><span class="b-entry__title">Om å skisse først</span><time class="b-entry__meta">11. nov.</time></li><li class="b-entry"><span class="b-entry__title">Notater fra mandag</span><time class="b-entry__meta">9. nov.</time></li></ul>']
     ]],
@@ -4410,6 +4464,56 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       if (b) threadReply(b.closest(".b-thread"), b.closest(".b-thread__msg"));
     });
   }
+  // Sheet: one on a plain veil with the behaviour written out (what a framework app does), one on a <dialog>.
+  function sheetHtml() {
+    var src = [["Kartet over myra", "Reader", "«Ti hexer med vann, tre med skog og en sti tvers over, tegnet uten linjal.»"], ["Om å skisse først", "Utkast", "Bestem hva som skal være på flaten, og hvordan det henger sammen, før noen velger farger."],
+      ["Grafitt bærer alt", "Reader", "«Svart, hvitt og gråtoner gjør nesten hele jobben.»"], ["Notater fra mandag", "Utkast", "Brygga er gammel, og stien går over myra."], ["Fem steiner og en figur", "Reader", "«Reglene for spillet på én side, med tegninger av hvert trekk.»"], ["Kull og papir", "Utkast", "I Kull blir blyanten kritt."]];
+    return '<section class="stack-lg" id="ark"><div class="sec-head"><h2>Ark</h2><p>Et hevet ark over siden for én kort oppgave: publisere, velge, bekrefte. Midt på under navigasjonen på en bred skjerm, nederst på en telefon. Esc, et trykk på sløret eller «Avbryt» lukker det.</p></div>' +
+      '<div class="row"><button class="b-btn b-btn--primary" type="button" id="s-sheet-open">Publiser …</button><button class="b-btn" type="button" id="s-dialog-open">Velg en kilde …</button></div>' +
+      '<div class="b-sheet-scrim" id="s-sheet" hidden><section class="b-sheet" role="dialog" aria-modal="true" aria-labelledby="s-sheet-t" tabindex="-1">' +
+      '<header class="b-sheet__head"><h2 class="b-sheet__title" id="s-sheet-t">Publiser «Om brygga»</h2><button class="b-sheet__close" type="button" aria-label="Lukk" data-close></button></header>' +
+      '<div class="b-sheet__body"><label class="b-field"><span class="b-field__label">Adresse</span><input class="b-input" id="s-sheet-slug" value="om-brygga"><span class="b-field__hint">phareim.md/om-brygga</span></label>' +
+      '<label class="b-check"><input type="checkbox" id="s-sheet-c1" checked><span class="b-check__box"></span>Vis på forsiden</label><label class="b-check"><input type="checkbox" id="s-sheet-c2"><span class="b-check__box"></span>Åpne for kommentarer</label></div>' +
+      '<footer class="b-sheet__foot"><p class="b-sheet__note">Utkastet blir liggende.</p><button class="b-btn" type="button" data-close>Avbryt</button><button class="b-btn b-btn--primary" type="button" data-close>Publiser</button></footer></section></div>' +
+      '<dialog class="b-sheet-scrim" id="s-dialog" aria-labelledby="s-dialog-t"><div class="b-sheet"><header class="b-sheet__head"><h2 class="b-sheet__title" id="s-dialog-t">Velg en kilde</h2><button class="b-sheet__close" type="button" aria-label="Lukk" data-close></button></header>' +
+      '<div class="b-sheet__body"><ul class="b-checklist">' + src.map(function (r, i) {
+        return '<li class="b-checklist__item"><span class="b-checklist__mark" aria-hidden="true">·</span><button class="b-checklist__title" type="button" data-close' + (i === 3 ? " disabled" : "") + ">" + r[0] + '</button><span class="b-checklist__meta">' + (i === 3 ? "Brukt" : r[1]) + '</span><span class="b-checklist__desc">' + r[2] + "</span></li>";
+      }).join("") + '</ul></div><footer class="b-sheet__foot"><button class="b-btn" type="button" data-close>Avbryt</button></footer></div></dialog></section>';
+  }
+  function wireSheets(d) {
+    // the plain veil: the app does what <dialog> would have done
+    var scrim = d.querySelector("#s-sheet"), sheet = scrim.querySelector(".b-sheet"), back = null;
+    var FOCUS = "a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex='-1'])";
+    function keys(e) {
+      if (e.key === "Escape") { e.preventDefault(); closeSheet(); return; }
+      if (e.key !== "Tab") return;
+      var f = Array.prototype.filter.call(sheet.querySelectorAll(FOCUS), function (n) { return n.offsetParent !== null; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === sheet)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    function openSheet() {
+      back = document.activeElement;
+      scrim.hidden = false;
+      root.style.overflow = "hidden";
+      document.addEventListener("keydown", keys);
+      (sheet.querySelector("input, select, textarea") || sheet).focus();
+    }
+    function closeSheet() {
+      scrim.hidden = true;
+      root.style.overflow = "";
+      document.removeEventListener("keydown", keys);
+      if (back && back.isConnected) back.focus();
+    }
+    scrim.addEventListener("click", function (e) { if (e.target === scrim || e.target.closest("[data-close]")) closeSheet(); });
+    d.querySelector("#s-sheet-open").addEventListener("click", openSheet);
+    // <dialog>: Esc, focus and the inert page come from the browser; a tap on the veil is a click on the dialog itself
+    var dlg = d.querySelector("#s-dialog");
+    d.querySelector("#s-dialog-open").addEventListener("click", function () { dlg.showModal(); root.style.overflow = "hidden"; });
+    dlg.addEventListener("click", function (e) { if (e.target === dlg || e.target.closest("[data-close]")) dlg.close(); });
+    dlg.addEventListener("close", function () { root.style.overflow = ""; });
+  }
   VIEWS.system = {
     title: "System",
     render: function (host, o) {
@@ -4443,6 +4547,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         '<li class="b-checklist__item"><span class="b-checklist__mark" aria-hidden="true">↻</span><a class="b-checklist__title" href="#system">Vann plantene</a><span class="b-checklist__meta">Mandager</span></li>' +
         '<li class="b-checklist__item is-done"><label class="b-check"><input type="checkbox" id="s-k2" aria-label="Ferdig" checked><span class="b-check__box"></span></label><a class="b-checklist__title" href="#system">Spiss blyantene</a><span class="b-checklist__meta">I går</span></li>' +
         '</ul></div>' +
+        '<div class="b-box"><span class="b-label">Plukkliste med en linje til</span><ul class="b-checklist">' +
+        '<li class="b-checklist__item"><label class="b-check"><input type="checkbox" id="s-p1" aria-label="Ta med" checked><span class="b-check__box"></span></label><button class="b-checklist__title" type="button">Kartet over myra</button><span class="b-checklist__meta">Reader</span><span class="b-checklist__desc">«Ti hexer med vann, tre med skog og en sti tvers over, tegnet uten linjal.»</span></li>' +
+        '<li class="b-checklist__item"><span class="b-checklist__mark" aria-hidden="true">·</span><button class="b-checklist__title" type="button">Om å skisse først</button><span class="b-checklist__meta">Utkast</span><span class="b-checklist__desc">Bestem hva som skal være på flaten før noen velger farger.</span></li>' +
+        '<li class="b-checklist__item"><span class="b-checklist__mark" aria-hidden="true">·</span><button class="b-checklist__title" type="button" disabled>Notater fra mandag</button><span class="b-checklist__meta">Brukt</span><span class="b-checklist__desc">Allerede med i teksten.</span></li>' +
+        '</ul></div>' +
         '<div class="b-box"><span class="b-label">Plassholder</span><div class="b-ph" style="--ratio:16/9"><span>bilde 16:9</span></div></div>' +
         '<div class="b-box"><span class="b-label">Verktøylinje</span>' +
         '<div class="b-toolbar" role="toolbar" aria-label="Verktøy" style="justify-self:start"><button class="b-toolbar__btn" type="button" aria-pressed="true" aria-label="Flytt" title="Flytt"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="flytt"></svg></button><button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Blyant" title="Blyant"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="blyant"></svg></button><button class="b-toolbar__btn" type="button" aria-pressed="false" aria-label="Tekst" title="Tekst"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="tekst"></svg></button><span class="b-toolbar__sep"></span><button class="b-toolbar__btn b-toolbar__btn--marker" type="button" aria-label="Spør om hjelp" title="Spør om hjelp"><svg viewBox="0 0 64 64" aria-hidden="true" data-icon="spor"></svg></button></div>' +
@@ -4454,16 +4563,19 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         '<div class="stack"><span class="b-label">Kompakt</span><a class="b-linkcard b-linkcard--compact" href="#system"><img class="b-linkcard__image" src="' + linkPic(2) + '" alt="" onerror="this.remove()"><span class="b-linkcard__site">myra.no</span><strong class="b-linkcard__title">Fem steiner, seks farger og en figur som hopper fra hex til hex</strong><p class="b-linkcard__desc">Reglene for spillet på én side, med tegninger av hvert trekk og et kart over brettet.</p></a></div>' +
         '<div class="stack"><span class="b-label">Med valg i foten</span><article class="b-linkcard"><img class="b-linkcard__image" src="' + linkPic(2) + '" alt="" onerror="this.remove()"><span class="b-linkcard__site">blyant.phareim.no</span><strong class="b-linkcard__title"><a href="#system">Grafitt bærer alt</a></strong><p class="b-linkcard__desc">Svart, hvitt og gråtoner gjør nesten hele jobben. Farge er en effekt du legger på det ene leseren skal finne.</p><div class="b-linkcard__foot"><label class="b-check"><input type="checkbox" id="s-lc1"><span class="b-check__box"></span>Legg i Reader</label><span class="b-tag b-tag--green"><span class="b-dot"></span>Lest</span></div></article></div>' +
         '<div class="stack"><span class="b-label">Lang tittel, uten beskrivelse</span><a class="b-linkcard" href="#system"><img class="b-linkcard__image" src="finnes-ikke.jpg" alt="" onerror="this.remove()"><span class="b-linkcard__site">en-svært-lang-adresse-som-ikke-får-plass.eksempel.no/artikler/2026/11</span><strong class="b-linkcard__title">En svært lang tittel som fortsetter og fortsetter om hvordan man skisserer brett, kart, figurer og regler før noen har bestemt seg for farger, merkevare eller hva spillet faktisk skal hete</strong><div class="b-linkcard__foot"><span class="b-tag">Lagret</span></div></a></div>' +
+        '<div class="stack"><span class="b-label">Med kilde i foten</span><article class="b-linkcard b-linkcard--compact"><span class="b-linkcard__site">skisseboka.no</span><strong class="b-linkcard__title"><a href="#system">Blyanten først, pynten etterpå</a></strong><p class="b-linkcard__desc">«En skisse holder lenger enn et ferdig design når du ennå ikke vet hva du bygger.»</p><div class="b-linkcard__foot"><span class="b-linkcard__from">Reader · utheving</span></div></article></div>' +
         '</div><div class="linkcards linkcards--row">' +
         '<div class="stack"><span class="b-label">Rad</span><a class="b-linkcard b-linkcard--row" href="#system"><img class="b-linkcard__image" src="' + linkPic(1) + '" alt="" onerror="this.remove()"><span class="b-linkcard__site">skisseboka.no</span><strong class="b-linkcard__title">Blyanten først, pynten etterpå</strong><p class="b-linkcard__desc">Hvorfor en skisse holder lenger enn et ferdig design når du ennå ikke vet hva du bygger.</p></a></div>' +
         '<div class="stack linkcards__narrow"><span class="b-label">Rad, smalere enn 360px: stables</span><a class="b-linkcard b-linkcard--row" href="#system"><img class="b-linkcard__image" src="' + linkPic(2) + '" alt="" onerror="this.remove()"><span class="b-linkcard__site">myra.no</span><strong class="b-linkcard__title">Kartet over myra</strong><p class="b-linkcard__desc">Ti hexer med vann, tre med skog og en sti tvers over.</p></a></div>' +
         "</div></section>" +
+        (o.thumb ? "" : sheetHtml()) +
         '<section class="stack-lg" id="samtale"><div class="sec-head"><h2>Samtale</h2><p>Kommentarer mellom leseren og Claude, i ren tekst. Leserens egne kommentarer er satt inn fra venstre på en lapp; den andre skriver rett på arket.</p></div><div class="threads">' +
         '<div class="stack threads__wide"><span class="b-label">Under et dokument</span>' + threadHtml("a", true) + '</div>' +
         '<div class="stack"><span class="b-label">Sidepanel, 320 px</span><div class="b-box threads__panel">' + threadHtml("b", false) + '</div></div>' +
         "</div></section>";
       host.appendChild(d);
       wireThreads(d);
+      if (!o.thumb) wireSheets(d);
       Array.prototype.forEach.call(d.querySelectorAll(".b-checklist input"), function (c) {
         c.addEventListener("change", function () { c.closest(".b-checklist__item").classList.toggle("is-done", c.checked); });
       });
@@ -4488,7 +4600,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         B.figure(sv, [{ type: "rect", x: 6, y: 6, w: 288, h: 28, wobble: [0.6, 1.2, 2.4][i], seed: 60 + i }]);
         st.appendChild(row);
       });
-    }
+    },
+    leave: function () { root.style.overflow = ""; }
   };
 
   /* --------------------------------------------------------------- */

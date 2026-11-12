@@ -1,0 +1,36 @@
+<!-- @dsCard group="Tilstander" height=900 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Sheet</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div style="display:grid;gap:24px;justify-items:start">
+<div style="position:relative;width:100%;height:420px;overflow:hidden;border-radius:var(--b-radius-sm)">
+  <p style="margin:0;padding:16px">Siden ligger under sløret.</p>
+  <div class="b-sheet-scrim" style="position:absolute;--b-sheet-top:40px">
+    <section class="b-sheet" role="dialog" aria-modal="true" aria-labelledby="t1" tabindex="-1">
+      <header class="b-sheet__head"><h2 class="b-sheet__title" id="t1">Publiser «Om brygga»</h2><button class="b-sheet__close" type="button" aria-label="Lukk"></button></header>
+      <div class="b-sheet__body">
+        <label class="b-field"><span class="b-field__label">Adresse</span><input class="b-input" value="om-brygga"><span class="b-field__hint">phareim.md/om-brygga</span></label>
+        <label class="b-check"><input type="checkbox" checked><span class="b-check__box"></span>Vis på forsiden</label>
+      </div>
+      <footer class="b-sheet__foot"><p class="b-sheet__note">Utkastet blir liggende.</p><button class="b-btn" type="button">Avbryt</button><button class="b-btn b-btn--primary" type="button">Publiser</button></footer>
+    </section>
+  </div>
+</div>
+<div style="position:relative;width:360px;max-width:100%;height:420px;overflow:hidden;border-radius:var(--b-radius-sm)">
+  <p style="margin:0;padding:16px">Smalere enn 640px: arket ligger nederst.</p>
+  <div class="b-sheet-scrim" style="position:absolute">
+    <section class="b-sheet" role="dialog" aria-modal="true" aria-labelledby="t2" tabindex="-1">
+      <header class="b-sheet__head"><h2 class="b-sheet__title" id="t2">Velg en kilde</h2><button class="b-sheet__close" type="button" aria-label="Lukk"></button></header>
+      <div class="b-sheet__body"><ul class="b-checklist">
+        <li class="b-checklist__item"><span class="b-checklist__mark" aria-hidden="true">·</span><button class="b-checklist__title" type="button">Kartet over myra</button><span class="b-checklist__desc">«Ti hexer med vann og en sti tvers over.»</span></li>
+        <li class="b-checklist__item"><span class="b-checklist__mark" aria-hidden="true">·</span><button class="b-checklist__title" type="button">Om å skisse først</button><span class="b-checklist__desc">Bestem hva som skal være på flaten.</span></li>
+      </ul></div>
+      <footer class="b-sheet__foot"><button class="b-btn" type="button">Avbryt</button></footer>
+    </section>
+  </div>
+</div>
+</div>
+<script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>
