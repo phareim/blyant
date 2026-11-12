@@ -61,6 +61,10 @@ En graf du setter inn i PowerPoint, får graf-fargene av seg selv. En ny form er
 
 Alle oppsett utenom fullskjerm har stikkordet over tittelen og en bunntekst i mono: tekst til venstre, dato og nummer til høyre. Bunnteksten slår du på under Sett inn → Topptekst og bunntekst. Første nivå i en tekstboks er et avsnitt uten punkt. Trykk Tab for en liste med den lille ringen fra prosa-listene.
 
+**Navn.** Plassholderne har faste navn (Stikkord, Tittel, Innhold, Bilde 1, Bildetekst 1 og så videre), og blyantstrekene heter Ramme, Boks, Pil, Skille og Blyantstrek. Du ser dem i valgruten (Hjem → Ordne → Valgrute). Navnene er de samme som feltene i en definisjon, se under.
+
+**Notater.** Notatsiden har lysbildet øverst og manuset under, på papir i begge temaer.
+
 ## Retningslinjer
 
 De samme som for [Slide](komponenter/Slide.md):
@@ -69,6 +73,62 @@ De samme som for [Slide](komponenter/Slide.md):
 - Farge er effekt. Tusjen brukes på det ene øyet skal finne, og bare én gang per slide.
 - Eksempeldata merkes som eksempeldata i stikkordet eller bunnteksten.
 - Trenger du en strek, en ramme eller en skravur som malen ikke har, tegn den med `Blyant.rough` og lim den inn som SVG, i stedet for å tegne en rett strek i PowerPoint.
+
+## Fra en samtale med Claude
+
+Skillen `skills/blyant-presentasjon/` lar deg snakke deg gjennom en presentasjon med Claude, eksportere den til PowerPoint og jobbe videre der. Den har tre deler:
+
+- **Definisjonen.** Mens dere snakker, holder Claude presentasjonen som en liten JSON-fil: hvilke slides, hvilket oppsett hver har, og hva som står i feltene. Feltene heter det samme som plassholderne i malen.
+- **Eksporten.** `lag_presentasjon.py` fyller ut malen fra definisjonen og skriver en vanlig `.pptx`. Skriptet trenger bare Python, og leser oppsettene ut av malen, så det følger den versjonen det får.
+- **Reglene.** Skillen beskriver hvordan en Blyant-slide skal se ut og hvordan man jobber i en Blyant-presentasjon i PowerPoint, så Claude i PowerPoint bruker oppsettene, temafargene og blyantstrekene i stedet for å finne på sine egne.
+
+```json
+{
+  "tittel": "Hex-skisse etter fem runder",
+  "tema": "papir",
+  "bunntekst": "Hex-skisse · eksempeldata",
+  "slides": [
+    {"oppsett": "Tittel", "tema": "kull", "stikkord": "Testflaten", "tittel": "Hex-skisse etter\nfem runder"},
+    {"oppsett": "Tittel og innhold", "tittel": "Tre grep ga flyten",
+     "innhold": ["De virket ==sammen==.", ["En tydelig start-hex.", "Færre farger."]],
+     "notater": "Det du sier til denne sliden."},
+    {"oppsett": "Bilde", "tittel": "Start-hexen er lettere å finne nå", "bilde": "brett.png", "bildetekst": "Etter runde 4"},
+    {"oppsett": "Tittel og innhold", "tittel": "Bom per runde gikk ned",
+     "innhold": {"tabell": [["Runde", "Bom"], ["R1", 9], ["R2", 8]]}}
+  ]
+}
+```
+
+```bash
+python3 skills/blyant-presentasjon/lag_presentasjon.py presentasjon.json
+```
+
+```bash
+python3 skills/blyant-presentasjon/lag_presentasjon.py --oppsett
+```
+
+Den første skriver `presentasjon.pptx`. Den andre viser oppsettene og feltene i malen. Hele formatet står i `skills/blyant-presentasjon/SKILL.md`, og `eksempel.json` i samme mappe er en hel definisjon. Kort fortalt:
+
+- En streng er ett avsnitt, en liste er flere, og en liste inni en liste er punkter. `==ord==` får gul tusj, `**ord**` blir fet.
+- Et bilde er en filsti (PNG, JPEG eller GIF). Et bildefelt uten bilde viser ruta med kryss, klar til at du slipper et bilde på den i PowerPoint.
+- `notater` blir manuset i notatfeltet. `tema` kan settes for hele presentasjonen og for én slide.
+- Video, SVG, grafer og egne tegninger kan ikke eksporteres. De setter du inn i PowerPoint etterpå.
+
+Etter eksporten er det `.pptx`-fila som gjelder. Skriptet skriver ikke over en fil som er lagret fra PowerPoint, med mindre du ber om det med `--overskriv`.
+
+### Få skillen inn i Claude
+
+- **Claude Code og Cowork på egen maskin:** lenk mappa inn ved siden av `blyant`-skillen.
+
+  ```bash
+  ln -s ~/github/blyant/skills/blyant-presentasjon ~/.claude/skills/blyant-presentasjon
+  ```
+
+- **Claude på nett, i appen og i PowerPoint:** last ned <https://phareim.github.io/blyant/blyant-presentasjon.zip> (eller bygg den med `python3 build.py --skill`) og last den opp under Customize → Skills. Zip-fila har malen med seg, så eksporten virker uten nett. Skills du har slått på der, følger med inn i Claude for PowerPoint, og kan kalles med `/` i sidepanelet. Last opp på nytt når malen får en ny versjon.
+
+Claude i PowerPoint har også et felt for faste instrukser (Innstillinger → Instructions). Denne teksten passer der, og virker også uten skillen:
+
+> Denne presentasjonen bruker Blyant-malen. Lag nye slides fra oppsettene i malen og fyll ut plassholderne, i stedet for å legge til frie tekstbokser. Bruk bare temafargene og skriftene Caveat, Architects Daughter og Cutive Mono. Én tanke per slide, og tittelen er påstanden. Gul tusj (fargen «marker») brukes høyst én gang per slide. Ikke tegn rette linjer eller standardformer: kopier blyantstrekene som finnes. Ikke endre lysbildemalen.
 
 ## Versjon
 
@@ -104,7 +164,7 @@ felt[15].text = "31"
 p.save("presentasjon.pptx")
 ```
 
-Plassholderne har faste `idx`: tittel 0, hovedinnhold 1, stikkord 13. Bilder har 2, 4 og 6 fra venstre, og bildeteksten under har tallet etter (3, 5 og 7). Et bilde settes inn med `felt[2].insert_picture("bilde.png")`. Resten står i `oppsett()` i `mal/potx.py`.
+Til en vanlig presentasjon er `lag_presentasjon.py` over enklere. Plassholderne har faste `idx`: tittel 0, hovedinnhold 1, stikkord 13. Bilder har 2, 4 og 6 fra venstre, og bildeteksten under har tallet etter (3, 5 og 7). Et bilde settes inn med `felt[2].insert_picture("bilde.png")`. Resten står i `oppsett()` i `mal/potx.py`.
 
 ## Bygging
 

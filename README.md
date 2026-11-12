@@ -37,7 +37,7 @@ Andre måter å hente filene på:
 - `npm install blyant`, og importer `blyant/dist/blyant.css` og `blyant/dist/blyant.js` i byggeverktøyet ditt. Typene ligger i `src/blyant.d.ts`.
 - Siste versjon fra `main`, uten fast versjon: `https://phareim.github.io/blyant/dist/blyant.css` og `…/dist/blyant.js`. Greit til skisser, men den endrer seg uten varsel.
 
-**PowerPoint.** Blyant finnes også som presentasjonsmal, med samme versjon som pakken: [blyant.potx](https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant.potx) er malen, og [blyant-eksempel.pptx](https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant-eksempel.pptx) viser oppsettene fylt ut. Installer Caveat, Architects Daughter og Cutive Mono først. Se [docs/presentasjonsmal.md](docs/presentasjonsmal.md).
+**PowerPoint.** Blyant finnes også som presentasjonsmal, med samme versjon som pakken: [blyant.potx](https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant.potx) er malen, og [blyant-eksempel.pptx](https://cdn.jsdelivr.net/npm/blyant@0.11.0/dist/blyant-eksempel.pptx) viser oppsettene fylt ut. Installer Caveat, Architects Daughter og Cutive Mono først. Skillen `skills/blyant-presentasjon/` lar deg snakke deg gjennom en presentasjon med Claude, eksportere den til malen og jobbe videre i PowerPoint. Se [docs/presentasjonsmal.md](docs/presentasjonsmal.md).
 
 | Fil | Hva |
 | --- | --- |
@@ -51,6 +51,7 @@ Andre måter å hente filene på:
 | `docs/komponenter/` | Retningslinjer per komponent |
 | `mal/` | Bygger PowerPoint-malen fra `tokens.json` og `Blyant.rough` (trenger Node). Se `docs/presentasjonsmal.md` |
 | `examples/hex-skisse/` | Testflaten: hex-spill, nettside, dokument, presentasjon, grafer, former og system |
+| `skills/blyant-presentasjon/` | Skillen for presentasjoner: definisjonen fra en samtale, eksporten til `.pptx` (`lag_presentasjon.py`) og reglene for arbeid i PowerPoint |
 | `skills/blyant/` | Skillen som gjør Blyant til standard-designsystemet for agenter, og som sier når nye elementer skal bygges inn her |
 | `release.py` | Gir ut en ny versjon på npm |
 

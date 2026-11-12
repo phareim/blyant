@@ -15,8 +15,13 @@ examples/hex-skisse/index.html – testflaten, ferdig bygget
 
 build/ds/project/ – filene til Design System-artefakten i Claude, bygget fra src/,
                     tokens.json, docs/komponenter/ og designsystem/. Se CLAUDE.md.
+
+    python3 build.py --skill
+
+build/blyant-presentasjon.zip – skillen skills/blyant-presentasjon/ med malen lagt ved, klar til å
+                    lastes opp i Claude (Customize → Skills). Se docs/presentasjonsmal.md.
 """
-import json, os, re, shutil, sys
+import json, os, re, shutil, sys, zipfile
 
 from mal import potx
 
@@ -101,6 +106,19 @@ def design_system():
             write(os.path.join(out, 'components', n, 'README.md'), read('docs', 'komponenter', n + '.md'))
 
 
+def skill():
+    """The presentation skill as a zip Claude can take: the skill folder with the template beside the script."""
+    navn = 'blyant-presentasjon'
+    rel = os.path.join('build', navn + '.zip')
+    os.makedirs(os.path.join(ROOT, 'build'), exist_ok=True)
+    with zipfile.ZipFile(os.path.join(ROOT, rel), 'w', zipfile.ZIP_DEFLATED) as z:
+        for f in sorted(os.listdir(os.path.join(ROOT, 'skills', navn))):
+            if not f.startswith(('.', '__')):
+                z.write(os.path.join(ROOT, 'skills', navn, f), '%s/%s' % (navn, f))
+        z.write(os.path.join(ROOT, 'dist', 'blyant-eksempel.pptx'), navn + '/blyant-eksempel.pptx')
+    print('  %-34s %7d bytes' % (rel, os.path.getsize(os.path.join(ROOT, rel))))
+
+
 JS = ('blyant.js', 'blyant-chart.js', 'blyant-frames.js', 'blyant-sketch2d.js')
 
 if __name__ == '__main__':
@@ -124,3 +142,5 @@ if __name__ == '__main__':
     potx.bygg()
     if '--ds' in sys.argv:
         design_system()
+    if '--skill' in sys.argv:
+        skill()

@@ -9,7 +9,8 @@ Håndtegnet designsystem. Vanilla JS og CSS, ingen avhengigheter. Brukeren skriv
 - `docs/komponenter/<Navn>.md` er retningslinjene per komponent. `designsystem/forhandsvisning/<Navn>.html` er forhåndsvisningen i Design System-artefakten.
 - Ny komponent: legg navnet i `@ds-bundle`-linja øverst i `src/blyant.js`, skriv `docs/komponenter/<Navn>.md` og `designsystem/forhandsvisning/<Navn>.html`, og oppdater `src/blyant.d.ts` og README.
 - Sjekk visuelle endringer med Playwright-skjermbilder av `examples/hex-skisse/index.html`, i både lyst (Papir) og mørkt (Kull) tema og på mobilbredde.
-- Sjekk endringer i malen ved å gjøre `dist/blyant-eksempel.pptx` om til PDF med LibreOffice og se på hver slide, i Papir og Kull. Caveat, Architects Daughter og Cutive Mono må være installert, ellers stemmer ikke bildet. Endres et oppsett, oppdater tabellen i `docs/presentasjonsmal.md` og bildet `docs/presentasjonsmal.png`.
+- Sjekk endringer i malen ved å gjøre `dist/blyant-eksempel.pptx` om til PDF med LibreOffice og se på hver slide, i Papir og Kull. Caveat, Architects Daughter og Cutive Mono må være installert, ellers stemmer ikke bildet. Endres et oppsett, oppdater tabellen i `docs/presentasjonsmal.md`, tabellen i `skills/blyant-presentasjon/SKILL.md` og bildet `docs/presentasjonsmal.png`.
+- Navnet på en plassholder i `mal/potx.py` (`navn`) er feltnavnet i en definisjon. Bytter en plassholder navn, er det et brudd for definisjoner som finnes. Sjekk eksporten med `python3 skills/blyant-presentasjon/lag_presentasjon.py skills/blyant-presentasjon/eksempel.json -o build/eksempel.pptx` og se på resultatet på samme måte.
 
 ## Design System-artefakten i Claude
 
@@ -37,6 +38,8 @@ Testflaten er også publisert som en artefakt: https://claude.ai/artifact/Eh4C4o
   - Utgivelsen er ferdig når `npm view blyant version` viser den nye versjonen. Feiler workflowen, se `gh run list --workflow npm.yml`.
   - Bygg og publiser også artefaktene over når endringen berører dem.
 
-## Skillen
+## Skillene
+
+`skills/blyant-presentasjon/` er skillen for presentasjoner: hvordan en presentasjon defineres i en samtale, `lag_presentasjon.py` som eksporterer definisjonen til malen, og reglene for arbeid i en Blyant-presentasjon i PowerPoint. `python3 build.py --skill` pakker den med malen til `build/blyant-presentasjon.zip`, og Pages-workflowen legger zip-fila på <https://phareim.github.io/blyant/blyant-presentasjon.zip>, til opplasting i Claude (Customize → Skills). Skills som er slått på der, følger med inn i Claude for PowerPoint. Skriptet bruker bare standardbiblioteket og leser oppsettene ut av malen, så det skal ikke ha egne farger, skrifter eller mål. På egen maskin lenkes mappa inn som `~/.claude/skills/blyant-presentasjon`.
 
 `skills/blyant/SKILL.md` gjør Blyant til standard-designsystemet på maskinen. Den er symlinket som `~/.claude/skills/blyant` og `~/.agents/skills/blyant`, og forteller agenter i andre prosjekter når de skal bruke Blyant, hvordan de tar det inn og når et nytt element skal bygges inn her. Når komponentlista, måten å ta inn Blyant på eller release-regelen endres, oppdaterer du skillen også.

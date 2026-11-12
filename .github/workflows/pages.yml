@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "22"
       - name: Bygg dist/ og eksempelet
-        run: python3 build.py
+        run: python3 build.py --skill
       - name: Sjekk at dist/ i repoet er oppdatert
         run: |
           if ! git diff --quiet -- dist examples; then
@@ -41,6 +41,7 @@ jobs:
           cp -r dist _site/dist
           cp tokens.json _site/tokens.json
           cp docs/hex-skisse.png _site/hex-skisse.png
+          cp build/blyant-presentasjon.zip _site/blyant-presentasjon.zip   # skillen, til opplasting i Claude
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

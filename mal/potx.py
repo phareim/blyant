@@ -158,7 +158,8 @@ def rekt(x, y, w, h, farge, alpha=None, rot=0, skygge=False, kant=None, navn='Fl
 
 
 def ph(key, type, idx, boks, stil=None, prompt='', navn=None, **kw):
-    """A placeholder. key is what a slide fills it by; type and idx are PowerPoint's own."""
+    """A placeholder. key is what a slide fills it by; type and idx are PowerPoint's own. navn is the name
+    in PowerPoint's selection pane, and the field name in a deck definition (skills/blyant-presentasjon)."""
     return dict(k='ph', key=key, type=type, idx=idx, boks=boks, stil=stil, prompt=prompt, navn=navn or prompt, **kw)
 
 
@@ -351,8 +352,8 @@ def bilderute(n, idx, x, y, w, h, seed, type='pic', prompt='Sett inn et bilde'):
             strek({'type': 'line', 'x1': x + 4, 'y1': y + 4, 'x2': x + w - 4, 'y2': y + h - 4, 'seed': seed, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
             strek({'type': 'line', 'x1': x + w - 4, 'y1': y + 4, 'x2': x + 4, 'y2': y + h - 4, 'seed': seed + 1, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
             strek({'type': 'rect', 'x': x, 'y': y, 'w': w, 'h': h, 'seed': seed + 2}, navn='Bilderamme'),
-            ph('bilde%s' % n, type, idx, (x + 7, y + 7, w - 14, h - 14), stil(18, 'note', 'ink-soft', algn='ctr'), prompt, anker='ctr', krymp=False, navn='Bilde %s' % n),
-            ph('bildetekst%s' % n, 'body', idx + 1, (x, y + h + 10, w, 26), stil(15, 'note', 'ink-soft'), 'Bildetekst', sz='quarter', krymp=False, navn='Bildetekst %s' % n)]
+            ph('bilde%s' % n, type, idx, (x + 7, y + 7, w - 14, h - 14), stil(18, 'note', 'ink-soft', algn='ctr'), prompt, anker='ctr', krymp=False, navn=('Bilde %s' % n).strip()),
+            ph('bildetekst%s' % n, 'body', idx + 1, (x, y + h + 10, w, 26), stil(15, 'note', 'ink-soft'), 'Bildetekst', sz='quarter', krymp=False, navn=('Bildetekst %s' % n).strip())]
 
 
 def fullskjerm(navn, key, type, prompt, seed):
@@ -361,7 +362,7 @@ def fullskjerm(navn, key, type, prompt, seed):
         strek({'type': 'line', 'x1': 26, 'y1': 26, 'x2': W - 26, 'y2': H - 26, 'seed': seed + 20, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
         strek({'type': 'line', 'x1': W - 26, 'y1': 26, 'x2': 26, 'y2': H - 26, 'seed': seed + 21, 'passes': 1}, 'graphite-300', 1.3, navn='Kryss'),
         ramme(seed),
-        ph(key, type, 2, (0, 0, W, H), stil(18, 'note', 'ink-soft', algn='ctr'), prompt, anker='ctr', krymp=False, navn=navn)])
+        ph(key, type, 2, (0, 0, W, H), stil(18, 'note', 'ink-soft', algn='ctr'), prompt, anker='ctr', krymp=False, navn=key.capitalize())])
 
 
 def oppsett(t):
@@ -373,7 +374,7 @@ def oppsett(t):
     f = [ramme(1),
          ph('kicker', 'body', 13, (ML, 132, 900, 32), stil(18, 'note', 'ink-soft', caps=True, spc=.06), 'Stikkord', sz='quarter', krymp=False),
          ph('tittel', 'ctrTitle', None, (ML, 170, 1000, 206), stil(72, 'display', linje=80), 'Klikk for å legge til en tittel', navn='Tittel'),
-         ph('undertittel', 'subTitle', 1, (ML, 392, 900, 84), stil(26, 'body', linje=100), 'Klikk for å legge til en undertittel')]
+         ph('undertittel', 'subTitle', 1, (ML, 392, 900, 84), stil(26, 'body', linje=100), 'Klikk for å legge til en undertittel', navn='Undertittel')]
     for i in range(9):
         cx, cy = 628 + i * 64, 536 + (i % 2) * 55
         if i % 3 == 1:
@@ -386,7 +387,7 @@ def oppsett(t):
     f = [ramme(2),
          ph('kicker', 'body', 13, (ML, 236, 640, 30), stil(18, 'note', 'ink-soft', caps=True, spc=.06), 'Stikkord', sz='quarter', krymp=False),
          ph('tittel', 'title', None, (ML, 272, 660, 150), stil(60, 'display', linje=80), 'Klikk for å legge til en seksjonstittel', navn='Tittel'),
-         ph('tekst', 'body', 1, (ML, 436, 620, 90), stil(24, 'body', 'ink-soft', linje=100), 'Hva denne delen handler om'),
+         ph('tekst', 'body', 1, (ML, 436, 620, 90), stil(24, 'body', 'ink-soft', linje=100), 'Hva denne delen handler om', navn='Tekst'),
          strek({'type': 'hatch', 'points': hexpts(1000, 350, 160), 'gap': 11, 'seed': 21}, 'graphite-300', navn='Skravur'),
          strek({'type': 'hex', 'cx': 1000, 'cy': 350, 'r': 160, 'seed': 22}, navn='Hex'),
          flate(hexpts(822, 508, 60), 'marker'),
@@ -414,7 +415,7 @@ def oppsett(t):
 
     # Bilde og tekst
     out.append(dict(navn='Bilde og tekst', type='picTx', former=hode(6) + [
-        ph('tekst', 'body', 1, (ML, 206, 490, 408), None, 'Klikk for å legge til tekst', sz='half')]
+        ph('tekst', 'body', 1, (ML, 206, 490, 408), None, 'Klikk for å legge til tekst', sz='half', navn='Tekst')]
         + bilderute('', 2, 640, 210, 550, 372, 61) + fot()))
 
     # Bilde, To bilder, Tre bilder: the same framed picture, one to three across
@@ -434,13 +435,13 @@ def oppsett(t):
         flate([[76, 318], [412, 311], [405, 384], [68, 389]], 'marker', navn='Tusj'),
         ph('merkelapp', 'body', 14, (ML, 214, 500, 26), stil(15, 'note', 'ink-soft', caps=True, spc=.08), 'Merkelapp', sz='quarter', krymp=False),
         ph('tall', 'body', 15, (ML, 246, 520, 220), stil(150, 'display', linje=80, fet=True), '42', sz='quarter', navn='Tall'),
-        ph('fotnote', 'body', 16, (ML, 414, 500, 60), stil(20, 'body', 'ink-soft', linje=100), 'Hva tallet sammenlignes med', sz='quarter'),
-        ph('tekst', 'body', 1, (670, 214, 520, 400), None, 'Klikk for å legge til tekst', sz='half')] + fot()))
+        ph('fotnote', 'body', 16, (ML, 414, 500, 60), stil(20, 'body', 'ink-soft', linje=100), 'Hva tallet sammenlignes med', sz='quarter', navn='Fotnote'),
+        ph('tekst', 'body', 1, (670, 214, 520, 400), None, 'Klikk for å legge til tekst', sz='half', navn='Tekst')] + fot()))
 
     # Notatlapp: .b-note, a little crooked, with a strip of tape
     tilt = -1.2
     out.append(dict(navn='Notatlapp', former=hode(8) + [
-        ph('tekst', 'body', 1, (ML, 206, 560, 408), None, 'Klikk for å legge til tekst', sz='half'),
+        ph('tekst', 'body', 1, (ML, 206, 560, 408), None, 'Klikk for å legge til tekst', sz='half', navn='Tekst'),
         rekt(750, 222, 420, 360, 'note', rot=tilt, skygge=True, navn='Lapp'),
         rekt(906, 204, 116, 30, 'tape', 70, rot=2, kant=('ink', .8, 25), navn='Teip'),
         ph('notat', 'body', 2, (750, 222, 420, 360), stil(24, 'note', 'on-marker', linje=105), 'husk: skriv det ene her', sz='quarter', rot=tilt, ins=30, anker='ctr', navn='Notat')] + fot()))
@@ -448,7 +449,7 @@ def oppsett(t):
     # Innhold og margnotat: .b-scribble in the margin and an arrow that points at the content
     out.append(dict(navn='Innhold og margnotat', former=hode(9) + [
         ph('innhold', None, 1, (ML, 206, 790, 408), None, 'Klikk for å legge til tekst', navn='Innhold'),
-        ph('margnotat', 'body', 2, (940, 250, 250, 170), stil(19, 'note', 'ink-soft', linje=105), 'en kommentar i margen', sz='quarter'),
+        ph('margnotat', 'body', 2, (940, 250, 250, 170), stil(19, 'note', 'ink-soft', linje=105), 'en kommentar i margen', sz='quarter', navn='Margnotat'),
         strek({'type': 'arrow', 'x1': 1010, 'y1': 440, 'x2': 900, 'y2': 500, 'bend': -.25, 'seed': 91, 'wobble': 2.4}, navn='Pil')] + fot()))
 
     # Bare tittel, Tomt
@@ -498,7 +499,7 @@ def theme(t, versjon):
     pencil = '<a:ln w="%d" cap="rnd"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:round/></a:ln>' % round(STROKE['stroke-pencil'] * PX)
     # the rest of the palette, for the colour picker: everything in tokens.json that has no theme slot
     extra = ''.join('<a:custClr name="%s"><a:srgbClr val="%s"/></a:custClr>' % (n, c[n]) for n in
-                    ['marker', 'dust-red', 'dust-orange', 'dust-yellow', 'dust-green', 'dust-blue', 'dust-purple',
+                    ['marker', 'on-marker', 'dust-red', 'dust-orange', 'dust-yellow', 'dust-green', 'dust-blue', 'dust-purple',
                      'paper-3', 'graphite-100', 'graphite-300', 'graphite-700'])
     return (HEAD + '<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Blyant %s %s"><a:themeElements>'
             '<a:clrScheme name="Blyant %s">%s</a:clrScheme>'
@@ -519,11 +520,13 @@ def table_styles():
     dash = '<a:ln w="9525" cmpd="sng"><a:solidFill><a:schemeClr val="tx1"><a:alpha val="36000"/></a:schemeClr></a:solidFill><a:prstDash val="dash"/></a:ln>'
     rule = '<a:ln w="%d" cmpd="sng"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill></a:ln>' % round(STROKE['stroke-pencil'] * PX)
     tx = '<a:tcTxStyle><a:fontRef idx="minor"><a:prstClr val="black"/></a:fontRef><a:schemeClr val="%s"/></a:tcTxStyle>'
+    # the head row is in the note font, like the head of a Table
+    head = '<a:tcTxStyle><a:font><a:latin typeface="%s"/><a:ea typeface=""/><a:cs typeface=""/></a:font><a:schemeClr val="tx2"/></a:tcTxStyle>' % FONT['note']
     return (HEAD + '<a:tblStyleLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" def="%s"><a:tblStyle styleId="%s" styleName="Blyant">'
             '<a:wholeTbl>%s<a:tcStyle><a:tcBdr><a:left>%s</a:left><a:right>%s</a:right><a:top>%s</a:top><a:bottom>%s</a:bottom>'
             '<a:insideH>%s</a:insideH><a:insideV>%s</a:insideV></a:tcBdr><a:fill><a:noFill/></a:fill></a:tcStyle></a:wholeTbl>'
             '<a:firstRow>%s<a:tcStyle><a:tcBdr><a:bottom>%s</a:bottom></a:tcBdr><a:fill><a:noFill/></a:fill></a:tcStyle></a:firstRow>'
-            '</a:tblStyle></a:tblStyleLst>' % (TABLE_STYLE, TABLE_STYLE, tx % 'tx1', none, none, none, dash, dash, none, tx % 'tx2', rule))
+            '</a:tblStyle></a:tblStyleLst>' % (TABLE_STYLE, TABLE_STYLE, tx % 'tx1', none, none, none, dash, dash, none, head, rule))
 
 
 # ---------------------------------------------------------------------------
@@ -550,7 +553,9 @@ def eksempel(versjon):
             'Én tanke per slide. Det som ikke får plass, hører hjemme i notatene eller på neste slide.',
             (1, 'Skriv «Hopp per runde økte i R4», ikke «Resultater».'),
             (1, 'Farge er effekt: tusj på det ene øyet skal finne.'),
-            (1, 'Merk eksempeldata som eksempeldata i stikkordet eller bunnteksten.')]), []),
+            (1, 'Merk eksempeldata som eksempeldata i stikkordet eller bunnteksten.')],
+            notater=['Notatene er manuset: det du sier, står her og ikke på sliden.',
+                     'En presentasjon som er laget fra en samtale med Claude, får notatene med seg hit.']), []),
         (0, 'Seksjon', dict(bunn, kicker='Del 2', tittel='Oppsettene', tekst='De samme oppsettene i Papir og i Kull.'), []),
         (0, 'To kolonner', dict(bunn, kicker='Temaer', tittel='Papir i dagslys, Kull i et mørkt rom', venstre=[
             'Papir er det lyse arket. Det passer på skjerm, på utskrift og i et lyst møterom.',
@@ -591,6 +596,44 @@ def eksempel(versjon):
                                merkelapp='Hopp i runde 4', tall='31', fotnote='mot 19 i runde 3',
                                tekst=['Tusjen er den samme gule i Kull, og teksten oppå den er fortsatt mørk.']), []),
     ]
+
+
+# ---------------------------------------------------------------------------
+# Notes: the manuscript under each slide
+# ---------------------------------------------------------------------------
+TREE = ('<p:cSld>%s<p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>'
+        '<p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>'
+        '%s</p:spTree></p:cSld>')
+NOTES_W, NOTES_H = 6858000, 9144000
+
+
+def notes_master(t):
+    """The notes page: the slide on top and the manuscript under, in the body font."""
+    def sp(n, navn, locks, tag, boks, rest):
+        return ('<p:sp><p:nvSpPr><p:cNvPr id="%d" name="%s"/><p:cNvSpPr><a:spLocks noGrp="1"%s/></p:cNvSpPr><p:nvPr>%s</p:nvPr></p:nvSpPr>'
+                '<p:spPr><a:xfrm><a:off x="%d" y="%d"/><a:ext cx="%d" cy="%d"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom>%s</p:sp>'
+                % ((n, navn, locks, tag) + boks + (rest,)))
+    m = 685800
+    bilde = sp(2, 'Lysbilde', ' noRot="1" noChangeAspect="1"', '<p:ph type="sldImg" idx="2"/>', (m, 1143000, NOTES_W - 2 * m, round((NOTES_W - 2 * m) * H / W)),
+               '<a:noFill/><a:ln w="%d"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill></a:ln></p:spPr>' % round(STROKE['stroke-pencil'] * PX))
+    tekst = sp(3, 'Notater', '', '<p:ph type="body" sz="quarter" idx="3"/>', (m, 4400550, NOTES_W - 2 * m, 3600450),
+               '</p:spPr><p:txBody><a:bodyPr vert="horz" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0"/><a:lstStyle/>%s</p:txBody>'
+               % avsnitt('Klikk for å redigere notatene'))
+    stil = ''.join('<a:lvl%dpPr marL="%d" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1">'
+                   '<a:defRPr sz="1600" kern="1200">%s<a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl%dpPr>'
+                   % (n, (n - 1) * 457200, t.fyll('ink'), n) for n in range(1, 10))
+    return (HEAD + '<p:notesMaster %s>%s<p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" '
+            'accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:notesStyle>%s</p:notesStyle></p:notesMaster>'
+            % (NS, TREE % ('<p:bg><p:bgPr>%s<a:effectLst/></p:bgPr></p:bg>' % t.fyll('paper'), bilde + tekst), stil))
+
+
+def notes_slide(tekst):
+    def sp(n, navn, locks, tag, rest):
+        return ('<p:sp><p:nvSpPr><p:cNvPr id="%d" name="%s"/><p:cNvSpPr><a:spLocks noGrp="1"%s/></p:cNvSpPr><p:nvPr>%s</p:nvPr></p:nvSpPr><p:spPr/>%s</p:sp>'
+                % (n, navn, locks, tag, rest))
+    return (HEAD + '<p:notes %s>%s<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:notes>' % (NS, TREE % ('', (
+        sp(2, 'Lysbilde', ' noRot="1" noChangeAspect="1"', '<p:ph type="sldImg"/>', '')
+        + sp(3, 'Notater', '', '<p:ph type="body" idx="1"/>', '<p:txBody><a:bodyPr/><a:lstStyle/>%s</p:txBody>' % avsnitt(tekst))))))
 
 
 # ---------------------------------------------------------------------------
@@ -638,6 +681,15 @@ def pakke(versjon, slides, mal):
         pres_rels.append((REL + 'slideMaster', 'slideMasters/slideMaster%d.xml' % m))
         masters.append('<p:sldMasterId id="%d" r:id="rId%d"/>' % (master_id, len(pres_rels)))
 
+    # the notes page, on paper in both themes: it is the one that gets printed
+    nt = len(temaer) + 1
+    parts['ppt/notesMasters/notesMaster1.xml'] = notes_master(temaer[0])
+    parts['ppt/notesMasters/_rels/notesMaster1.xml.rels'] = rels([(REL + 'theme', '../theme/theme%d.xml' % nt)])
+    parts['ppt/theme/theme%d.xml' % nt] = theme(temaer[0], versjon)
+    types += [('/ppt/notesMasters/notesMaster1.xml', CT + 'presentationml.notesMaster+xml'), ('/ppt/theme/theme%d.xml' % nt, CT + 'theme+xml')]
+    pres_rels.append((REL + 'notesMaster', 'notesMasters/notesMaster1.xml'))
+    notes = '<p:notesMasterIdLst><p:notesMasterId r:id="rId%d"/></p:notesMasterIdLst>' % len(pres_rels)
+
     sld = ''
     for n, (ti, navn, fyll, ekstra) in enumerate(slides, 1):
         lay_no, o, t = layouts[(ti, navn)]
@@ -648,7 +700,14 @@ def pakke(versjon, slides, mal):
         for s in ekstra:
             sd.add(s)
         parts['ppt/slides/slide%d.xml' % n] = HEAD + '<p:sld %s>%s<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>' % (NS, sd.tree())
-        parts['ppt/slides/_rels/slide%d.xml.rels' % n] = rels([(REL + 'slideLayout', '../slideLayouts/slideLayout%d.xml' % lay_no)])
+        srels = [(REL + 'slideLayout', '../slideLayouts/slideLayout%d.xml' % lay_no)]
+        if fyll.get('notater'):
+            parts['ppt/notesSlides/notesSlide%d.xml' % n] = notes_slide(fyll['notater'])
+            parts['ppt/notesSlides/_rels/notesSlide%d.xml.rels' % n] = rels([
+                (REL + 'notesMaster', '../notesMasters/notesMaster1.xml'), (REL + 'slide', '../slides/slide%d.xml' % n)])
+            types.append(('/ppt/notesSlides/notesSlide%d.xml' % n, CT + 'presentationml.notesSlide+xml'))
+            srels.append((REL + 'notesSlide', '../notesSlides/notesSlide%d.xml' % n))
+        parts['ppt/slides/_rels/slide%d.xml.rels' % n] = rels(srels)
         types.append(('/ppt/slides/slide%d.xml' % n, CT + 'presentationml.slide+xml'))
         pres_rels.append((REL + 'slide', 'slides/slide%d.xml' % n))
         sld += '<p:sldId id="%d" r:id="rId%d"/>' % (255 + n, len(pres_rels))
@@ -656,9 +715,9 @@ def pakke(versjon, slides, mal):
 
     # embedTrueTypeFonts: PowerPoint saves Caveat and the two others into every deck made from the template
     parts['ppt/presentation.xml'] = (
-        HEAD + '<p:presentation %s embedTrueTypeFonts="1"><p:sldMasterIdLst>%s</p:sldMasterIdLst>%s'
-        '<p:sldSz cx="%d" cy="%d"/><p:notesSz cx="6858000" cy="9144000"/></p:presentation>'
-        % (NS, ''.join(masters), '<p:sldIdLst>%s</p:sldIdLst>' % sld if sld else '', W * PX, H * PX))
+        HEAD + '<p:presentation %s embedTrueTypeFonts="1"><p:sldMasterIdLst>%s</p:sldMasterIdLst>%s%s'
+        '<p:sldSz cx="%d" cy="%d"/><p:notesSz cx="%d" cy="%d"/></p:presentation>'
+        % (NS, ''.join(masters), notes, '<p:sldIdLst>%s</p:sldIdLst>' % sld if sld else '', W * PX, H * PX, NOTES_W, NOTES_H))
     parts['ppt/_rels/presentation.xml.rels'] = rels(pres_rels)
     parts['ppt/tableStyles.xml'] = table_styles()
     parts['docProps/core.xml'] = (
