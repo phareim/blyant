@@ -7,14 +7,23 @@ dist/tokens.css   – fargene (Papir/Kull), avstander, strek og skrift som CSS-v
 dist/blyant.css   – fonter + tokens + komponenter (én fil å lenke til)
 dist/blyant-core.css – det samme uten @import av fontene, for sider som leverer fontene selv
 dist/blyant.js    – Blyant (streker, komponenter, Sketch3D, HexBoard) + Blyant.chart + Blyant.frames + Blyant.Sketch2D
+dist/blyant.potx  – PowerPoint-malen, med samme versjon som pakken (mal/potx.py, trenger Node)
+dist/blyant-eksempel.pptx – oppsettene i malen fylt ut
 examples/hex-skisse/index.html – testflaten, ferdig bygget
 
     python3 build.py --ds
 
 build/ds/project/ – filene til Design System-artefakten i Claude, bygget fra src/,
                     tokens.json, docs/komponenter/ og designsystem/. Se CLAUDE.md.
+
+    python3 build.py --skill
+
+build/blyant-presentasjon.zip – skillen skills/blyant-presentasjon/ med malen lagt ved, klar til å
+                    lastes opp i Claude (Customize → Skills). Se docs/presentasjonsmal.md.
 """
-import json, os, re, shutil, sys
+import json, os, re, shutil, sys, zipfile
+
+from mal import potx
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 T = json.load(open(os.path.join(ROOT, 'tokens.json')))
@@ -97,6 +106,19 @@ def design_system():
             write(os.path.join(out, 'components', n, 'README.md'), read('docs', 'komponenter', n + '.md'))
 
 
+def skill():
+    """The presentation skill as a zip Claude can take: the skill folder with the template beside the script."""
+    navn = 'blyant-presentasjon'
+    rel = os.path.join('build', navn + '.zip')
+    os.makedirs(os.path.join(ROOT, 'build'), exist_ok=True)
+    with zipfile.ZipFile(os.path.join(ROOT, rel), 'w', zipfile.ZIP_DEFLATED) as z:
+        for f in sorted(os.listdir(os.path.join(ROOT, 'skills', navn))):
+            if not f.startswith(('.', '__')):
+                z.write(os.path.join(ROOT, 'skills', navn, f), '%s/%s' % (navn, f))
+        z.write(os.path.join(ROOT, 'dist', 'blyant-eksempel.pptx'), navn + '/blyant-eksempel.pptx')
+    print('  %-34s %7d bytes' % (rel, os.path.getsize(os.path.join(ROOT, rel))))
+
+
 JS = ('blyant.js', 'blyant-chart.js', 'blyant-frames.js', 'blyant-sketch2d.js')
 
 if __name__ == '__main__':
@@ -117,5 +139,8 @@ if __name__ == '__main__':
             '<style>body { margin: 0; } [hidden] { display: none !important; }</style>\n'
             '</head>\n<body>\n' + page + '\n</body>\n</html>\n')
     write(os.path.join(ex, 'index.html'), page)
+    potx.bygg()
     if '--ds' in sys.argv:
         design_system()
+    if '--skill' in sys.argv:
+        skill()

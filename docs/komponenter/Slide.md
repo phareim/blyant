@@ -7,3 +7,5 @@ En 16:9-ramme for presentasjoner. Alt inni skaleres med bredden (container-enhet
 - Én tanke per slide. Tittelen er påstanden, ikke temaet: «Hopp per runde økte i R4», ikke «Resultater».
 - Diagrammer tegnes med `Blyant.figure`: akser med `line`, søyler med `rect` + `hatch`.
 - Eksempeldata merkes som eksempeldata i kicker eller bunntekst.
+
+**PowerPoint.** De samme delene finnes som oppsett i malen `dist/blyant.potx`, i Papir og Kull og med samme versjon som pakken. Se `docs/presentasjonsmal.md` i repoet.

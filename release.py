@@ -6,8 +6,8 @@
     python3 release.py 1.0.0       # en bestemt versjon
     python3 release.py minor --no-push   # stopp etter commit og tag
 
-Skriptet øker `version` i package.json og jsDelivr-lenkene i README, bygger,
-committer, lager taggen v<versjon>, pusher main og taggen, og venter til npm
+Skriptet øker `version` i package.json og jsDelivr-lenkene i README, bygger
+(PowerPoint-malen i dist/ får den nye versjonen), committer, lager taggen v<versjon>, pusher main og taggen, og venter til npm
 viser den nye versjonen. Workflowen .github/workflows/npm.yml publiserer.
 """
 import json, os, re, subprocess, sys, time
@@ -68,8 +68,11 @@ def main():
     readme = open(readme_path).read()
     open(readme_path, 'w').write(readme.replace('npm/blyant@%s/' % old, 'npm/blyant@%s/' % new))
 
+    # Bygg en gang til: PowerPoint-malen har versjonen i seg.
+    subprocess.run([sys.executable, 'build.py'], cwd=ROOT, check=True)
+
     unpushed = git('log', '--oneline', 'origin/main..HEAD')
-    git('add', 'package.json', 'README.md')
+    git('add', 'package.json', 'README.md', 'dist')
     git('commit', '--quiet', '-m', 'Gi ut %s' % new)
     git('tag', tag)
     print('%s -> %s, tagget %s.' % (old, new, tag))

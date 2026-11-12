@@ -1,0 +1,59 @@
+{
+  "tittel": "Hex-skisse etter fem runder",
+  "tema": "papir",
+  "bunntekst": "Hex-skisse · eksempeldata",
+  "slides": [
+    {
+      "oppsett": "Tittel",
+      "tema": "kull",
+      "stikkord": "Testflaten · november 2026",
+      "tittel": "Hex-skisse etter\nfem runder",
+      "undertittel": "Hva vi lærte av å la fem spillere prøve brettet.",
+      "notater": "Si hvem som testet, og at alle tallene er eksempeldata."
+    },
+    {
+      "oppsett": "Stort tall",
+      "stikkord": "Runde 4",
+      "tittel": "Hopp per runde økte i R4",
+      "merkelapp": "Hopp i runde 4",
+      "tall": "31",
+      "fotnote": "mot 19 i runde 3",
+      "tekst": [
+        "Da brettet fikk en tydelig start, fant spillerne flyten.",
+        "Tallene er oppdiktet."
+      ],
+      "notater": ["Pek på tallet først.", "Forklar så hva som ble endret mellom runde 3 og 4."]
+    },
+    {
+      "oppsett": "Tittel og innhold",
+      "stikkord": "Hva vi endret",
+      "tittel": "Tre grep ga flyten",
+      "innhold": [
+        "Ingen av grepene var store, men de virket ==sammen==.",
+        ["En tydelig start-hex.", "Færre farger på brettet.", ["Bare gul tusj på neste trekk."], "Kortere runder."]
+      ]
+    },
+    {
+      "oppsett": "Innhold og margnotat",
+      "stikkord": "Tallene",
+      "tittel": "Bom per runde gikk ned hele veien",
+      "innhold": {"tabell": [["Runde", "Hopp", "Bom", "Tid"], ["R1", 14, 9, "34 s"], ["R2", 22, 8, "26 s"], ["R3", 19, 7, "29 s"], ["R4", 31, 3, "17 s"], ["R5", 27, 5, "21 s"]],
+                  "kolonner": [3, 2, 2, 2]},
+      "margnotat": "R4: endelig flyt!"
+    },
+    {
+      "oppsett": "To bilder",
+      "stikkord": "Brettet",
+      "tittel": "Start-hexen er lettere å finne nå",
+      "bildetekst 1": "Før: alle hexene er like",
+      "bildetekst 2": "Etter: starten har tusj"
+    },
+    {
+      "oppsett": "Notatlapp",
+      "stikkord": "Videre",
+      "tittel": "Neste runde tester vi på mobil",
+      "tekst": ["Brettet er bare prøvd på stor skjerm.", "Vi vet ikke om hexene er store nok for en tommel."],
+      "notat": "husk: test med én hånd!"
+    }
+  ]
+}
