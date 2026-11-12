@@ -20,9 +20,9 @@ Artefakten er en kopi og følger ikke repoet av seg selv. Når noe i `src/`, `to
 3. Les artefakten først (`action: "read"` med `paths` for filene du skal erstatte), og sjekk at den ikke har endringer som mangler i repoet. Har den det, hent dem inn i repoet først.
 4. Publiser til artefaktens URL med `root: build/ds`, `file_path: build/ds/project/design-system.json`, og alle filene under `build/ds/project/` i `files`. `components/index.d.ts` må ha `contentType: "text/plain"`.
 
-## Hex-skisse-artefakten i Claude
+## Skissebok-artefakten i Claude (testflaten)
 
-Testflaten er også publisert som en artefakt: https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs. Design System-artefakten lenker dit. Når `examples/hex-skisse/` eller biblioteket endres: kjør `python3 build.py`, les artefakten, og publiser `examples/hex-skisse/index.html` til den URL-en.
+Testflaten i `examples/hex-skisse/` åpner på en oversikt over flatene og komponentene; hex-spillet er én av undersidene. En ny komponent får en prøve i `PIECES` i `examples/hex-skisse/app.js`. Testflaten er også publisert som en artefakt, «Blyant skissebok»: https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs. Design System-artefakten lenker dit. Når `examples/hex-skisse/` eller biblioteket endres: kjør `python3 build.py`, les artefakten, og publiser `examples/hex-skisse/index.html` til den URL-en.
 
 ## Publisering
 

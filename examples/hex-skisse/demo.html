@@ -1,10 +1,10 @@
-<title>Hex-skisse</title>
+<title>Blyant skissebok</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Architects+Daughter&family=Cutive+Mono&display=swap">
 <style>
-/* Layout: one sketchbook page — a sticky pencil nav, then one view at a time (game, website, document, deck, shapes, system). */
+/* Layout: one sketchbook page — a sticky pencil nav, then one view at a time (overview, game, website, document, deck, shapes, system). */
 /*{{TOKENS}}*/
 /*{{BLYANT_CSS}}*/
 /*{{APP_CSS}}*/
@@ -13,8 +13,9 @@
 <div class="app b-page" id="app">
   <header class="top">
     <nav class="b-nav top__nav" aria-label="Hovedmeny">
-      <a class="b-nav__brand" href="#spill">Blyant<span class="top__ver">skissebok</span></a>
+      <a class="b-nav__brand" href="#oversikt">Blyant<span class="top__ver">skissebok</span></a>
       <ul class="b-nav__links" id="nav-links">
+        <li><a class="b-nav__link" href="#oversikt" data-view="oversikt">Oversikt</a></li>
         <li><a class="b-nav__link" href="#spill" data-view="spill">Hex-flaten</a></li>
         <li><a class="b-nav__link" href="#nettside" data-view="nettside">Nettside</a></li>
         <li><a class="b-nav__link" href="#dokument" data-view="dokument">Dokument</a></li>
