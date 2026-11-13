@@ -14,7 +14,7 @@ examples/hex-skisse/index.html – testflaten, ferdig bygget
     python3 build.py --ds
 
 build/ds/project/ – filene til Design System-artefakten i Claude, bygget fra src/,
-                    tokens.json, docs/komponenter/ og designsystem/. Se CLAUDE.md.
+                    tokens.json, docs/komponenter/ og designsystem/. Se AGENTS.md.
 
     python3 build.py --skill
 

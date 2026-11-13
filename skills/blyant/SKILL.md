@@ -1,13 +1,13 @@
 ---
 name: blyant
-description: Use when you build or style anything people look at (a web page, an app, a game's HUD or menus, a document, a presentation, a dashboard, a chart, a prototype, a wireframe, a Claude artifact) and neither the user nor the project names another look. Blyant is Petter's own hand-drawn pencil design system (npm `blyant`, source `~/github/blyant`) and the default. Also use when a page built on Blyant needs an element Blyant lacks, and whenever you change Blyant itself. Another look counts when a brand or style book is named (Zaptec, Miles, Neon Dreams, Eventyrland, Alvheim, Ganymede) or the project already has an established look of its own. Trigger on blyant, «skisse», «håndtegnet», «wireframe», «lag en side», «ny app», «lag et dashbord».
+description: Use when you sketch something new that people will look at (a web page, an app, a document, a presentation, a dashboard, a chart, a prototype, a wireframe, a Claude artifact) and neither the user nor the project names another look. Blyant is Petter's own hand-drawn pencil design system (npm `blyant`, source `~/github/blyant`). Fun things such as games use Neon Coast instead (`neon-coast` skill). Also use when a page built on Blyant needs an element Blyant lacks, and whenever you change Blyant itself. Another look counts when a brand or style book is named (Miles, Eventyrland, Alvheim, Ganymede) or the project already has an established look of its own. Trigger on blyant, «skisse», «håndtegnet», «wireframe», «lag en side», «ny app», «lag et dashbord».
 ---
 
 # Blyant
 
-Blyant er standard-designsystemet. Det gjelder alt som skal ses: nettsider, apper, spill-HUD, dokumenter, presentasjoner, dashbord, grafer, prototyper og artefakter. Bruk det når verken Petter eller prosjektet sier noe annet.
+Blyant er designspråket for skisser av noe nytt: nettsider, apper, dokumenter, presentasjoner, dashbord, grafer, prototyper og artefakter. Bruk det når verken Petter eller prosjektet sier noe annet. Er det noe gøy, som et spill, gjelder Neon Coast (`neon-coast`).
 
-**Noe annet er sagt** når Petter navngir en merkevare eller stil, når en skill for den finnes (`zaptec-design`, `miles-design`, `neon-dreams-design`, `style-books` for Eventyrland, Alvheim og Ganymede), eller når prosjektet allerede har sitt eget utseende i CSS, tokens eller en stilbok. Da styrer det, og du flytter ikke prosjektet over på Blyant uten at Petter ber om det. `make-interfaces-feel-better` og `tufte-viz` er tillegg som bygger videre på Blyant, ikke noe som erstatter det. Grafer i Blyant tegnes med `Blyant.chart`.
+**Noe annet er sagt** når Petter navngir en merkevare eller stil, når en skill for den finnes (`miles-design`, `style-books` for Eventyrland, Alvheim og Ganymede), eller når prosjektet allerede har sitt eget utseende i CSS, tokens eller en stilbok. Da styrer det, og du flytter ikke prosjektet over på Blyant uten at Petter ber om det. `make-interfaces-feel-better` og `tufte-viz` er tillegg som bygger videre på Blyant, ikke noe som erstatter det. Grafer i Blyant tegnes med `Blyant.chart`.
 
 ## Før du tegner
 
@@ -45,14 +45,14 @@ Til et ferdig design med en merkevare skriver du et nytt skall med `data-skin`, 
 
 Bruk det som finnes før du lager noe nytt. Når siden trenger et element Blyant ikke har, avgjør du om det kan brukes igjen:
 
-- **Kan det brukes igjen** (et element som lett dukker opp i en annen side, et annet spill eller et annet dokument, som en ny kontroll, et korttype, en graf eller en tilstand)? **Bygg det inn i Blyant først.** Gjør arbeidet i `~/github/blyant` og følg `~/github/blyant/CLAUDE.md`: kilden, komponentdokumentet, forhåndsvisningen, typene, README-en, testflaten og skjermbildene. Gi så ut en ny versjon (se under), og bruk den versjonen i prosjektet. Ikke lag en lokal kopi i prosjektet som skal «flyttes inn senere».
+- **Kan det brukes igjen** (et element som lett dukker opp i en annen side, et annet spill eller et annet dokument, som en ny kontroll, et korttype, en graf eller en tilstand)? **Bygg det inn i Blyant først.** Gjør arbeidet i `~/github/blyant` og følg `~/github/blyant/AGENTS.md`: kilden, komponentdokumentet, forhåndsvisningen, typene, README-en, testflaten og skjermbildene. Gi så ut en ny versjon (se under), og bruk den versjonen i prosjektet. Ikke lag en lokal kopi i prosjektet som skal «flyttes inn senere».
 - **Er det bare for dette prosjektet** (innhold, oppsett eller en vri bare denne siden trenger)? Lag det lokalt i prosjektet, men bygg det av Blyant-tokens (`var(--ink)`, `var(--paper-2)`, `var(--line)`, `var(--stroke-pencil)`, `var(--space-4)`, `--dust-*`, `--chart-*`) og Blyant-strek (`data-ink`, `Blyant.rough`), så det ser ut som resten.
 
 Er du i tvil, regn det som noe som kan brukes igjen. Si i rapporten hva som ble lagt inn i Blyant, og hva som ble laget lokalt.
 
 ## Når Blyant endres
 
-Hver endring i det pakken leverer (`src/`, `tokens.json`, `mal/`) gir en ny versjon på npm, gitt ut i samme økt. PowerPoint-malen har samme versjon som pakken. `~/github/blyant/CLAUDE.md` har stegene, og `python3 release.py` gjør dem. Til slutt gjelder dette:
+Hver endring i det pakken leverer (`src/`, `tokens.json`, `mal/`) gir en ny versjon på npm, gitt ut i samme økt. PowerPoint-malen har samme versjon som pakken. `~/github/blyant/AGENTS.md` har stegene, og `python3 release.py` gjør dem. Til slutt gjelder dette:
 
 - Versjonen gis ut fra `main`. Gjøres arbeidet på en gren eller i en PR, gis den ut etter merge.
 - Utgivelsen er ferdig når `npm view blyant version` viser den nye versjonen. At taggen er pushet, er ikke nok.

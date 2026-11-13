@@ -30,7 +30,7 @@ Testflaten i `examples/hex-skisse/` åpner på en oversikt over flatene og kompo
 ## Publisering
 
 - GitHub Pages bygges av `.github/workflows/pages.yml` ved push til `main`.
-- **Hver endring i det pakken leverer (`src/`, `tokens.json`, `mal/`) gir en ny versjon på npm, gitt ut i samme økt.** PowerPoint-malen har pakkens versjon i seg, så den versjoneres sammen med resten. Endringer bare i dokumentasjon, forhåndsvisninger, `skills/`, `CLAUDE.md` eller verktøy gir ingen ny versjon.
+- **Hver endring i det pakken leverer (`src/`, `tokens.json`, `mal/`) gir en ny versjon på npm, gitt ut i samme økt.** PowerPoint-malen har pakkens versjon i seg, så den versjoneres sammen med resten. Endringer bare i dokumentasjon, forhåndsvisninger, `skills/`, `AGENTS.md` eller verktøy gir ingen ny versjon.
   - `patch` gjelder rettelser og justeringer. `minor` gjelder en ny komponent, et nytt valg, et endret API eller et nytt oppsett i malen. Før 1.0 er brudd også `minor`.
   - Kjør `python3 release.py patch|minor` fra `main` med et rent arbeidstre. Skriptet øker versjonen i `package.json` og i jsDelivr-lenkene i README, bygger (malen får den nye versjonen), committer, tagger `v<versjon>` og pusher `main` og taggen. Så venter det til npm viser versjonen.
   - Workflowen `.github/workflows/npm.yml` publiserer når taggen kommer. Versjonen i taggen må være lik `version` i `package.json`.
