@@ -61,7 +61,7 @@ Endrer du `tokens.json`, noe i `src/` eller noe i `mal/`, kjør `python3 build.p
 
 **Ny versjon på npm.** Hver endring i `src/`, `tokens.json` eller `mal/` gir en ny versjon, og PowerPoint-malen får den samme. Kjør `python3 release.py patch` for rettelser og `python3 release.py minor` for nye komponenter og endret API. Skriptet øker versjonen i `package.json` og i jsDelivr-lenkene over, bygger, committer, tagger og pusher, og venter til npm har versjonen. Workflowen `.github/workflows/npm.yml` bygger og publiserer pakken når taggen kommer. Den trenger hemmeligheten `NPM_TOKEN` i repoet.
 
-Designsystemet finnes også som artefakt i Claude: <https://claude.ai/artifact/PHdDmrVn92a3Ly1Vx4398B>, og testflaten på <https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs>. Begge er private til du deler dem.
+Designsystemet finnes også som artefakt i Claude: <https://claude.ai/artifact/PHdDmrVn92a3Ly1Vx4398B>, og testflaten på <https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs>.
 
 Se systemet i bruk på testflaten: [Blyant skissebok](https://claude.ai/artifact/Eh4C4o74E2GKVp1y14DbMs). Forsiden gir oversikt over alt som finnes: flatene som skisser (hex-spillet, nettside, dokument, presentasjon, grafer, tegneserieruter, former og system) og hver komponent som en liten prøve.
 
