@@ -1,7 +1,8 @@
-/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"Sketch2D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Sheet"},{"name":"Editor"},{"name":"Toolbar"},{"name":"Checklist"},{"name":"LinkCard"},{"name":"Thread"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Blyant","components":[{"name":"Button"},{"name":"Field"},{"name":"Check"},{"name":"Box"},{"name":"Note"},{"name":"Tag"},{"name":"Marker"},{"name":"Nav"},{"name":"Tabs"},{"name":"Table"},{"name":"Placeholder"},{"name":"Slide"},{"name":"Rough"},{"name":"Sketch3D"},{"name":"Sketch2D"},{"name":"Paint"},{"name":"Game2D"},{"name":"HexBoard"},{"name":"LineChart"},{"name":"BarChart"},{"name":"ScatterChart"},{"name":"Segments"},{"name":"Stat"},{"name":"Frames"},{"name":"Prose"},{"name":"Sidenote"},{"name":"Entries"},{"name":"Empty"},{"name":"Menu"},{"name":"Toast"},{"name":"Sheet"},{"name":"Editor"},{"name":"Toolbar"},{"name":"Checklist"},{"name":"LinkCard"},{"name":"Thread"}]} */
 /* Blyant — hand-drawn pencil design system. Vanilla JS, no dependencies.
    Sketch3D needs window.THREE (three.js r147 UMD) loaded first.
-   Sketch2D (blyant-sketch2d.js) needs nothing but WebGL.                 */
+   Sketch2D (blyant-sketch2d.js) needs nothing but WebGL.
+   Paint (blyant-paint.js) and Game2D (blyant-game2d.js) need only canvas 2D. */
 (function () {
   "use strict";
   var B = {};

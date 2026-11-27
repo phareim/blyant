@@ -116,6 +116,32 @@
           { type: "hatch", points: [[80, 40], [120, 74], [100, 96], [40, 96]], gap: 6, angle: 0.6, seed: 24 }]);
         sv.style.width = "100%"; sv.style.color = "var(--ink)";
       }],
+      ["Paint", "Malepenselen: oljemaling med tekstur.", null, function (st) {
+        var c = document.createElement("canvas"), k = Math.min(2, window.devicePixelRatio || 1);
+        c.width = 260 * k; c.height = 118 * k; c.style.cssText = "width:100%;height:auto;display:block;background:#f7f0e1;border-radius:4px";
+        st.appendChild(c);
+        var wet = document.createElement("canvas"); wet.width = c.width; wet.height = c.height;
+        var g = c.getContext("2d"), w = wet.getContext("2d");
+        w.setTransform(k, 0, 0, k, 0, 0);
+        [["#2f5fa8", 26, 34, 0], ["#f0c23a", 22, 62, 9], ["#c9463d", 18, 90, 17]].forEach(function (b, i) {
+          var flat = [];
+          for (var x = 22; x <= 238; x += 8) flat.push(x, b[2] + Math.sin((x + b[3] * 9) / 34) * 9);
+          w.clearRect(0, 0, 260, 118);
+          B.Paint.stroke(w, B.Paint.hand(flat, b[1], 40 + i), { color: b[0], width: b[1], seed: 40 + i });
+          g.drawImage(wet, 0, 0);
+        });
+      }],
+      ["Game2D", "Rigg for 2D-spill av egne tegninger.", null, function (st) {
+        var sv = figureInto(st, 260, 120, [
+          { type: "line", x1: 6, y1: 104, x2: 254, y2: 104, seed: 51 },
+          { type: "hatch", points: [[6, 104], [254, 104], [254, 116], [6, 116]], gap: 6, angle: 0.7, seed: 52 },
+          { type: "rect", x: 104, y: 62, w: 70, h: 12, seed: 53 },
+          { type: "circle", cx: 46, cy: 66, r: 9, seed: 54 }, { type: "line", x1: 46, y1: 75, x2: 46, y2: 94, seed: 55 },
+          { type: "line", x1: 46, y1: 94, x2: 39, y2: 104, seed: 56 }, { type: "line", x1: 46, y1: 94, x2: 53, y2: 104, seed: 57 }, { type: "line", x1: 37, y1: 82, x2: 55, y2: 82, seed: 58 },
+          { type: "poly", points: [[139, 30], [143, 41], [155, 41], [146, 48], [149, 59], [139, 52], [129, 59], [132, 48], [123, 41], [135, 41]], closed: true, fill: "var(--dust-yellow)", fillOpacity: 0.85, seed: 59 },
+          { type: "poly", points: [[196, 104], [205, 84], [214, 104], [223, 84], [232, 104]], closed: false, fill: "var(--dust-red)", fillOpacity: 0.6, seed: 60 }]);
+        sv.style.width = "100%"; sv.style.color = "var(--ink)";
+      }],
       ["HexBoard", "En hex-verden med en figur som hopper.", "spill", function (st) {
         var shapes = [];
         [[0, 0]].concat(B.hexgrid.ring(1)).forEach(function (c, i) {

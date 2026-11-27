@@ -128,6 +128,103 @@ export interface Sketch2DHandle {
   refreshTheme(): void;
   dispose(): void;
 }
+/** Blyant.Paint — the oil brush: thick paint with the ridges of the bristles, on a canvas 2D. */
+export interface PaintPoint { x: number; y: number; /** Pressure 0–1 (default 0.5). */ p?: number; }
+export interface PaintProps {
+  /** "#rrggbb". */
+  color: string;
+  /** Brush width in user units (2–200); under 6 the stroke is a clean line with a rim. */
+  width: number;
+  /** The same seed, points and picks give the same pixels. */
+  seed?: number;
+  /** The colour of the wet paint already on the picture at (x, y), or null for bare canvas. Asked about once per `width` of travel. */
+  pick?: (x: number, y: number) => string | null;
+  /** Instead of `pick`: the recorded answers, for painting a stored stroke again. */
+  picked?: (string | null)[];
+  /** How much paint the brush holds (0.3–2): how far it goes before it turns dry. */
+  load?: number;
+  /** The direction the light comes from, on the screen (default [-0.6, -0.8]). */
+  light?: [number, number];
+}
+/** new Blyant.Paint.Stroke(ctx, props) — paints as points arrive. `ctx` is a transparent wet layer holding only this stroke; lay it over the picture when the stroke ends. */
+export interface PaintStroke {
+  add(point: PaintPoint): void;
+  end(): void;
+  /** After end(): the picks that were used, to store with the stroke. */
+  picked: (string | null)[];
+  /** [x0, y0, x1, y1] around everything painted, shadow included. */
+  box: [number, number, number, number];
+}
+export interface PaintApi {
+  Stroke: new (ctx: CanvasRenderingContext2D, props: PaintProps) => PaintStroke;
+  /** A whole stroke at once, on a wet layer. */
+  stroke(ctx: CanvasRenderingContext2D, points: PaintPoint[], props: PaintProps): { picked: (string | null)[]; box: [number, number, number, number] };
+  /** A closed shape covered with brushwork. `rings` are flat [x, y, x, y, …] lists; a ring inside another is a hole. `angle` in degrees. */
+  fill(ctx: CanvasRenderingContext2D, rings: number[][], props: { color: string; seed?: number; width?: number; angle?: number }): unknown;
+  /** The linen the dry brush catches on, as a background. */
+  weave(ctx: CanvasRenderingContext2D, w: number, h: number, props?: { color?: string; strength?: number }): void;
+  /** A flat point list as points with the pressure of a hand that lands, presses and lifts. */
+  hand(flat: number[], width: number, seed: number, spacing?: number): Required<PaintPoint>[];
+}
+
+/** new Blyant.Game2D(container, spec, options) — a rig for 2D games: the game is a plain description, the rig runs it. See docs/komponenter/Game2D.md. */
+export type Game2DKind = "platform" | "topdown" | "catch" | "runner" | "fly";
+export type Game2DRole = "player" | "solid" | "collect" | "hazard" | "goal" | "decor" | "spring";
+export type Game2DImage = HTMLCanvasElement | HTMLImageElement | ImageBitmap;
+export interface Game2DSprite { image?: Game2DImage; shape?: string; color?: string; }
+export interface Game2DThing {
+  /** An id in `sprites`, or the name of a built-in shape. */
+  sprite?: string;
+  role: Game2DRole;
+  /** The centre of the thing in world units; y runs down. */
+  x?: number; y?: number;
+  /** Height in world units; the width follows the drawing. */
+  size?: number;
+  w?: number; h?: number;
+  move?: "still" | "patrol" | "chase" | "float" | "wander" | "fall";
+  axis?: "x" | "y"; range?: number; speed?: number;
+  points?: number;
+  layer?: "back" | "front"; parallax?: number;
+  /** A note that pops up when the player touches the thing (80 characters). */
+  say?: string;
+}
+export interface Game2DSpec {
+  title?: string;
+  kind?: Game2DKind;
+  world?: { width?: number; height?: number; sky?: string; ground?: boolean; groundColor?: string };
+  view?: { height?: number };
+  player?: { speed?: number; jump?: number; doubleJump?: boolean };
+  sprites?: Record<string, Game2DSprite | Game2DImage | string>;
+  things?: Game2DThing[];
+  spawn?: { every?: number; from?: "top" | "right" | "left"; max?: number; things: Game2DThing[] }[];
+  rules?: { lives?: number; win?: "goal" | "collect" | "score" | "survive"; score?: number; time?: number };
+  text?: { start?: string; win?: string; lose?: string };
+}
+export interface Game2DState { score: number; lives: number; time: number; }
+export type Game2DEvent = "start" | "win" | "lose" | "score" | "hurt";
+export interface Game2DHandle {
+  start(): void; pause(): void; resume(): void;
+  /** Back to the start screen. */
+  reset(): void;
+  /** Removes the canvas, the listeners and the sound. */
+  destroy(): void;
+  on(name: Game2DEvent, fn: (state: Game2DState) => void): Game2DHandle;
+  off(name: Game2DEvent, fn: (state: Game2DState) => void): Game2DHandle;
+  readonly state: "ready" | "playing" | "paused" | "won" | "lost";
+  /** The spec as the rig runs it. */
+  readonly spec: Game2DSpec;
+  readonly score: number; readonly lives: number; readonly time: number;
+}
+export interface Game2DApi {
+  new (container: HTMLElement, spec?: Game2DSpec, options?: { sound?: boolean; autostart?: boolean; seed?: number }): Game2DHandle;
+  /** The spec as the rig would run it: numbers held in range, unknown values replaced, exactly one player. Touches nothing. */
+  clean(spec: unknown): Game2DSpec;
+  /** The names of the built-in shapes. */
+  shapes: string[];
+  /** The thickness of the ground: its top edge is at world.height − GROUND. */
+  GROUND: number;
+}
+
 /** new Blyant.HexBoard(container, options) — a hex world with a hopping figure, built on Sketch3D. */
 export interface HexBoardProps {
   radius?: number; seed?: number; gems?: number; size?: number; interactive?: boolean;
@@ -176,6 +273,8 @@ export interface BlyantGlobal {
   };
   Sketch3D: new (container: HTMLElement, options?: Sketch3DProps) => any;
   Sketch2D: new (options?: Sketch2DProps) => Sketch2DHandle;
+  Paint: PaintApi;
+  Game2D: Game2DApi;
   HexBoard: new (container: HTMLElement, options?: HexBoardProps) => any;
 }
 export interface ChartSeries { name: string; values: (number | null)[]; color?: string; }

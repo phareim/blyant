@@ -103,6 +103,12 @@ sketch.start((dt) => { box.rotation.y += dt; });
 
 `Blyant.HexBoard` er en ferdig hex-verden bygget på Sketch3D: terreng, trær, steiner, vann, seks fargesteiner og en figur som hopper. Piltaster snur og hopper, Q E A D Z C hopper direkte, klikk går dit hex for hex. `Blyant.hexgrid` har den aksiale matematikken (`toXZ`, `dist`, `ring`, `path`).
 
+## Malepenselen og 2D-spill
+
+`Blyant.Paint` er en pensel med oljemaling på canvas 2D: tykk maling med riller etter busten, tørr pensel som fester seg på trådene i lerretet, og farger som dras med gjennom våt maling. Hvert strøk males på et eget, gjennomsiktig lag og legges over bildet når det er ferdig. Samme frø og punkter gir samme piksler. Se `Paint`.
+
+`Blyant.Game2D` er en rigg for 2D-spill: spillet er en beskrivelse (slag, verden, ting, regler), og riggen kjører den med fysikk, kamera, poeng, liv, skjermbilder og styring med taster og fingre. Figurene er egne tegninger eller innebygde blyantformer. Se `Game2D`.
+
 ## Blyanten over et bilde
 
 `Blyant.Sketch2D` tegner et ferdig bilde om til skisse: et lerret fra et spill, pikselkunst, et foto. Det er samme hånd som i 3D, uten three.js:
@@ -175,7 +181,8 @@ Se `docs/komponenter/Frames.md`.
 - **Samtale og kommentarer:** `.b-thread` er samtalen mellom leseren og én annen, i ren tekst: hvem, når og teksten. Leserens egne kommentarer står inn fra venstre på en lapp, den andre skriver rett på arket. `--pending` viser tre blyantprikker mens svaret kommer, `--failed` et ✗ og «Prøv igjen». `.b-thread__form` er feltet og knappen under. Den passer like godt i en bred spalte under et dokument som i et sidepanel på 320 px.
 - **Lenker og lesing:** `.b-linkcard` er kortet for en lenke eller en artikkel: bilde, nettsted, tittel, beskrivelse og en fot med valg som «Legg i Reader». `.b-linkcard--compact` er uten bilde, til lister, og `.b-linkcard--row` har et lite bilde til venstre. Til lenker limt inn på en tavle og til lister i en leser.
 - **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`. Skal presentasjonen lages i PowerPoint, finnes de samme delene som oppsett i malen `dist/blyant.potx` i npm-pakken, i Papir og Kull og med samme versjon som pakken.
-- **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå. Et 2D-spill som tegner på eget lerret, får blyanten med `Blyant.Sketch2D`.
+- **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå. Et 2D-spill av egne tegninger og blyantformer beskrives for `Blyant.Game2D`, som har HUD og skjermbilder selv. Et 2D-spill som tegner på eget lerret, får blyanten med `Blyant.Sketch2D`.
+- **Maleri og tegneflate:** et lerret der hvert strøk males med `Blyant.Paint` på et vått lag og legges over bildet. Verktøyene ligger i en `.b-toolbar`.
 - **Tegneserie og storyboard:** `Blyant.frames` på en flate med fast sideforhold, innhold i `rute.body`.
 - **Dashbord og rapport:** en rad `Blyant.chart.stat` øverst, ett filter-rad over grafene, og grafer i `.b-box`-kort med en «Vis tabell»-knapp.
 
