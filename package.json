@@ -1,7 +1,7 @@
 {
   "name": "blyant",
   "version": "0.13.1",
-  "description": "Håndtegnet blyant-designsystem for spill, nettsider, dokumenter og presentasjoner: CSS-komponenter, håndtegnede streker, three.js-blyantshader, blyantshader for 2D-lerret, grafer og tegneserieruter.",
+  "description": "Håndtegnet blyant-designsystem for spill, nettsider, dokumenter og presentasjoner: CSS-komponenter, håndtegnede streker, three.js-blyantshader, blyantshader for 2D-lerret, malepensel med oljemaling, rigg for 2D-spill, grafer og tegneserieruter.",
   "keywords": [
     "design-system",
     "sketch",
@@ -9,7 +9,9 @@
     "pencil",
     "three.js",
     "charts",
-    "comic"
+    "comic",
+    "game",
+    "oil-paint"
   ],
   "homepage": "https://phareim.github.io/blyant/",
   "repository": {

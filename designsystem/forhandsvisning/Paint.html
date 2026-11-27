@@ -1,0 +1,115 @@
+<!-- @dsCard group="Tegning" height=420 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Paint</title>
+<style>
+  .lerret { position: relative; flex: 1; min-width: 280px; height: 340px; min-height: 0; background: #f7f0e1; cursor: crosshair; }
+  .lerret > canvas { position: absolute; left: 0; top: 0; }
+  .farger { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .farge { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); padding: 0; cursor: pointer; }
+  .farge[aria-pressed="true"] { outline: 3px solid var(--marker); outline-offset: 3px; }
+</style></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div style="display:flex;gap:18px;align-items:flex-start">
+  <figure style="margin:0;flex:1;min-width:0">
+    <div class="b-canvas lerret" id="lerret"></div>
+    <figcaption class="b-label" style="margin-top:6px">Blyant.Paint – mal med pekeren</figcaption>
+  </figure>
+  <div class="farger" id="farger" role="group" aria-label="Farge">
+    <button class="b-btn b-btn--sm" type="button" id="tom">Tøm</button>
+  </div>
+</div>
+<script>
+(function () {
+  var Paint = Blyant.Paint, host = document.getElementById("lerret");
+  var dpr = Math.min(window.devicePixelRatio || 1, 2), W = host.clientWidth, H = host.clientHeight, k = W / 600;   /* motivet er tegnet 600 bredt */
+  function lag(les) {
+    var c = document.createElement("canvas"); c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    host.appendChild(c);
+    return c.getContext("2d", les ? { willReadFrequently: true } : undefined);
+  }
+  var ark = lag(), bilde = lag(true), vatt = lag();          /* lerretet, det som er malt, og strøket som males nå */
+  [ark, bilde, vatt].forEach(function (g) { g.setTransform(dpr * k, 0, 0, dpr * k, 0, 0); });
+  Paint.weave(ark, 600, H / k);
+
+  /* Fargen som ligger vått på bildet der penselen er: den dras med i strøket. */
+  function plukk(x, y) {
+    var px = Math.round(x * k * dpr), py = Math.round(y * k * dpr);
+    if (px < 0 || py < 0 || px >= bilde.canvas.width || py >= bilde.canvas.height) return null;
+    var d = bilde.getImageData(px, py, 1, 1).data;
+    return d[3] < 128 ? null : "#" + ((1 << 24) | (d[0] << 16) | (d[1] << 8) | d[2]).toString(16).slice(1);
+  }
+  /* Strøket er ferdig: det våte laget legges på bildet og tømmes. */
+  function legg() {
+    bilde.save(); bilde.setTransform(1, 0, 0, 1, 0, 0); bilde.drawImage(vatt.canvas, 0, 0); bilde.restore();
+    vatt.save(); vatt.setTransform(1, 0, 0, 1, 0, 0); vatt.clearRect(0, 0, vatt.canvas.width, vatt.canvas.height); vatt.restore();
+  }
+  var teller = 1;
+  function strok(flat, farge, bredde) {
+    Paint.stroke(vatt, Paint.hand(flat, bredde, teller), { color: farge, width: bredde, seed: teller++, pick: plukk });
+    legg();
+  }
+  /* En solnedgang over havet, malt med noen få strøk. */
+  function motiv() {
+    teller = 1;
+    strok([18, 34, 200, 26, 400, 40, 584, 30], "#3d5fa8", 54);
+    strok([584, 80, 390, 90, 200, 74, 16, 86], "#8e5aa8", 52);
+    strok([16, 128, 210, 120, 400, 136, 584, 124], "#d9608a", 50);
+    strok([584, 170, 400, 178, 190, 164, 18, 174], "#e8853a", 48);
+    var sol = [], v;
+    for (v = 0; v <= 14; v += 0.35) sol.push(302 + Math.cos(v) * (3 + v), 152 + Math.sin(v) * (3 + v));
+    strok(sol, "#f6d04a", 20);
+    strok([14, 222, 200, 214, 400, 228, 586, 218], "#2f5f9c", 50);
+    strok([586, 266, 400, 274, 200, 258, 14, 270], "#27507f", 52);
+    strok([14, 312, 210, 304, 410, 318, 586, 308], "#1f3f68", 54);
+    strok([250, 208, 300, 214, 356, 206], "#f6d04a", 16);
+    strok([264, 236, 304, 242, 342, 234], "#f4efe6", 13);
+    strok([276, 262, 304, 266, 330, 260], "#f6d04a", 10);
+    strok([96, 108, 130, 96, 168, 106, 206, 98], "#f4efe6", 24);
+  }
+  motiv();
+
+  /* Fargeprikkene. */
+  var FARGER = [["Rød", "#c9463d"], ["Gul", "#e8b93a"], ["Grønn", "#3f8f5a"], ["Blå", "#3d7ab8"], ["Hvit", "#f4efe6"], ["Svart", "#2b2a33"]];
+  var valgt = FARGER[4][1], boks = document.getElementById("farger"), tom = document.getElementById("tom");
+  FARGER.forEach(function (f) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "farge"; b.style.background = f[1];
+    b.setAttribute("aria-label", f[0]); b.setAttribute("aria-pressed", f[1] === valgt ? "true" : "false");
+    b.addEventListener("click", function () {
+      valgt = f[1];
+      Array.prototype.forEach.call(boks.querySelectorAll(".farge"), function (el) { el.setAttribute("aria-pressed", el === b ? "true" : "false"); });
+    });
+    boks.insertBefore(b, tom);
+  });
+  tom.addEventListener("click", function () {
+    bilde.save(); bilde.setTransform(1, 0, 0, 1, 0, 0); bilde.clearRect(0, 0, bilde.canvas.width, bilde.canvas.height); bilde.restore();
+  });
+
+  /* Maling med pekeren: et strøk fra pekeren settes ned til den løftes. */
+  var pensel = null;
+  function punkt(e) {
+    var r = host.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / k, y: (e.clientY - r.top) / k, p: e.pointerType === "pen" && e.pressure ? e.pressure : 0.55 };
+  }
+  host.addEventListener("pointerdown", function (e) {
+    if (pensel) return;
+    host.setPointerCapture(e.pointerId);
+    pensel = new Paint.Stroke(vatt, { color: valgt, width: 24, seed: 1000 + teller++, pick: plukk });
+    pensel.add(punkt(e));
+    e.preventDefault();
+  });
+  host.addEventListener("pointermove", function (e) {
+    if (!pensel) return;
+    var alle = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+    if (!alle.length) alle = [e];
+    for (var i = 0; i < alle.length; i++) pensel.add(punkt(alle[i]));
+  });
+  function slipp() { if (!pensel) return; pensel.end(); pensel = null; legg(); }
+  host.addEventListener("pointerup", slipp);
+  host.addEventListener("pointercancel", slipp);
+})();
+</script>
+<script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!-- @dsCard group="Tegning" height=460 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Game2D</title></head>
+<body class="b-page" style="margin:0;padding:20px 24px">
+<div id="spill" style="height:384px"></div>
+<p class="b-label" style="margin:8px 0 0">Blyant.Game2D · piltaster og mellomrom</p>
+<script>
+var spill = new Blyant.Game2D(document.getElementById("spill"), {
+  title: "Stjernejakten",
+  kind: "platform",
+  world: { width: 2600, height: 700, sky: "--dust-blue" },
+  view: { height: 560 },
+  player: { doubleJump: true },
+  sprites: {
+    sol: { shape: "sun" }, sky: { shape: "cloud" }, haug: { shape: "hill" }, hus: { shape: "house" },
+    edelstein: { shape: "gem" }, sopp: { shape: "mushroom" }, gress: { color: "--dust-green" }
+  },
+  things: [
+    { role: "decor", sprite: "sol", x: 520, y: 235, size: 120, parallax: 0.1 },
+    { role: "decor", sprite: "sky", x: 300, y: 250, size: 70, parallax: 0.3 },
+    { role: "decor", sprite: "sky", x: 1500, y: 300, size: 60, parallax: 0.3 },
+    { role: "decor", sprite: "haug", x: 800, y: 540, size: 170, parallax: 0.6 },
+    { role: "decor", sprite: "haug", x: 1900, y: 550, size: 150, parallax: 0.6 },
+    { role: "decor", sprite: "hus", x: 250, y: 540, size: 160, say: "Finn flagget! Hopp på slimet." },
+    { role: "decor", sprite: "tree", x: 470, y: 525, size: 190 },
+    { role: "decor", sprite: "bush", x: 1560, y: 592, size: 56 },
+    { role: "decor", sprite: "tree", x: 2060, y: 535, size: 170 },
+    { role: "decor", sprite: "flower", x: 640, y: 584, size: 72, layer: "front" },
+    { role: "decor", sprite: "flower", x: 2330, y: 588, size: 64, layer: "front" },
+    { role: "player", x: 120, y: 570 },
+    { role: "solid", sprite: "gress", x: 760, y: 470, w: 240, h: 40 },
+    { role: "collect", x: 700, y: 400 }, { role: "collect", x: 820, y: 400 },
+    { role: "hazard", x: 1010, y: 584, move: "patrol", range: 220 },
+    { role: "collect", x: 1010, y: 440 },
+    { role: "hazard", x: 1240, y: 590 },
+    { role: "spring", x: 1380, y: 593 },
+    { role: "solid", sprite: "gress", x: 1600, y: 330, w: 220, h: 40 },
+    { role: "collect", sprite: "edelstein", x: 1600, y: 250, points: 5 },
+    { role: "solid", x: 1880, y: 440, w: 160, h: 40, move: "patrol", range: 160, speed: 70 },
+    { role: "collect", x: 1880, y: 360 },
+    { role: "collect", sprite: "sopp", x: 2180, y: 590, size: 60, points: 2 },
+    { role: "goal", x: 2460, y: 555 }
+  ],
+  rules: { lives: 3, win: "goal" },
+  text: { start: "Samle stjerner på veien til flagget." }
+});
+</script>
+<script>Blyant.ink(document);if(document.fonts)document.fonts.ready.then(function(){Blyant.reink(document)});</script>
+</body>
+</html>

@@ -11,13 +11,13 @@ Blyant er designspråket for skisser av noe nytt: nettsider, apper, dokumenter, 
 
 ## Før du tegner
 
-1. Les `~/github/blyant/README.md`. Den har prinsippene, fargene, typografien, strekene, 3D, grafene og flatene (nettside, dokument, blogg, presentasjon, spill, dashbord).
+1. Les `~/github/blyant/README.md`. Den har prinsippene, fargene, typografien, strekene, 3D, malepenselen (`Blyant.Paint`), riggen for 2D-spill (`Blyant.Game2D`), grafene og flatene (nettside, dokument, blogg, presentasjon, spill, dashbord).
 2. Slå opp komponenten du trenger i `~/github/blyant/docs/komponenter/<Navn>.md`. API-et står i `~/github/blyant/src/blyant.d.ts`.
 3. Se hvordan det ser ut: <https://phareim.github.io/blyant/>. Kodeeksempler finner du i `~/github/blyant/examples/hex-skisse/`.
 
 Uten `~/github/blyant` på maskinen (for eksempel i en sky-økt eller på en annen maskin): klon `https://github.com/phareim/blyant`, eller les de samme filene på GitHub.
 
-Komponentene er Button, Field, Check, Box, Note, Tag, Marker, Nav, Tabs, Table, Placeholder, Slide, Rough, Sketch3D, Sketch2D, HexBoard, LineChart, BarChart, ScatterChart, Segments, Stat, Frames, Prose, Sidenote, Entries, Empty, Menu, Toast, Sheet, Editor, Toolbar, Checklist, LinkCard og Thread. Lista i `@ds-bundle`-linja øverst i `~/github/blyant/src/blyant.js` er alltid den riktige.
+Komponentene er Button, Field, Check, Box, Note, Tag, Marker, Nav, Tabs, Table, Placeholder, Slide, Rough, Sketch3D, Sketch2D, Paint, Game2D, HexBoard, LineChart, BarChart, ScatterChart, Segments, Stat, Frames, Prose, Sidenote, Entries, Empty, Menu, Toast, Sheet, Editor, Toolbar, Checklist, LinkCard og Thread. Lista i `@ds-bundle`-linja øverst i `~/github/blyant/src/blyant.js` er alltid den riktige.
 
 ## Ta det inn
 

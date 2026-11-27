@@ -1,6 +1,6 @@
 # Blyant
 
-Blyant er et håndtegnet designsystem for spill, nettsider, dokumenter og presentasjoner. Det lar deg sette rammer, innhold og flyt med blyant før noen bestemmer seg for farger og merkevare. Alt er bygget slik at skisse-laget kan byttes ut med et ferdig design uten å røre strukturen.
+Blyant er et håndtegnet designsystem for spill, nettsider, dokumenter og presentasjoner, med en malepensel ved siden av blyanten. Det lar deg sette rammer, innhold og flyt med blyant før noen bestemmer seg for farger og merkevare. Alt er bygget slik at skisse-laget kan byttes ut med et ferdig design uten å røre strukturen.
 
 **Se den i bruk: <https://phareim.github.io/blyant/>** – en figur hopper fra hex til hex, og skissene under lenker til nettside, dokument, presentasjon, grafer, former og system.
 
@@ -44,7 +44,7 @@ Andre måter å hente filene på:
 | `dist/blyant.css` | Fonter, tokens og alle komponenter i én fil |
 | `dist/blyant-core.css` | Det samme uten `@import` av fontene, for sider som leverer fontene selv (se Typografi) |
 | `dist/tokens.css` | Bare tokens som CSS-variabler (Papir og Kull) |
-| `dist/blyant.js` | `Blyant`: streker, `ink`, `figure`, `doodle`, `Sketch3D`, `Sketch2D`, `HexBoard`, `hexgrid`, `chart` og `frames` |
+| `dist/blyant.js` | `Blyant`: streker, `ink`, `figure`, `doodle`, `Sketch3D`, `Sketch2D`, `Paint`, `Game2D`, `HexBoard`, `hexgrid`, `chart` og `frames` |
 | `dist/blyant.potx` | PowerPoint-malen: Papir og Kull, seksten oppsett i hvert. `dist/blyant-eksempel.pptx` viser dem fylt ut |
 | `tokens.json` | Kilden til alle tokens |
 | `src/` | Kildekoden; `src/blyant.d.ts` beskriver API-et |
@@ -186,6 +186,48 @@ ctx.drawImage(pencil.canvas, 0, 0);
 - `mix` i `render` lar skissen komme fram over bildet, til en overgang.
 - Uten WebGL (`pencil.ok` er `false`) legges bildet lett på arket.
 
+## Malepenselen
+
+`Blyant.Paint` er en pensel med oljemaling: tykk, dekkende maling med riller etter busten, rygger som fanger lyset og en skygge under kanten. Går penselen tom, fester malingen seg bare på trådene i lerretet, og dras et strøk gjennom våt maling, blir fargen med. Rent canvas 2D, og samme frø og punkter gir samme piksler, så et lagret strøk kan males opp igjen.
+
+```js
+const strøk = new Blyant.Paint.Stroke(vått, { color: "#c9463d", width: 28, seed: 7, pick: fargenPåBildet });
+lerret.onpointermove = e => strøk.add({ x: e.offsetX, y: e.offsetY, p: e.pressure });
+lerret.onpointerup = () => { strøk.end(); bilde.drawImage(vått.canvas, 0, 0); };   // og tøm det våte laget
+```
+
+- Mal hvert strøk på et eget, gjennomsiktig lag (det våte laget), og legg laget over bildet når strøket er ferdig. Skyggen ligger under malingen og ryggene oppå, og det går bare slik.
+- `pick(x, y)` sier hvilken farge som ligger på bildet der penselen går, så fargene dras med. Lagre `strøk.picked` sammen med punktene, og gi dem tilbake som `picked` når strøket males opp igjen.
+- `Blyant.Paint.fill(ctx, ringer, { color })` dekker en lukket form med penselstrøk, `Blyant.Paint.weave` tegner lerretet, og `Blyant.Paint.hand` gir en punktliste trykket til en hånd.
+- Malepenselen er for bilder, ikke for kontroller: knapper, rammer og tekst er fortsatt blyant. Lerretet er lyst og varmt, også i Kull.
+
+Se `docs/komponenter/Paint.md`.
+
+## 2D-spill
+
+`Blyant.Game2D` er en rigg for 2D-spill. Et spill er en beskrivelse, ikke kode: hva slags spill det er, hva som finnes i verden og hva som skal til for å vinne. Riggen kjører den, med fysikk, kamera, poeng, liv, skjermbilder, lyd og styring med taster, mus og fingre. Figurene er egne tegninger eller innebygde former tegnet med blyant og fargeblyant.
+
+```js
+const spill = new Blyant.Game2D(el, {
+  kind: "platform",                                   // platform, topdown, catch, runner eller fly
+  sprites: { katt: { image: tegningen } },            // et lerret eller et bilde med gjennomsiktig bakgrunn
+  things: [
+    { role: "player", sprite: "katt", x: 120, y: 570 },
+    { role: "solid", x: 700, y: 470, w: 240, h: 40 },
+    { role: "collect", sprite: "star", x: 700, y: 400 },
+    { role: "hazard", sprite: "slime", x: 1000, y: 580, move: "patrol", range: 220 },
+    { role: "goal", sprite: "flag", x: 2200, y: 555 }
+  ]
+});
+```
+
+- Fem slag spill: `platform` (hopp sett fra siden), `topdown` (sett ovenfra), `catch` (fang det som faller), `runner` (løp og hopp) og `fly` (flaks).
+- Riggen tåler alt: tall klemmes, ukjente verdier får en standard, og det er alltid én spiller. Derfor kan en beskrivelse komme fra et skjema, en fil eller en språkmodell. `Blyant.Game2D.clean(spec)` viser hva riggen ville kjørt.
+- `x` og `y` er midten av tingen, `y` går nedover, og bakken er 80 enheter tykk. Et hopp når omtrent 225 enheter opp.
+- Kall `spill.destroy()` når visningen forlates. `spill.on("win" | "lose" | "score" | "hurt" | "start", fn)` forteller hva som skjer.
+
+Se `docs/komponenter/Game2D.md` for hele beskrivelsen og de 29 formene.
+
 ## Grafer
 
 `Blyant.chart` tegner grafer med samme blyant: `line`, `bar` (loddrett, vannrett, stablet), `scatter`, `segments` (del av helhet), `stat` (nøkkeltall) og `spark` (trendlinje). Gi grafen en tom boks og dataene; den fyller bredden og tegner seg på nytt ved ny størrelse.
@@ -239,7 +281,8 @@ Se `docs/komponenter/Frames.md`.
 - **Samtale og kommentarer:** `.b-thread` er samtalen mellom leseren og én annen, i ren tekst: hvem, når og teksten. Leserens egne kommentarer står inn fra venstre på en lapp, den andre skriver rett på arket. `--pending` viser tre blyantprikker mens svaret kommer, `--failed` et ✗ og «Prøv igjen». `.b-thread__form` er feltet og knappen under. Den passer like godt i en bred spalte under et dokument som i et sidepanel på 320 px.
 - **Lenker og lesing:** `.b-linkcard` er kortet for en lenke eller en artikkel: bilde, nettsted, tittel, beskrivelse og en fot med valg som «Legg i Reader», eller en myk linje om hvor kortet kommer fra (`.b-linkcard__from`). `.b-linkcard--compact` er uten bilde, til lister, og `.b-linkcard--row` har et lite bilde til venstre. Til lenker limt inn på en tavle og til lister i en leser.
 - **Presentasjon:** `.b-slide` er en 16:9-ramme som skalerer alt etter bredden (container-enheter). Bruk `.b-slide__kicker`, `.b-slide__title`, `.b-slide__body`, `.b-slide__foot`. Skal presentasjonen lages i PowerPoint, bruk malen `dist/blyant.potx`: de samme delene som oppsett, i Papir og Kull. Se [docs/presentasjonsmal.md](docs/presentasjonsmal.md).
-- **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå. Et 2D-spill som tegner på eget lerret, får blyanten med `Blyant.Sketch2D`.
+- **Spill:** `Blyant.Sketch3D` eller `Blyant.HexBoard` i et `.b-canvas`, HUD i vanlige komponenter oppå. Et 2D-spill av egne tegninger og blyantformer beskrives for `Blyant.Game2D`, som har HUD og skjermbilder selv. Et 2D-spill som tegner på eget lerret, får blyanten med `Blyant.Sketch2D`.
+- **Maleri og tegneflate:** et lerret der hvert strøk males med `Blyant.Paint` på et vått lag og legges over bildet. Verktøyene ligger i en `.b-toolbar`.
 - **Tegneserie og storyboard:** `Blyant.frames` på en flate med fast sideforhold, innhold i `rute.body`.
 - **Dashbord og rapport:** en rad `Blyant.chart.stat` øverst, ett filter-rad over grafene, og grafer i `.b-box`-kort med en «Vis tabell»-knapp.
 

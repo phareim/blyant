@@ -7,6 +7,7 @@ dist/tokens.css   – fargene (Papir/Kull), avstander, strek og skrift som CSS-v
 dist/blyant.css   – fonter + tokens + komponenter (én fil å lenke til)
 dist/blyant-core.css – det samme uten @import av fontene, for sider som leverer fontene selv
 dist/blyant.js    – Blyant (streker, komponenter, Sketch3D, HexBoard) + Blyant.chart + Blyant.frames + Blyant.Sketch2D
+                    + Blyant.Paint + Blyant.Game2D
 dist/blyant.potx  – PowerPoint-malen, med samme versjon som pakken (mal/potx.py, trenger Node)
 dist/blyant-eksempel.pptx – oppsettene i malen fylt ut
 examples/hex-skisse/index.html – testflaten, ferdig bygget
@@ -119,7 +120,7 @@ def skill():
     print('  %-34s %7d bytes' % (rel, os.path.getsize(os.path.join(ROOT, rel))))
 
 
-JS = ('blyant.js', 'blyant-chart.js', 'blyant-frames.js', 'blyant-sketch2d.js')
+JS = ('blyant.js', 'blyant-chart.js', 'blyant-frames.js', 'blyant-sketch2d.js', 'blyant-paint.js', 'blyant-game2d.js')
 
 if __name__ == '__main__':
     tok = tokens_css()
@@ -132,7 +133,7 @@ if __name__ == '__main__':
     ex = os.path.join('examples', 'hex-skisse')
     page = read(ex, 'demo.html')
     for k, v in {'TOKENS': tok, 'BLYANT_CSS': css, 'APP_CSS': read(ex, 'app.css'),
-                 'BLYANT_JS': read('src', 'blyant.js'), 'CHART_JS': read('src', 'blyant-chart.js'), 'FRAMES_JS': read('src', 'blyant-frames.js'), 'SKETCH2D_JS': read('src', 'blyant-sketch2d.js'), 'APP_JS': read(ex, 'app.js')}.items():
+                 'BLYANT_JS': read('src', 'blyant.js'), 'CHART_JS': read('src', 'blyant-chart.js'), 'FRAMES_JS': read('src', 'blyant-frames.js'), 'SKETCH2D_JS': read('src', 'blyant-sketch2d.js'), 'PAINT_JS': read('src', 'blyant-paint.js'), 'GAME2D_JS': read('src', 'blyant-game2d.js'), 'APP_JS': read(ex, 'app.js')}.items():
         page = page.replace('/*{{%s}}*/' % k, v)
     page = ('<!doctype html>\n<html lang="nb">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
