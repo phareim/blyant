@@ -215,9 +215,11 @@
   Stroke.prototype.add = function (pt) {
     if (this.ended || !pt) return this;
     var x = +pt.x, y = +pt.y, p = pt.p == null ? 0.5 : clamp(+pt.p, 0, 1);
-    if (x !== x || y !== y) return this;
+    if (!isFinite(x) || !isFinite(y)) return this;
     if (p !== p) p = 0.5;
     var pts = this.pts, last = pts[pts.length - 1], m = this.reach, bx = this.box;
+    /* Et punkt så langt unna at avstanden dit ikke er et tall, hoppes over: penselen ville aldri kommet fram. */
+    if (last && !isFinite((x - last.x) * (x - last.x) + (y - last.y) * (y - last.y))) return this;
     if (!bx) this.box = [x - m, y - m, x + m, y + m];
     else { if (x - m < bx[0]) bx[0] = x - m; if (y - m < bx[1]) bx[1] = y - m; if (x + m > bx[2]) bx[2] = x + m; if (y + m > bx[3]) bx[3] = y + m; }
     if (last) {
@@ -399,16 +401,19 @@
         v0 *= mul; v1 *= mul; v2 *= mul;
         d[o] = v0 + (252 - v0) * add; d[o + 1] = v1 + (252 - v1) * add; d[o + 2] = v2 + (236 - v2) * add; d[o + 3] = 255;
       }
-      /* Utenfor kantene fortsetter kantfargen, så klatter som stikker ut, ikke henter farge fra andre siden. */
+      /* Utenfor kantene fortsetter kantfargen, så klatter som stikker ut, ikke henter farge fra andre siden.
+         Alle kolonnene skrives: raden er brukt før, og et smalt strøk skal ikke arve kolonner fra et bredere. */
       d[0] = d[4]; d[1] = d[5]; d[2] = d[6]; d[3] = 255;
-      var e0 = Mc * 4;
-      for (j = 1; j <= 8; j++) {
+      var e0 = Mc * 4, pad = (TEX_W - Mc) >> 1;
+      for (j = 1; j <= pad; j++) {
         o = (Mc + j) * 4; d[o] = d[e0]; d[o + 1] = d[e0 + 1]; d[o + 2] = d[e0 + 2]; d[o + 3] = 255;
         o = (TEX_W - j) * 4; d[o] = d[4]; d[o + 1] = d[5]; d[o + 2] = d[6]; d[o + 3] = 255;
       }
       g.putImageData(row, 0, r % TEX_H);
       g.putImageData(row, 0, (r + 1) % TEX_H);            /* det som stikker fram foran leddet, får samme farge inntil neste rad er malt */
-      if (r === 0) g.putImageData(row, 0, TEX_H - 1);     /* og det som stikker ut bak starten */
+      /* Første rad fyller resten av teksturen: det som stikker ut bak starten, og alle rader strøket ikke har
+         malt ennå. Teksturen er brukt før, og radene til forrige strøk ville ellers vist seg i dette. */
+      if (r === 0) for (j = 2; j < TEX_H; j++) g.putImageData(row, 0, j);
       this.rows++;
       this.pat = null;
     }
@@ -785,13 +790,19 @@
     o = o || {};
     var seed = (+o.seed || 0) | 0, rgb = rgbOf(o.color) || [37, 38, 35], hsl = toHsl(rgb), r, i;
     var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, any = false;
-    rings = (rings || []).filter(function (g) { return g && g.length >= 6; });
+    /* Punkter som ikke er endelige tall, tas ut av ringen: ett uendelig punkt ville gitt uendelig mange strøk. */
+    rings = (rings || []).map(function (g) {
+      var out = [], k;
+      for (k = 0; g && k + 1 < g.length; k += 2) if (isFinite(g[k]) && isFinite(g[k + 1])) out.push(+g[k], +g[k + 1]);
+      return out;
+    }).filter(function (g) { return g.length >= 6; });
     for (r = 0; r < rings.length; r++) for (i = 0; i + 1 < rings[r].length; i += 2) {
       var px = rings[r][i], py = rings[r][i + 1];
       if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py; any = true;
     }
     if (!any) return { box: [0, 0, 0, 0] };
     var bw = x1 - x0, bh = y1 - y0;
+    if (!isFinite(bw) || !isFinite(bh)) return { box: [0, 0, 0, 0] };   /* tall så store at avstanden mellom dem ikke er et tall */
     var W = clamp(+o.width || 0.2 * Math.sqrt(Math.max(1, bw * bh)), 4, 200);
     var Wr = clamp(W * 0.42, 3, 24), box = [x0, y0, x1, y1];
     function grow(b) { if (!b) return; if (b[0] < box[0]) box[0] = b[0]; if (b[1] < box[1]) box[1] = b[1]; if (b[2] > box[2]) box[2] = b[2]; if (b[3] > box[3]) box[3] = b[3]; }

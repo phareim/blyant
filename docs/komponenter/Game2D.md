@@ -19,7 +19,7 @@ var spill = new Blyant.Game2D(el, {
 spill.on("win", function (r) { console.log(r.score, r.lives, r.time); });
 ```
 
-- Flaten må ha en høyde. Riggen fyller den med ett lerret og legger poeng, liv og skjermbilder oppå i HTML. Elementet får klassen `b-game`.
+- Flaten må ha en høyde. Riggen fyller den med ett lerret og legger poeng, liv og skjermbilder oppå i HTML. Er flaten smal og livene mange, legger hjertene seg på flere rader, så klokka og pauseknappen får plass på en telefon. Elementet får klassen `b-game`.
 - Riggen kaster aldri på en rar beskrivelse. Tall klemmes, ukjente verdier får en standard, og det er alltid nøyaktig én spiller. `Blyant.Game2D.clean(spec)` gir beskrivelsen slik riggen ville kjørt den, uten å røre siden. `spill.spec` er den samme.
 - Enheter: `x` går mot høyre og `y` nedover fra øverste venstre hjørne av verden. `x` og `y` er midten av tingen. Bakken er 80 enheter tykk (`Blyant.Game2D.GROUND`), så overkanten ligger på `world.height − 80`. Ting som ville havnet nede i bakken, løftes opp på den.
 - Et hopp når omtrent 225 enheter opp (ganger `player.jump`), og en fjær omtrent 550. Legg plattformer deretter.
@@ -40,7 +40,7 @@ spill.on("win", function (r) { console.log(r.score, r.lives, r.time); });
 | `spawn[]` | opptil 6: `{ every, from, max, things }`. Hvert `every` sekund (0,3–10) kommer én tilfeldig av `things` inn fra kanten `from`: `"top"`, `"right"` eller `"left"` | `max` 12 samtidig |
 | `rules.lives` | 1–9 | 3 |
 | `rules.win` | `"goal"`, `"collect"`, `"score"`, `"survive"` | mål hvis det finnes, ellers samle alt, ellers poeng (catch), ellers holde ut |
-| `rules.score`, `rules.time` | poeng som trengs; sekunder | 10; 45 for `"survive"`, ellers ingen tid |
+| `rules.score`, `rules.time` | poeng som trengs; sekunder, 5–3600 (0 eller mindre teller som ikke oppgitt) | 10; 45 for `"survive"`, ellers ingen tid |
 | `text.start`, `text.win`, `text.lose` | tekst på skjermbildene | etter regelen, «Du klarte det!», «Prøv igjen» |
 
 En ting:
@@ -64,8 +64,9 @@ En ting:
 - **runner**: spilleren løper av seg selv, og du hopper. Med regelen `"goal"` er det seier ved målet eller ved enden av verden. Med en annen regel kommer banen rundt igjen til regelen er oppfylt.
 - **fly**: som runner, men i lufta: et trykk gir et vingeslag. Bakken, taket og `solid` koster et liv.
 - En `hazard` koster et liv, og spilleren blinker og kan ikke skades på et øyeblikk. I platform og runner kan spilleren hoppe oppå en `hazard` som beveger seg: den er borte, og det gir ett poeng. En som står stille, gjør alltid vondt.
-- `"patrol"` går fram og tilbake rundt startstedet, `"chase"` går mot spilleren innenfor 500 enheter, `"float"` dupper, `"wander"` rusler rundt, `"fall"` faller til den lander. Ting fra `spawn` faller fra toppen og går rett bortover fra sidene; `"float"`, `"chase"` og `"wander"` gir dem en annen gange, og `"patrol"` fra siden går langs bakken.
+- `"patrol"` går fram og tilbake rundt startstedet, `"chase"` går mot spilleren innenfor 500 enheter, `"float"` dupper, `"wander"` rusler rundt, `"fall"` faller til den lander. Ting fra `spawn` faller fra toppen og går rett bortover fra sidene, aldri saktere enn 40 enheter i sekundet; `"float"`, `"chase"` og `"wander"` gir dem en annen gange, og `"patrol"` fra siden går langs bakken.
 - Går tiden ut, er det tap, bortsett fra med `"survive"`, der det er seier.
+- Med `"score"` i platform, topdown og catch kan banen gå tom for poeng. Gir ikke `spawn` flere (en `collect` med poeng, eller i platform en `hazard` å hoppe på), senkes `rules.score` til poengene banen har. Er det ingen poeng å få, gjelder standardregelen.
 
 ## Figurer og farger
 
@@ -77,7 +78,7 @@ En ting:
 
 ## Styring og API
 
-- Taster: piltaster eller WASD, mellomrom eller pil opp for hopp og vingeslag, P for pause, Enter for start.
+- Taster: piltaster eller WASD, mellomrom eller pil opp for hopp og vingeslag, P for pause, Enter eller mellomrom for start og for å fortsette etter pause.
 - Berøring: knappene kommer fram på berøringsskjermer, eller ved første berøring. platform har ← → til venstre og hopp til høyre. I runner og fly er hele skjermen knappen. I catch følger spilleren fingeren, og i topdown går spilleren dit fingeren holdes.
 - `spill.start()`, `pause()`, `resume()`, `reset()` (tilbake til startskjermen) og `destroy()`. `spill.state` er `"ready"`, `"playing"`, `"paused"`, `"won"` eller `"lost"`. `spill.score` og `spill.lives` kan leses underveis.
 - `spill.on(navn, fn)` lytter på `"start"`, `"win"`, `"lose"`, `"score"` og `"hurt"`. `fn` får `{ score, lives, time }`, der `time` er sekunder spilt. `spill.off(navn, fn)` tar lytteren bort.

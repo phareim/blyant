@@ -200,24 +200,33 @@
       spawn.push({ every: 1.2, from: "top", max: 12, things: tpl });
     }
 
-    var nCollect = 0, nGoal = 0, spawnCollect = false, stomp = false, j;
+    // held: the points the level holds. more: points keep coming, from a spawner or because the level comes round again
+    var nCollect = 0, nGoal = 0, spawnCollect = false, held = 0, more = kind === "runner" || kind === "fly", j;
+    var stompKind = kind === "platform" || kind === "runner";
     for (i = 0; i < things.length; i++) {
       t = things[i];
-      if (t.role === "collect") nCollect++;
+      if (t.role === "collect") { nCollect++; held += t.points; }
       if (t.role === "goal") nGoal++;
-      if (t.role === "hazard" && t.move !== "still" && (kind === "platform" || kind === "runner")) stomp = true;
+      if (t.role === "hazard" && t.move !== "still" && stompKind) held++;   // jumped on: one point
     }
-    for (i = 0; i < spawn.length; i++) for (j = 0; j < spawn[i].things.length; j++) if (spawn[i].things[j].role === "collect") spawnCollect = true;
-    var canScore = nCollect > 0 || spawnCollect || stomp;
+    for (i = 0; i < spawn.length; i++) for (j = 0; j < spawn[i].things.length; j++) {
+      t = spawn[i].things[j];
+      if (t.role === "collect" && t.points > 0) spawnCollect = true;
+      if (t.role === "hazard" && stompKind) more = true;
+    }
+    if (spawnCollect) more = true;
+    var canScore = held > 0 || spawnCollect;
     var win = pick(ri.win, WINS, null);
     if (win === "goal" && !nGoal && kind !== "runner" && kind !== "fly") win = null;   // runner and fly can win at the world's end
     if (win === "collect" && !nCollect) win = null;
     if (win === "score" && !canScore) win = null;
     if (!win) win = nGoal ? "goal" : nCollect ? "collect" : kind === "catch" && canScore ? "score" : "survive";
+    var score = Math.round(num(ri.score, 10, 1, 9999)), time = num(ri.time, 0, 0, 3600);
+    if (win === "score" && !more) score = Math.min(score, held);   // nothing comes back: the level cannot give more than it holds
     var rules = {
       lives: Math.round(num(ri.lives, 3, 1, 9)), win: win,
-      score: Math.round(num(ri.score, 10, 1, 9999)),
-      time: num(ri.time, win === "survive" ? 45 : null, 5, 3600)
+      score: score,
+      time: time > 0 ? Math.max(5, time) : win === "survive" ? 45 : null   // a time that is not above zero is no time limit
     };
     var start = win === "goal" ? (kind === "runner" || kind === "fly" ? "Kom deg helt fram." : "Finn veien til mål.")
       : win === "collect" ? "Samle alt du finner."
@@ -504,16 +513,16 @@
     ".b-game{overflow:hidden;min-height:200px;background-color:var(--paper,#fafaf7);background-image:var(--b-grain-img,none);color:var(--ink,#252623);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}",
     ".b-game__root{position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;container-type:size;font-family:var(--b-display,cursive);color:var(--ink,#252623)}",
     ".b-game__canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block;touch-action:none;outline:none}",
-    ".b-game__hud{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:14px;padding:8px 8px 0 14px;pointer-events:none;font-size:34px;line-height:1;font-weight:600;text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper),0 0 7px var(--paper);z-index:1}",
+    ".b-game__hud{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:14px;column-gap:min(14px,3.9%);padding:8px 8px 0 14px;pointer-events:none;font-size:34px;line-height:1;font-weight:600;text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper),0 0 7px var(--paper);z-index:1}",
     ".b-game__root:not([data-state='playing']):not([data-state='paused']) .b-game__hud,.b-game__root:not([data-state='playing']) .b-game__pad{visibility:hidden}",
-    ".b-game__lives{display:flex;gap:1px}",
-    ".b-game__lives svg{width:32px;height:30px;overflow:visible;color:var(--line)}",
+    ".b-game__lives{display:flex;flex-wrap:wrap;gap:1px;flex:0 1 auto;min-width:0;height:30px}",   /* many lives on a narrow screen: the hearts go on more rows, under the first */
+    ".b-game__lives svg{flex:none;width:32px;height:30px;overflow:visible;color:var(--line)}",
     ".b-game__lives svg.is-lost{opacity:.4}",
-    ".b-game__score{display:flex;align-items:center;gap:5px;margin-left:auto}",
+    ".b-game__score{display:flex;flex:none;align-items:center;gap:5px;margin-left:auto}",
     ".b-game__score svg{width:30px;height:30px;overflow:visible;color:var(--line)}",
-    ".b-game__time{min-width:1.9em;text-align:right;font-variant-numeric:tabular-nums}",
+    ".b-game__time{flex:none;min-width:1.9em;text-align:right;font-variant-numeric:tabular-nums}",
     ".b-game__time:empty{display:none}",
-    ".b-game__pause{pointer-events:auto;-webkit-appearance:none;appearance:none;background:none;border:0;margin:0;padding:0;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;color:var(--line);border-radius:50%;touch-action:manipulation}",
+    ".b-game__pause{pointer-events:auto;-webkit-appearance:none;appearance:none;background:none;border:0;margin:0;padding:0;flex:none;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;color:var(--line);border-radius:50%;touch-action:manipulation}",
     ".b-game__pause svg{width:30px;height:30px;overflow:visible}",
     ".b-game__pause:focus-visible{outline:2.5px solid var(--focus,#3d6c99);outline-offset:1px}",
     ".b-game__pad{position:absolute;bottom:14px;display:none;gap:12px;touch-action:none;pointer-events:auto;z-index:1}",
@@ -964,7 +973,7 @@
   };
   /** The small note a thing says: hand-written on a slip of paper. */
   Game2D.prototype._note = function (str) {
-    var hit = this._notes[str];
+    var key = "n|" + str, hit = this._notes[key];   // never a name Object.prototype has
     if (hit) return hit;
     var cols = this._cols, wob = this._wob, font = "500 23px " + this._font, lines = [], line = "", i, w = 0;
     var m = document.createElement("canvas").getContext("2d");
@@ -994,7 +1003,7 @@
         for (i = 0; i < lines.length; i++) c.fillText(lines[i], mid, 9 + 12.5 + i * 25, 300);
       } catch (e) { this._fail(e); }
     }
-    this._notes[str] = cv;
+    this._notes[key] = cv;
     return cv;
   };
 
@@ -1017,7 +1026,9 @@
     for (i = 0; i < this._imgWait.length; i++) if (this._imgWait[i][0] === img) return;
     var fn = function () {
       if (self._dead) return;
-      self._ents.forEach(function (e) { var x = e.x, y = e.y, b = y + e.h / 2; self._fit(e, e.from, e.index); e.x = x; e.y = e.role === "solid" ? y : b - e.h / 2; });
+      var refit = function (e) { var x = e.x, y = e.y, b = y + e.h / 2; self._fit(e, e.from, e.index); e.x = x; e.y = e.role === "solid" ? y : b - e.h / 2; };
+      self._ents.forEach(refit);
+      if (self._p) refit(self._p);   // the player is not among _ents
     };
     img.addEventListener("load", fn);
     this._imgWait.push([img, fn]);
@@ -1141,11 +1152,15 @@
     else if (k === " " || k === "spacebar") name = "jump";
     if (down) this._gesture = true;
     if (this.state !== "playing") {
-      if (!down || e.repeat) return;
-      if (k === "p" && this.state === "paused") { this.resume(); return; }
-      // Enter or space starts, when the keys are not meant for something else on the page
+      if (!down) return;
+      if (k === "p" && !e.repeat && this.state === "paused") { this.resume(); return; }
+      // Enter or space starts, when the keys are not meant for something else on the page, and not while the win or lose screen is on its way.
+      // The key is the game's own all the same: it is swallowed also while it is held back, or space would scroll the page away under the screen.
       var a = document.activeElement, here = !a || a === document.body || this.el.contains(a);
-      if ((k === "enter" || k === " ") && here && !(a && a.classList && a.classList.contains("b-game__go")) && this._clock - this._scrAt > 0.6) { e.preventDefault(); this._go(); }
+      if ((k === "enter" || k === " ") && here && !(a && a.classList && a.classList.contains("b-game__go"))) {
+        e.preventDefault();
+        if (!e.repeat && !(this._endT > 0) && this._clock - this._scrAt > 0.6) this._go();
+      }
       return;
     }
     if (k === "p" && down && !e.repeat) { this.pause(); return; }
@@ -1359,7 +1374,7 @@
     var e = this._make(tpl, s.from, 5000 + Math.floor(rand() * 100000));
     var g = hasGround(sp.kind, sp.world), gt = H - GROUND, floor = g ? gt : Math.min(H, cam.y + v.h);
     var ramp = 1 + Math.min(0.4, this._t / 150);   // a little faster as the round goes on
-    var speed = e.speed * ramp;
+    var speed = Math.max(40, e.speed) * ramp;   // never so slow that it stays outside the view
     if (s.from === "top") {
       var l = Math.max(cam.x, this._loop ? -Infinity : 0) + e.w / 2 + 6, r = Math.min(cam.x + v.w, this._loop ? Infinity : W) - e.w / 2 - 6;
       e.x = r > l ? l + rand() * (r - l) : (l + r) / 2;
@@ -1502,7 +1517,7 @@
       var acc = 3600 * dt;
       p.vx += clamp(dx * speed - p.vx, -acc, acc); p.vy += clamp(dy * speed - p.vy, -acc, acc);
       if (Math.abs(dx) > 0.15) p.face = dx < 0 ? -1 : 1;
-      p.x += p.vx * dt; this._pushOut(p, true);
+      p.x += p.vx * dt; this._pushOut(p, true, dt);
       p.y += p.vy * dt; this._pushOut(p, false);
       p.x = clamp(p.x, hw, W - hw); p.y = clamp(p.y, p.ch / 2, H - p.ch / 2);
       p.walk += Math.sqrt(p.vx * p.vx + p.vy * p.vy) * dt;
@@ -1599,12 +1614,17 @@
     if (p.y - p.h / 2 > H + 140) this._fell();
   };
   /* topdown walls: out the short way, along the axis that just moved */
-  Game2D.prototype._pushOut = function (p, alongX) {
-    var i, s;
+  Game2D.prototype._pushOut = function (p, alongX, dt) {
+    var i, s, penX, penY;
     for (i = 0; i < this._solids.length; i++) {
       s = this._solids[i];
       if (!s.alive || !overlap(p, s)) continue;
-      if (alongX) { p.x = p.x < s.x ? s.x - s.w / 2 - p.cw / 2 - 0.01 : s.x + s.w / 2 + p.cw / 2 + 0.01; p.vx = 0; }
+      if (alongX) {
+        penX = Math.min(p.x + p.cw / 2 - (s.x - s.w / 2), s.x + s.w / 2 - (p.x - p.cw / 2));
+        penY = Math.min(p.y + p.ch / 2 - (s.y - s.h / 2), s.y + s.h / 2 - (p.y - p.ch / 2));
+        if (penX > penY && penX > Math.abs(p.vx) * dt + Math.abs(s.dx) + 1.5) continue;   // not made by this sideways move, and shorter up or down: the y pass sorts it out
+        p.x = p.x < s.x ? s.x - s.w / 2 - p.cw / 2 - 0.01 : s.x + s.w / 2 + p.cw / 2 + 0.01; p.vx = 0;
+      }
       else { p.y = p.y < s.y ? s.y - s.h / 2 - p.ch / 2 - 0.01 : s.y + s.h / 2 + p.ch / 2 + 0.01; p.vy = 0; }
     }
   };
@@ -1720,7 +1740,7 @@
   Game2D.prototype._advance = function (dt) {
     var n = 0;
     if (this._themeDirty) { this._theme(); this._hud(true); }
-    if (this.state === "paused") return;
+    if (this.state === "paused") { this._scrAt -= dt; return; }   // the clock stands still, but the wait before Enter and space resume still runs out
     this._clock += dt;
     if (this.state === "playing") {
       this._acc += dt;
